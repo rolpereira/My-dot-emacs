@@ -1,4 +1,4 @@
-; Time-stamp: <2009-09-11 18:55:22 (rolando)>
+; Time-stamp: <2009-09-22 23:57:03 (rolando)>
 
 
 (defvar *emacs-load-start* (current-time))
@@ -715,7 +715,7 @@ it moves the cursor to the beginning-of-line"
 
 ;; Mudar o charset
 (setq erc-server-coding-system '(iso-8859-1 . iso-8859-1))
-(setq erc-server-coding-system '(utf-8 . utf-8))
+;(setq erc-server-coding-system '(utf-8 . utf-8))
 
 ;; ;; Transformar links em butoes que abrem o browser
 ;; (setq erc-button-url-regexp
