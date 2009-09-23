@@ -1,5 +1,6 @@
-; Time-stamp: <2009-09-22 23:57:03 (rolando)>
+; Time-stamp: <2009-09-23 00:48:06 (rolando)>
 
+;; Arranjar uma keybind para find-function (podera funcionar melhor que as tags)
 
 (defvar *emacs-load-start* (current-time))
 
@@ -866,11 +867,17 @@ buffer."
 ;;;;;;;;;;;;;
 
 ;; Need to find some keybindings for the laptop
-(unless iamlaptop
+;(unless iamlaptop
   (require 'fold-dwim)
+(if iamlaptop
+  (progn
+    (global-set-key [(C J)] 'fold-dwim-hide-all)
+    (global-set-key [(C K)] 'fold-dwim-toggle)
+    (global-set-key [(C )] 'fold-dwim-show-all))
   (global-set-key [(C kp-4)] 'fold-dwim-hide-all)
   (global-set-key [(C kp-5)] 'fold-dwim-toggle)
   (global-set-key [(C kp-6)] 'fold-dwim-show-all))
+
 
 ;; % igual ao Vim
 ;; http://mewde.blogspot.com/2007_05_01_archive.html
@@ -1170,7 +1177,9 @@ point."
          (or (eobp) (not (= ?w (char-syntax (char-after))))))
         ;(dabbrev-expand arg)
       (hippie-expand arg)))
-      (indent-according-to-mode))
+      ;(indent-according-to-mode)
+  ; indent-according-to-mode doesn't work on regions
+  (indent-region (region-beginning) (region-end)))
 
 (defun my-tab-fix ()
   (local-set-key [(tab)] 'indent-or-expand))
