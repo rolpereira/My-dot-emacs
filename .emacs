@@ -1,4 +1,4 @@
-; Time-stamp: <2009-09-25 20:41:36 (rolando)>
+; Time-stamp: <2009-09-26 13:41:44 (rolando)>
 
 ;; Arranjar uma keybind para find-function (podera funcionar melhor que as tags)
 
@@ -7,21 +7,29 @@
 
 ; Experimentar usar a variavel default-directory
 
+;; (defun Where-Am-i ()
+;;   "If it returns t, then I am on the laptop, otherwise I am on the desktop."
+;;   (let ((BUFFER "teste"))
+;;   (save-excursion
+;;     (get-buffer-create BUFFER)
+;;     (set-buffer BUFFER)
+;;     (shell-command "echo $HOSTNAME" (get-buffer BUFFER))
+;;     (let ((LAPTOP-HOSTNAME "rolando-laptop")
+;;            (DESKTOP-HOSTNAME "main-computer")
+;; 	   ; substring removes the \n character in the end of the string
+;;            (current-hostname (substring (buffer-string) 0 -1)))
+;;       (kill-buffer BUFFER)
+;;       (if (string= current-hostname LAPTOP-HOSTNAME)
+;;         t
+;;         nil)))))
+
 (defun Where-Am-i ()
   "If it returns t, then I am on the laptop, otherwise I am on the desktop."
-  (let ((BUFFER "teste"))
-  (save-excursion
-    (get-buffer-create BUFFER)
-    (set-buffer BUFFER)
-    (shell-command "echo $HOSTNAME" (get-buffer BUFFER))
-    (let ((LAPTOP-HOSTNAME "jcarlos-laptop")
-           (DEKSTOP-HOSTNAME "main-computer")
-	   ; substring removes the \n character in the end of the string
-           (current-hostname (substring (buffer-string) 0 -1)))
-      (kill-buffer BUFFER)
-      (if (string= current-hostname LAPTOP-HOSTNAME)
-        t
-        nil)))))
+  (let ((LAPTOP-HOSTNAME "rolando-laptop"
+          DESKTOP-HOSTNAME "main-computer"))
+    (if (string= system-name LAPTOP-HOSTNAME)
+      t
+      nil)))
 
 (defun Are-We-On-Windows ()
   (if (equal system-type 'windows-nt)
