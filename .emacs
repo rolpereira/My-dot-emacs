@@ -1,4 +1,4 @@
-; Time-stamp: <2009-09-23 00:48:06 (rolando)>
+; Time-stamp: <2009-09-25 20:41:36 (rolando)>
 
 ;; Arranjar uma keybind para find-function (podera funcionar melhor que as tags)
 
@@ -1179,7 +1179,8 @@ point."
       (hippie-expand arg)))
       ;(indent-according-to-mode)
   ; indent-according-to-mode doesn't work on regions
-  (indent-region (region-beginning) (region-end)))
+;  (indent-region (region-beginning) (region-end)))
+  (indent-for-tab-command))
 
 (defun my-tab-fix ()
   (local-set-key [(tab)] 'indent-or-expand))
@@ -1327,5 +1328,17 @@ point."
 (add-hook 'gnus-group-mode-hook 'my-setup-hl-line)
 
 
+(defun autocompile nil
+  "compile itself if ~/.emacs"
+  (interactive)
+  (require 'bytecomp)
+  (if (string= (buffer-file-name) (expand-file-name (concat default-directory ".emacs")))
+    (byte-compile-file (buffer-file-name))))
+
+(add-hook 'after-save-hook 'autocompile)
+
+
+
 (message "My .emacs loaded in %ds" (destructuring-bind (hi lo ms) (current-time)
                            (- (+ hi lo) (+ (first *emacs-load-start*) (second *emacs-load-start*)))))
+
