@@ -3,6 +3,7 @@
   ;; If you edit it by hand, you could mess it up, so be careful.
   ;; Your init file should contain only one such instance.
   ;; If there is more than one, they won't work right.
+ '(canlock-password "b729cbb4108fd17f15d489d034f9a7f06c542e83")
  '(ecb-options-version "2.33beta2")
  '(erc-modules (quote (autojoin button completion fill irccontrols list match menu move-to-prompt netsplit networks noncommands readonly ring smiley stamp track)))
  '(org-agenda-files (quote ("~/notes/teste.org"))))
