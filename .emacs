@@ -1,4 +1,4 @@
-; Time-stamp: <2009-09-26 13:41:44 (rolando)>
+; Time-stamp: <2009-10-05 22:20:38 (rolando)>
 
 ;; Arranjar uma keybind para find-function (podera funcionar melhor que as tags)
 
@@ -25,8 +25,8 @@
 
 (defun Where-Am-i ()
   "If it returns t, then I am on the laptop, otherwise I am on the desktop."
-  (let ((LAPTOP-HOSTNAME "rolando-laptop"
-          DESKTOP-HOSTNAME "main-computer"))
+  (let ((LAPTOP-HOSTNAME "rolando-laptop")
+          (DESKTOP-HOSTNAME "main-computer"))
     (if (string= system-name LAPTOP-HOSTNAME)
       t
       nil)))
@@ -62,7 +62,8 @@ it moves the cursor to the beginning-of-line"
 
 (defun set-home-folder ()
   (cond ((and iamlaptop (not iamwindows))
-          "/media/JCARLOS/")
+          ;"/media/JCARLOS/")
+         "/home/rolando/")
     (iamwindows
       (substring default-directory 0 -9))
     ((not iamlaptop)
@@ -107,6 +108,7 @@ it moves the cursor to the beginning-of-line"
 
 ;(add-to-list 'load-path (concat home ".emacs.d/elisp"))
 (add-to-list 'load-path (concat home "elisp"))
+;(add-to-list 'load-path (concat home "elpa"))
 
 ;; (if iamlaptop
 ;;     (add-to-list 'load-path (concat "/media/JCARLOS/.emacs.d/elisp"))
@@ -149,8 +151,8 @@ it moves the cursor to the beginning-of-line"
 ;;;
 
 ; Activar Org-Mode
-(setq load-path (cons (concat home "elisp/org-6.16c/lisp") load-path))
-(setq load-path (cons (concat home "elisp/org-6.16c/contrib/lisp") load-path))
+(setq load-path (cons (concat home "elisp/org-6.31a/lisp") load-path))
+(setq load-path (cons (concat home "elisp/org-6.31a/contrib/lisp") load-path))
 ;;;;;
 
 ; Mostra so a * mais a direita no org-mode
@@ -881,7 +883,7 @@ buffer."
   (progn
     (global-set-key [(C J)] 'fold-dwim-hide-all)
     (global-set-key [(C K)] 'fold-dwim-toggle)
-    (global-set-key [(C )] 'fold-dwim-show-all))
+    (global-set-key [(C L)] 'fold-dwim-show-all))
   (global-set-key [(C kp-4)] 'fold-dwim-hide-all)
   (global-set-key [(C kp-5)] 'fold-dwim-toggle)
   (global-set-key [(C kp-6)] 'fold-dwim-show-all))
@@ -1166,7 +1168,9 @@ If the character is not a ';' simply do a newline-and-indent"
       '(try-expand-dabbrev
         try-expand-dabbrev-all-buffers
         try-expand-dabbrev-from-kill
+        try-complete-file-name-partially 
         try-complete-file-name
+        try-complete-lisp-symbol-partially
         try-complete-lisp-symbol))
 
 (global-set-key "\M- " 'hippie-expand)
