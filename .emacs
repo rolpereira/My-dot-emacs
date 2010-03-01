@@ -1,4 +1,4 @@
-; Time-stamp: <2009-10-05 22:20:38 (rolando)>
+; Time-stamp: <2010-02-26 20:48:42 (rolando)>
 
 ;; Arranjar uma keybind para find-function (podera funcionar melhor que as tags)
 
@@ -232,12 +232,15 @@ it moves the cursor to the beginning-of-line"
 ; Mudar a theme do emacs
 (when window-system
   (require 'color-theme)
-  ;(require 'color-theme-tango)
-  (require 'color-theme-sunburst)
+  (require 'color-theme-tango)
+  (require 'zenburn)
+  ;(require 'color-theme-sunburst)
   (color-theme-initialize)
 ;  (color-theme-goldenrod)
-  ;(color-theme-tango)
-  (color-theme-sunburst))
+  ;(color-theme-tango))
+  (color-theme-zenburn))
+  ;(color-theme-sunburst))
+  ;(color-theme-taylor))
 ; Other themes: midnight, white on black, charcoal black, Calm Forest, Billw,
 ; Arjen, Clarity and Beauty, Cooper Dark, Comidia, Dark Blue 2, Dark Laptop,
 ; Deep Blue, Hober, Late Night, Lethe, Linh Dang Dark, Taming Mr Arneson,
@@ -473,7 +476,8 @@ it moves the cursor to the beginning-of-line"
 ;; This ones don't work on Windows
 (if (not (Are-We-On-Windows))
     (if (= emacs-major-version 23)
-        (set-default-font "Bitstream Vera Sans Mono-8")
+        ;(set-default-font "Bitstream Vera Sans Mono-12")
+      (set-default-font "Inconsolata 14")
       (set-default-font
        "-adobe-courier-medium-r-normal-*-14-100-*-*-*-*-iso10646-1"))
   (set-default-font "-outline-Consolas-normal-r-normal-normal-14-97-96-96-c-*-iso8859-1"))
@@ -1223,12 +1227,14 @@ point."
 (defun lisp-switch-keys ()
   (local-set-key (kbd "8") (lambda ()
                              (interactive)
-                             (insert-parentheses)))
+                             ;(insert-parentheses)
+                             (insert "(")))
   (local-set-key (kbd "(") (lambda ()
                              (interactive)
-                             (insert "(")))
+                             (insert "8")))
   (local-set-key (kbd "9") (lambda ()
                              (interactive)
+                             ;(move-past-close-and-reindent)
                              (insert ")")))
   (local-set-key (kbd ")") (lambda ()
                              (interactive)
@@ -1349,6 +1355,9 @@ point."
 
 (add-hook 'after-save-hook 'autocompile)
 
+(tool-bar-mode 0)
+(scroll-bar-mode 0)
+(menu-bar-mode 0)
 
 
 (message "My .emacs loaded in %ds" (destructuring-bind (hi lo ms) (current-time)
