@@ -1,4 +1,4 @@
-; Time-stamp: <2010-02-26 20:48:42 (rolando)>
+; Time-stamp: <2010-03-04 19:44:01 (rolando)>
 
 ;; Arranjar uma keybind para find-function (podera funcionar melhor que as tags)
 
@@ -83,32 +83,18 @@ it moves the cursor to the beginning-of-line"
 ;; E necessario muitas vezes
 (require 'cl)
 
-
-
-
-
-
-
-
-;; Load CEDET
-;(load-file (concat home "elisp/cedet-1.0pre4/common/cedet.el"))
-;(global-ede-mode t)
-
 ; Load Emacs Code Browser
 ;; (add-to-list 'load-path (concat home ".emacs.d/elisp/ecb-snap"))
 ;; (require 'ecb)
 
-;(add-to-list 'load-path "~/.emacs.d/elisp/emacs-chess")
-;(require 'chess)
+
+
 
 (setq eldoc-idle-delay 0)
 
 (setq visible-bell t)
-;(setq load-path (append '("~/.emacs.d/elisp") load-path))
 
-;(add-to-list 'load-path (concat home ".emacs.d/elisp"))
 (add-to-list 'load-path (concat home "elisp"))
-;(add-to-list 'load-path (concat home "elpa"))
 
 ;; (if iamlaptop
 ;;     (add-to-list 'load-path (concat "/media/JCARLOS/.emacs.d/elisp"))
@@ -138,7 +124,7 @@ it moves the cursor to the beginning-of-line"
   tab-width 4
   indent-tabs-mode nil)
 (setq backward-delete-char-untabify nil
-  default-tab-width 4)
+  tab-width 4)
 ;;;
 
 ; Coisas SVN
@@ -216,8 +202,8 @@ it moves the cursor to the beginning-of-line"
   (c-set-offset 'arglist-intro 4)
   (c-set-offset 'arglist-cont-nonempty 4)
   (setq show-paren-style 'parenthesis)
-  (setq c-hungry-delete-key t)
-  (setq c-auto-newline 1)
+  ;(setq c-hungry-delete-key t)
+  ;(setq c-auto-newline 1)
   (highlight-fixmes-mode)
   (hs-minor-mode)
 ;  (lambda ()
@@ -400,7 +386,7 @@ it moves the cursor to the beginning-of-line"
 ;;;;;
 
 ; Dias do calendario traduzidos para PT
-(setq european-calendar-style 't)
+(setq calendar-date-style 'european)
 (setq calendar-week-start-day 1
   calendar-day-name-array
   ["Domingo" "Segunda" "Terça"
@@ -412,8 +398,8 @@ it moves the cursor to the beginning-of-line"
 ;;;;;
 
 ; Colocar o calendario mais bonito
-(setq view-diary-entries-initially t
-    mark-diary-entries-in-calendar t
+(setq calendar-view-diary-initially-flag t
+    calendar-mark-diary-entries-flag t
     number-of-diary-entries 7)
 (add-hook 'diary-display-hook 'fancy-diary-display)
 (add-hook 'today-visible-calendar-hook 'calendar-mark-today)
@@ -477,10 +463,10 @@ it moves the cursor to the beginning-of-line"
 (if (not (Are-We-On-Windows))
     (if (= emacs-major-version 23)
         ;(set-default-font "Bitstream Vera Sans Mono-12")
-      (set-default-font "Inconsolata 14")
-      (set-default-font
+      (set-frame-font "Inconsolata 14")
+      (set-frame-font
        "-adobe-courier-medium-r-normal-*-14-100-*-*-*-*-iso10646-1"))
-  (set-default-font "-outline-Consolas-normal-r-normal-normal-14-97-96-96-c-*-iso8859-1"))
+  (set-frame-font "-outline-Consolas-normal-r-normal-normal-14-97-96-96-c-*-iso8859-1"))
 
 ; Mostrar linhas lado esquerdo
 (require 'linum)
@@ -910,28 +896,28 @@ buffer."
 ;(require 'keywiz)
 ;;
 
-;; Scheme Mode
-(defun rolando-scheme-send-whole-buffer ()
-  "Sends the entire buffer to the inferior scheme process"
-  (interactive)
-  (save-excursion
-    (set-buffer "*scheme*")
-    (erase-buffer)
-    (save-excursion
-      (scheme-send-region (point-min) (point-max))
-      (if (get-buffer-window "*scheme*")
-        (display-buffer "*scheme*" t))
-      (unless (get-buffer-window "*scheme*")
-        (split-window-vertically)
-        (windmove-do-window-select 'down)
-        (set-window-buffer (selected-window) "*scheme*")))))
+;; ;; Scheme Mode
+;; (defun rolando-scheme-send-whole-buffer ()
+;;   "Sends the entire buffer to the inferior scheme process"
+;;   (interactive)
+;;   (save-excursion
+;;     (set-buffer "*scheme*")
+;;     (erase-buffer)
+;;     (save-excursion
+;;       (scheme-send-region (point-min) (point-max))
+;;       (if (get-buffer-window "*scheme*")
+;;         (display-buffer "*scheme*" t))
+;;       (unless (get-buffer-window "*scheme*")
+;;         (split-window-vertically)
+;;         (windmove-do-window-select 'down)
+;;         (set-window-buffer (selected-window) "*scheme*")))))
 
-(defun rolando-scheme-mode-hook ()
-  (interactive)
-  (local-set-key (kbd "C-t") 'rolando-scheme-send-whole-buffer))
+;; (defun rolando-scheme-mode-hook ()
+;;   (interactive)
+;;   (local-set-key (kbd "C-t") 'rolando-scheme-send-whole-buffer))
 
-(add-hook 'scheme-mode-hook 'rolando-scheme-mode-hook)
-;;;;
+;; (add-hook 'scheme-mode-hook 'rolando-scheme-mode-hook)
+;; ;;;;
 
 ;; F20 = Right Windows key
 (defun rolando-switch-buffer ()
