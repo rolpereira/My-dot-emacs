@@ -1,35 +1,22 @@
-; Time-stamp: <2010-03-04 19:44:01 (rolando)>
+; Time-stamp: <2010-03-29 22:53:21 (rolando)>
 
-;; Arranjar uma keybind para find-function (podera funcionar melhor que as tags)
+;; TODO: Arranjar uma keybind para find-function (podera funcionar melhor que as tags)
 
 (defvar *emacs-load-start* (current-time))
 
 
 ; Experimentar usar a variavel default-directory
 
-;; (defun Where-Am-i ()
-;;   "If it returns t, then I am on the laptop, otherwise I am on the desktop."
-;;   (let ((BUFFER "teste"))
-;;   (save-excursion
-;;     (get-buffer-create BUFFER)
-;;     (set-buffer BUFFER)
-;;     (shell-command "echo $HOSTNAME" (get-buffer BUFFER))
-;;     (let ((LAPTOP-HOSTNAME "rolando-laptop")
-;;            (DESKTOP-HOSTNAME "main-computer")
-;; 	   ; substring removes the \n character in the end of the string
-;;            (current-hostname (substring (buffer-string) 0 -1)))
-;;       (kill-buffer BUFFER)
-;;       (if (string= current-hostname LAPTOP-HOSTNAME)
-;;         t
-;;         nil)))))
-
 (defun Where-Am-i ()
   "If it returns t, then I am on the laptop, otherwise I am on the desktop."
   (let ((LAPTOP-HOSTNAME "rolando-laptop")
-          (DESKTOP-HOSTNAME "main-computer"))
-    (if (string= system-name LAPTOP-HOSTNAME)
-      t
-      nil)))
+          (DESKTOP-HOSTNAME "rolando-desktop"))
+    (cond ((string= system-name LAPTOP-HOSTNAME)
+            'laptop)
+      ((string= system-name DESKTOP-HOSTNAME)
+        'desktop)
+      (t
+        'undefined))))
 
 (defun Are-We-On-Windows ()
   (if (equal system-type 'windows-nt)
@@ -39,8 +26,10 @@
 (defconst iamwindows (Are-We-On-Windows)
   "If t, then we are on a windows system, otherwise se assume we are in a linux system")
 
-(defconst iamlaptop (Where-Am-i)
-  "If t, then we are on the laptop and in the linux system")
+(defconst whereami (Where-Am-i)
+  "If 'laptop, then we are on the laptop and in the linux system.
+If 'desktop, then we are on the desktop system and in the linux system.
+If 'undefined, then we don't know where we are.")
 
 (if (not iamwindows)
   (server-start))
@@ -61,12 +50,12 @@ it moves the cursor to the beginning-of-line"
 
 
 (defun set-home-folder ()
-  (cond ((and iamlaptop (not iamwindows))
+  (cond ((and (equal whereami 'laptop) (not iamwindows))
           ;"/media/JCARLOS/")
          "/home/rolando/")
     (iamwindows
       (substring default-directory 0 -9))
-    ((not iamlaptop)
+    ((equal whereami 'desktop)
       "/home/rolando/")))
 
 ;(message (file-name-directory load-file-name))
@@ -74,11 +63,14 @@ it moves the cursor to the beginning-of-line"
 (defconst home (concat (set-home-folder) ".emacs.d/"))
 ;(defconst home (file-name-directory load-file-name))
 
-;; (defvar iamlaptop (Where-Am-i))
+(defun file-in-exec-path-p (filename)
+  "Returns t if FILENAME is in the system exec-path, otherwise returns nil"
+  (if (locate-file filename exec-path)
+    t
+    nil))
 
-;; (if iamlaptop
-;;   (defvar home "/media/JCARLOS/")
-;;   (defvar home "/home/rolando/"))
+
+
 
 ;; E necessario muitas vezes
 (require 'cl)
@@ -105,6 +97,13 @@ it moves the cursor to the beginning-of-line"
 
 (setq load-path (append '("/usr/share/emacs/site-lisp/pydb") load-path))
 (setq c-default-style "bsd")
+
+
+
+(message "Stop 1 %ds" (destructuring-bind (hi lo ms) (current-time)
+                           (- (+ hi lo) (+ (first *emacs-load-start*) (second *emacs-load-start*)))))
+
+
 
 (setq require-final-newline t)                ; Always newline at end of file
 
@@ -154,7 +153,7 @@ it moves the cursor to the beginning-of-line"
 ;;;;;
 
 ; Activar flymake-mode para o python usando o pyflakes
-(when (load "flymake" t)
+(when (and (load "flymake" t) (file-in-exec-path-p "pyflakes"))
   (defun flymake-pyflakes-init ()
     (let* ((temp-file (flymake-init-create-temp-buffer-copy
                         'flymake-create-temp-inplace))
@@ -166,7 +165,7 @@ it moves the cursor to the beginning-of-line"
    (add-to-list 'flymake-allowed-file-name-masks
      '("\\.py\\'" flymake-pyflakes-init)))
 
-;; (add-hook 'find-file-hook 'flymake-find-file-hook)
+(add-hook 'find-file-hook 'flymake-find-file-hook)
 ;;;
 
 ; Flymake settings
@@ -189,10 +188,6 @@ it moves the cursor to the beginning-of-line"
 
 (add-hook 'python-mode-hook 'my-python-mode-hook)
 
-;; Activar documentacao
-;(add-hook 'python-mode-hook
-;  '(lambda () (eldoc-mode 1)) t)
-
 ;; C/C++/Java/C# Mode
 (defun my-c-mode-common-hook ()
   (c-set-offset 'substatement-open 0)
@@ -213,12 +208,21 @@ it moves the cursor to the beginning-of-line"
   ;(yas/minor-mode)
   )
 
+
+
+(message "Stop 2 %ds" (destructuring-bind (hi lo ms) (current-time)
+                           (- (+ hi lo) (+ (first *emacs-load-start*) (second *emacs-load-start*)))))
+
+
+
+
+
 (add-hook 'c-mode-common-hook 'my-c-mode-common-hook)
 
 ; Mudar a theme do emacs
 (when window-system
   (require 'color-theme)
-  (require 'color-theme-tango)
+  ;(require 'color-theme-tango)
   (require 'zenburn)
   ;(require 'color-theme-sunburst)
   (color-theme-initialize)
@@ -304,6 +308,17 @@ it moves the cursor to the beginning-of-line"
 (add-hook 'emacs-lisp-mode-hook 'djcb-emacs-lisp-mode-hook)
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+
+
+
+(message "Stop 3 %ds" (destructuring-bind (hi lo ms) (current-time)
+                           (- (+ hi lo) (+ (first *emacs-load-start*) (second *emacs-load-start*)))))
+
+
+
+
+
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; backups  (emacs will write backups and number them)
 (setq make-backup-files t ; do make backups
@@ -385,6 +400,14 @@ it moves the cursor to the beginning-of-line"
 (add-hook 'bibtex-mode-hook 'flyspell-mode)
 ;;;;;
 
+
+
+(message "Stop 4 %ds" (destructuring-bind (hi lo ms) (current-time)
+                           (- (+ hi lo) (+ (first *emacs-load-start*) (second *emacs-load-start*)))))
+
+
+
+
 ; Dias do calendario traduzidos para PT
 (setq calendar-date-style 'european)
 (setq calendar-week-start-day 1
@@ -406,7 +429,6 @@ it moves the cursor to the beginning-of-line"
 ;;;;;
 
 ; Mostrar imagens do site icanhascheezburger.com
-;(load "cheezburger.el")
 (autoload 'cheezburger "cheezburger" "" t)
 ;;;;;
 
@@ -478,6 +500,15 @@ it moves the cursor to the beginning-of-line"
 
 (global-set-key (kbd "<f2>") 'linum-mode)
 ;;;
+
+
+
+
+(message "Stop 5 %ds" (destructuring-bind (hi lo ms) (current-time)
+                           (- (+ hi lo) (+ (first *emacs-load-start*) (second *emacs-load-start*)))))
+
+
+
 
 ;; display the current time
 (setq display-time-24hr-format t)
@@ -567,6 +598,18 @@ it moves the cursor to the beginning-of-line"
   (concat "~/.emacs.d/autosaves/" (user-login-name) "/"))
 
 (make-directory autosave-dir t)
+
+
+
+
+
+(message "Stop 6 %ds" (destructuring-bind (hi lo ms) (current-time)
+                           (- (+ hi lo) (+ (first *emacs-load-start*) (second *emacs-load-start*)))))
+
+
+
+
+
 
 (defun auto-save-file-name-p (filename)
   (string-match "^#.*#$" (file-name-nondirectory filename)))
@@ -660,6 +703,12 @@ it moves the cursor to the beginning-of-line"
 (djcb-program-shortcut "irssi" (kbd "<S-f7>") t)  ; irc client
 (djcb-program-shortcut "tt++ " (kbd "<S-f8>") t)  ; MUD client
 ;;;;;;;;
+
+
+(message "Stop 7 %ds" (destructuring-bind (hi lo ms) (current-time)
+                           (- (+ hi lo) (+ (first *emacs-load-start*) (second *emacs-load-start*)))))
+
+
 
 ;; Mover para as janelas usando o ALT+setas
 ;; http://www.emacsblog.org/2008/05/01/quick-tip-easier-window-switching-in-emacs/
@@ -783,6 +832,14 @@ erc-modified-channels-alist. Should be executed on window change."
 
 (require 'erc-nick-notify)
 
+
+
+(message "Stop 8 %ds" (destructuring-bind (hi lo ms) (current-time)
+                           (- (+ hi lo) (+ (first *emacs-load-start*) (second *emacs-load-start*)))))
+
+
+
+
 (defun erc-cmd-UPTIME (&rest ignore)
   "Display the uptime of the system, as well as some load-related
 stuff, to the current ERC buffer."
@@ -855,6 +912,12 @@ buffer."
 ;; Saving bookmark data on killing a buffer
 (add-hook 'kill-buffer-hook 'bm-buffer-save)
 
+
+(message "Stop 9 %ds" (destructuring-bind (hi lo ms) (current-time)
+                           (- (+ hi lo) (+ (first *emacs-load-start*) (second *emacs-load-start*)))))
+
+
+
 ;; Saving the repository to file when on exit.
 ;; kill-buffer-hook is not called when emacs is killed, so we
 ;; must save all bookmarks first.
@@ -867,9 +930,8 @@ buffer."
 ;;;;;;;;;;;;;
 
 ;; Need to find some keybindings for the laptop
-;(unless iamlaptop
   (require 'fold-dwim)
-(if iamlaptop
+(if (equal whereami 'laptop)
   (progn
     (global-set-key [(C J)] 'fold-dwim-hide-all)
     (global-set-key [(C K)] 'fold-dwim-toggle)
@@ -893,7 +955,6 @@ buffer."
 ;; Fazer perguntas sobre keybindings
 ;; http://mewde.blogspot.com/2007_05_01_archive.html
 (autoload 'keywiz "keywiz" "" t)
-;(require 'keywiz)
 ;;
 
 ;; ;; Scheme Mode
@@ -939,6 +1000,12 @@ buffer."
   ;;                          (format "Describe symbol (default %s): " symbol)
   ;;                          "Describe symbol: ")
   ;;             nil nil symbol))))
+
+
+
+(message "Stop 10 %ds" (destructuring-bind (hi lo ms) (current-time)
+                           (- (+ hi lo) (+ (first *emacs-load-start*) (second *emacs-load-start*)))))
+
 
                                         ; Usar o fit-window-to-buffer, display-buffer
   (let ((name "*Python Documentation*"))
@@ -1028,6 +1095,15 @@ buffer."
 (add-hook 'html-mode-hook 'hexcolour-add-to-font-lock)
 ;;;;;
 
+
+
+
+(message "Stop 11 %ds" (destructuring-bind (hi lo ms) (current-time)
+                           (- (+ hi lo) (+ (first *emacs-load-start*) (second *emacs-load-start*)))))
+
+
+
+
 ;; Indent some code within an HTML file
 ;; http://www.emacswiki.org/emacs/HtmlMode
 (defun indent-region-as (other-mode)
@@ -1079,7 +1155,7 @@ buffer."
 ;    (expand-file-name "~/.emacs.d/elpa/package.el"))
 ;  (package-initialize))
 
-;; Configuracao para Haskell
+;; ;; Configuracao para Haskell
 (when (file-exists-p (concat home "elisp/haskell-mode-2.4/haskell-site-file.el"))
   (load (concat home "elisp/haskell-mode-2.4/haskell-site-file"))
   (add-hook 'haskell-mode-hook 'turn-on-haskell-doc-mode)
@@ -1119,6 +1195,11 @@ buffer."
       "~/remember.org" "Interesting")
      ("ToDo" ?t "* TODO %T %^{Summary}" 
        "~/remember.org" "Todo")))
+
+
+
+(message "Stop 12 %ds" (destructuring-bind (hi lo ms) (current-time)
+                           (- (+ hi lo) (+ (first *emacs-load-start*) (second *emacs-load-start*)))))
 
 
 ;; ;; FIXME: Usar hippie-expand
@@ -1226,6 +1307,11 @@ point."
                              (interactive)
                              (insert "9"))))
 
+(message "Stop 13 %ds" (destructuring-bind (hi lo ms) (current-time)
+                           (- (+ hi lo) (+ (first *emacs-load-start*) (second *emacs-load-start*)))))
+
+
+
 (add-hook 'c-mode-hook 'c-switch-keys)
 (add-hook 'emacs-lisp-mode-hook 'lisp-switch-keys)
 
@@ -1304,16 +1390,19 @@ point."
 ;          ("#nihongo" . iso-2022-jp) ("#truelambda" . iso-latin-1)
 ;          ("#bitlbee" . iso-latin-1))))
 
-(set-scroll-bar-mode 'right)
+(message "Stop 14 %ds" (destructuring-bind (hi lo ms) (current-time)
+                           (- (+ hi lo) (+ (first *emacs-load-start*) (second *emacs-load-start*)))))
+
+
 
 (setq gnus-nntp-server "news.eternal-september.org")
 
-;; (setq gnus-secondary-select-methods '((nnimap "feup"
-;;                                         (nnimap-address "maila.fe.up.pt")
-;;                                         (nnimap-stream ssl)
-;;                                         ;(remove-prefix "INBOX.")
-;;                                         (nnimap-authinfo-file
-;;                                           "/home/jcarlos/.authinfo"))))
+(setq gnus-secondary-select-methods '((nnimap "feup"
+                                        (nnimap-address "maila.fe.up.pt")
+                                        (nnimap-stream ssl)
+                                        ;(remove-prefix "INBOX.")
+                                        (nnimap-authinfo-file
+                                          "/home/jcarlos/.authinfo"))))
 
 (setq gnus-summary-line-format "%U%R%z %(%&user-date;  %-15,15f %* %B%s%)\n"
   gnus-user-date-format-alist '((t . "%d.%m.%Y %H:%M"))
@@ -1341,6 +1430,8 @@ point."
 
 (add-hook 'after-save-hook 'autocompile)
 
+
+;(set-scroll-bar-mode 'right)
 (tool-bar-mode 0)
 (scroll-bar-mode 0)
 (menu-bar-mode 0)
@@ -1349,3 +1440,26 @@ point."
 (message "My .emacs loaded in %ds" (destructuring-bind (hi lo ms) (current-time)
                            (- (+ hi lo) (+ (first *emacs-load-start*) (second *emacs-load-start*)))))
 
+;; ;; FIXME: nao esta a funcionar
+;; (setq smtpmail-default-smtp-server "smtp.fe.up.pt")
+;; (require 'smtpmail)
+;; (setq smtpmail-mail-address "ei08150@fe.up.pt")
+;; (setq smtpmail-debug-info t)
+;; (setq smtpmail-warn-about-unknown-extensions t)
+;; (require 'starttls)
+;; (setq starttls-use-gnutls t)
+;; (setq starttls-gnutls-program "gnutls-cli")
+;; (setq starttls-extra-arguments nil)
+
+;; (setq send-mail-function 'smtpmail-send-it)
+;; (setq message-send-mail-function 'smtpmail-send-it)
+;; ;(setq send-mail-function 'message-send-mail-with-sendmail)
+;; ;(setq message-send-mail-function 'message-send-mail-with-sendmail)
+
+;; (setq message-send-mail-function 'smtpmail-send-it)
+;; (setq smtpmail-starttls-credentials '(("smtp.fe.up.pt" 465 nil nil)))
+;; (setq smtpmail-auth-credentials '(("smtp.fe.up.pt" 465 "ei08150@fe.up.pt" nil)))
+;; (setq smtpmail-default-smtp-server "smtp.fe.up.pt")
+;; (setq smtpmail-smtp-server "smtp.fe.up.pt")
+;; (setq smtpmail-smtp-service 465)
+;; (setq smtpmail-local-domain "sapo.pt")
