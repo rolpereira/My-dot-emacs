@@ -1,4 +1,4 @@
-; Time-stamp: <2010-03-29 22:53:21 (rolando)>
+; Time-stamp: <2010-03-29 22:59:17 (rolando)>
 
 ;; TODO: Arranjar uma keybind para find-function (podera funcionar melhor que as tags)
 
@@ -73,7 +73,7 @@ it moves the cursor to the beginning-of-line"
 
 
 ;; E necessario muitas vezes
-(require 'cl)
+;(require 'cl)
 
 ; Load Emacs Code Browser
 ;; (add-to-list 'load-path (concat home ".emacs.d/elisp/ecb-snap"))
@@ -336,7 +336,7 @@ it moves the cursor to the beginning-of-line"
 
 ; Colocar o text-mode como default ao abrir um ficheiro e fazer com que o o
 ; texto so tenha 78 caracteres de largura
-(setq default-major-mode 'text-mode)
+(setq-default major-mode 'text-mode)
 (setq fill-column 78)
 (auto-fill-mode t)
 (add-hook 'text-mode-hook 'turn-on-auto-fill)
@@ -1067,8 +1067,9 @@ buffer."
            'face (list :background 
                    (match-string-no-properties 0)))))))
 
-(defun hexcolour-add-to-font-lock ()
-  (font-lock-add-keywords nil hexcolour-keywords))
+;; Why is this function defined twice?
+;; (defun hexcolour-add-to-font-lock ()
+;;   (font-lock-add-keywords nil hexcolour-keywords))
 
 
 (defun hexcolour-luminance (color)
