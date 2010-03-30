@@ -1,4 +1,4 @@
-; Time-stamp: <2010-03-30 16:58:29 (rolando)>
+; Time-stamp: <2010-03-30 17:13:05 (rolando)>
 
 ;; TODO: Arranjar uma keybind para find-function (podera funcionar melhor que as tags)
 
@@ -336,46 +336,50 @@ it moves the cursor to the beginning-of-line"
 ;;;
 
 ;; W3m configurations
-;; (when (not (Are-We-On-Windows)) ; Can't use W3m in Windows
-;;   (cond ((= emacs-major-version 23)
-;;           (add-to-list 'load-path (concat home "elisp/emacs-w3m"))
-;;           ;;    (require 'w3m-load)
-;;           ))
+(add-to-list 'load-path (concat home "elisp/emacs-w3m"))
+(autoload 'w3m "w3m" "" t)
+(eval-after-load "w3m"
+  '(when (not (Are-We-On-Windows)) ; Can't use W3m in Windows
+     ;; (cond ((= emacs-major-version 23)
+     ;;         (add-to-list 'load-path (concat home "elisp/emacs-w3m"))
+     ;;         ;;    (require 'w3m-load)
+     ;;         ))
 
-;;   (require 'w3m)
-;;   (setq browse-url-browser-function 'w3m-browse-url)
-;;   (autoload 'w3m-browse-url "w3m" "Ask a WWW browser to show a URL." t)
-;;   (setq w3m-use-cookies t)
+     (require 'w3m)
+     (setq browse-url-browser-function 'w3m-browse-url)
+     (autoload 'w3m-browse-url "w3m" "Ask a WWW browser to show a URL." t)
+     (setq w3m-use-cookies t)
 
-;;   ;; Mudar keybinding
-;;   (eval-after-load 'w3m
-;;     '(progn
-;;        (define-key w3m-mode-map "q" 'w3m-previous-buffer)
-;;        (define-key w3m-mode-map "w" 'w3m-next-buffer)
-;;        (define-key w3m-mode-map "x" 'w3m-delete-buffer)))
+     ;; Mudar keybinding
+     (eval-after-load 'w3m
+       '(progn
+          (define-key w3m-mode-map "q" 'w3m-previous-buffer)
+          (define-key w3m-mode-map "w" 'w3m-next-buffer)
+          (define-key w3m-mode-map "x" 'w3m-delete-buffer)))
 
-;;   ;; Gravar sessions
-;;   ;; (cond ((= emacs-major-version 22)
-;;   (require 'w3m-session)
-;;   (setq w3m-session-file "~/.emacs.d/w3m-session")
-;;   (setq w3m-session-save-always t)
-;;   (setq w3m-session-load-always t)
-;;   (setq w3m-session-autosave-period 30)
-;;   (setq w3m-session-duplicate-tabs 'always)
+     ;; Gravar sessions
+     ;; (cond ((= emacs-major-version 22)
+     (require 'w3m-session)
+     (setq w3m-session-file "~/.emacs.d/w3m-session")
+     (setq w3m-session-save-always t)
+     (setq w3m-session-load-always t)
+     (setq w3m-session-autosave-period 30)
+     (setq w3m-session-duplicate-tabs 'always)
 
-;;   ;; Utitilizar numeros para saltar para links
-;;   ;; http://emacs.wordpress.com/2008/04/12/numbered-links-in-emacs-w3m/
-;;   (require 'w3m-lnum)
-;;   (defun jao-w3m-go-to-linknum ()
-;;     "Turn on link numbers and ask for one to go to."
-;;     (interactive)
-;;     (let ((active w3m-link-numbering-mode))
-;;       (when (not active) (w3m-link-numbering-mode))
-;;       (unwind-protect
-;;         (w3m-move-numbered-anchor (read-number "Anchor number: "))
-;;         (when (not active) (w3m-link-numbering-mode)))))
+     (message "teste")
+     ;; Utitilizar numeros para saltar para links
+     ;; http://emacs.wordpress.com/2008/04/12/numbered-links-in-emacs-w3m/
+     (require 'w3m-lnum)
+     (defun jao-w3m-go-to-linknum ()
+       "Turn on link numbers and ask for one to go to."
+       (interactive)
+       (let ((active w3m-link-numbering-mode))
+         (when (not active) (w3m-link-numbering-mode))
+         (unwind-protect
+           (w3m-move-numbered-anchor (read-number "Anchor number: "))
+           (when (not active) (w3m-link-numbering-mode)))))
 
-;;   (define-key w3m-mode-map "f" 'jao-w3m-go-to-linknum))
+     (define-key w3m-mode-map "f" 'jao-w3m-go-to-linknum)))
 ;;;;
 
 ;; ;Activar o AUCTeX
@@ -480,7 +484,6 @@ it moves the cursor to the beginning-of-line"
   (set-frame-font "-outline-Consolas-normal-r-normal-normal-14-97-96-96-c-*-iso8859-1"))
 
 ; Mostrar linhas lado esquerdo
-(require 'linum)
 
 (add-hook 'emacs-lisp-mode-hook 'linum-mode)
 (add-hook 'python-mode-hook 'linum-mode)
