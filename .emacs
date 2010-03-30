@@ -1,4 +1,4 @@
-; Time-stamp: <2010-03-30 16:30:03 (rolando)>
+; Time-stamp: <2010-03-30 16:30:40 (rolando)>
 
 ;; TODO: Arranjar uma keybind para find-function (podera funcionar melhor que as tags)
 
@@ -1276,21 +1276,6 @@ point."
 ;; (global-set-key [(tab)] 'indent-or-expand)
 
 
-(defun c-switch-keys ()
-  (local-set-key (kbd "9") (lambda () 
-                             (interactive)
-                             (if (not (char-equal (char-after) ?\)))
-                               (insert ")")
-                               (forward-char))))
-  (local-set-key (kbd ")") (lambda () 
-                             (interactive)
-                             (insert "9")))
-  (local-set-key (kbd "8") (lambda () 
-                             (interactive)
-                             (insert-parentheses)))
-  (local-set-key (kbd "(") (lambda () 
-                             (interactive)
-                             (insert "8"))))
 ; TODO: Melhorar isto
 (defun lisp-switch-keys ()
   (local-set-key (kbd "8") (lambda ()
@@ -1313,7 +1298,7 @@ point."
 
 
 
-(add-hook 'c-mode-hook 'c-switch-keys)
+(add-hook 'c-mode-hook 'lisp-switch-keys)
 (add-hook 'emacs-lisp-mode-hook 'lisp-switch-keys)
 
 ;; Dired reuse buffer
