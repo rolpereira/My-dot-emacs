@@ -1,4 +1,4 @@
-; Time-stamp: <2010-03-29 22:59:17 (rolando)>
+; Time-stamp: <2010-03-30 16:30:03 (rolando)>
 
 ;; TODO: Arranjar uma keybind para find-function (podera funcionar melhor que as tags)
 
@@ -1269,7 +1269,7 @@ point."
 (defun my-tab-fix ()
   (local-set-key [(tab)] 'indent-or-expand))
  
-(add-hook 'c-mode-hook          'my-tab-fix)
+;(add-hook 'c-mode-hook          'my-tab-fix)
 (add-hook 'sh-mode-hook         'my-tab-fix)
 (add-hook 'emacs-lisp-mode-hook 'my-tab-fix)
 
