@@ -1,4 +1,4 @@
-; Time-stamp: <2010-03-30 16:30:40 (rolando)>
+; Time-stamp: <2010-03-30 16:58:29 (rolando)>
 
 ;; TODO: Arranjar uma keybind para find-function (podera funcionar melhor que as tags)
 
@@ -165,7 +165,8 @@ it moves the cursor to the beginning-of-line"
    (add-to-list 'flymake-allowed-file-name-masks
      '("\\.py\\'" flymake-pyflakes-init)))
 
-(add-hook 'find-file-hook 'flymake-find-file-hook)
+;; FIXME: flymake-find-file-hook should be used only if there is a makefile
+;(add-hook 'find-file-hook 'flymake-find-file-hook)
 ;;;
 
 ; Flymake settings
@@ -271,18 +272,6 @@ it moves the cursor to the beginning-of-line"
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Elisp
-
-;; indent the entire buffer
-(defun lisp-indent-buffer ()
-  "Indent entire buffer of lisp source code."
-  (interactive)
-  (save-excursion
-    (goto-char (point-min))
-    (while (< (point) (point-max))
-      (lisp-indent-line)
-      (end-of-line)
-      (forward-char 1))
-    (delete-trailing-whitespace)))
 
 (defun djcb-emacs-lisp-mode-hook ()
   (interactive)
