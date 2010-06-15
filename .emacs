@@ -1,4 +1,4 @@
-; Time-stamp: <2010-06-15 04:01:02 (rolando)>
+; Time-stamp: <2010-06-15 13:26:35 (rolando)>
 
 ;; TODO: Arranjar uma keybind para find-function (podera funcionar melhor que as tags)
 
@@ -1363,9 +1363,6 @@ point."
 (setq erc-timestamp-format "[%H:%M] ")
 (setq erc-fill-prefix "      + ")
 
-;; Didn't I had a reason to remove this a while ago?
-(define-key global-map (kbd "RET") 'newline-and-indent)
-
 ;(setq erc-encoding-coding-alist (quote (("#lisp" . utf-8)
 ;          ("#nihongo" . iso-2022-jp) ("#truelambda" . iso-latin-1)
 ;          ("#bitlbee" . iso-latin-1))))
@@ -1623,3 +1620,11 @@ point."
 
 ;; Not so sure about this one
 ;(global-set-key (kbd "C-c k") 'kill-rectangle)
+
+;; Didn't I had a reason to remove this a while ago?
+;(define-key global-map (kbd "RET") 'newline-and-indent)
+
+;; Lets try this
+;; http://www.emacswiki.org/emacs-en/EmacsNiftyTricks
+(global-set-key (kbd "RET") 'reindent-then-newline-and-indent)
+
