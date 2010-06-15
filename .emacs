@@ -1,4 +1,4 @@
-; Time-stamp: <2010-06-15 03:25:26 (rolando)>
+; Time-stamp: <2010-06-15 03:30:00 (rolando)>
 
 ;; TODO: Arranjar uma keybind para find-function (podera funcionar melhor que as tags)
 
@@ -1614,3 +1614,6 @@ point."
   (delete-windows-on "*Help*"))
 
 (global-set-key (kbd "C-c j") 'rolando-help-jump-to-source-file)
+
+;; Use this yow.lines file
+(setq yow-file "~/.emacs.d/misc/yow.lines")
