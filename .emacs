@@ -1,4 +1,4 @@
-; Time-stamp: <2010-06-15 03:30:00 (rolando)>
+; Time-stamp: <2010-06-15 03:55:24 (rolando)>
 
 ;; TODO: Arranjar uma keybind para find-function (podera funcionar melhor que as tags)
 
@@ -1617,3 +1617,8 @@ point."
 
 ;; Use this yow.lines file
 (setq yow-file "~/.emacs.d/misc/yow.lines")
+
+(global-set-key (kbd "C-c i") 'string-rectangle)
+
+;; Not so sure about this one
+;(global-set-key (kbd "C-c k") 'kill-rectangle)
