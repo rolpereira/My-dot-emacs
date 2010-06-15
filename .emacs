@@ -1,4 +1,4 @@
-; Time-stamp: <2010-06-15 03:55:24 (rolando)>
+; Time-stamp: <2010-06-15 04:01:02 (rolando)>
 
 ;; TODO: Arranjar uma keybind para find-function (podera funcionar melhor que as tags)
 
@@ -929,9 +929,10 @@ buffer."
     (global-set-key [(C J)] 'fold-dwim-hide-all)
     (global-set-key [(C K)] 'fold-dwim-toggle)
     (global-set-key [(C L)] 'fold-dwim-show-all))
-  (global-set-key [(C kp-4)] 'fold-dwim-hide-all)
-  (global-set-key [(C kp-5)] 'fold-dwim-toggle)
-  (global-set-key [(C kp-6)] 'fold-dwim-show-all))
+  ;; On the numpad
+  (global-set-key [(C kp-left)] 'fold-dwim-hide-all)   ; Key 4
+  (global-set-key [(C kp-begin)] 'fold-dwim-toggle)    ; Key 5
+  (global-set-key [(C kp-right)] 'fold-dwim-show-all)) ; Key 6
 
 
 ;; % igual ao Vim
