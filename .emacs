@@ -1,4 +1,4 @@
-; Time-stamp: <2010-06-15 01:17:04 (rolando)>
+; Time-stamp: <2010-06-15 03:25:26 (rolando)>
 
 ;; TODO: Arranjar uma keybind para find-function (podera funcionar melhor que as tags)
 
@@ -1599,3 +1599,18 @@ point."
 ;; http://www.emacswiki.org/emacs-en/EmacsNiftyTricks
 (set-register ?e '(file . "~/.emacs"))
 (set-register ?i '(file . "~/org/ideas.org"))
+
+(defun rolando-help-jump-to-source-file ()
+  "Open up the file where the function/variable definition is defined."
+  (interactive)
+  (pop-to-buffer "*Help*")
+  (goto-char (point-min))
+  (when (or (re-search-forward "`.*\.el'" nil t)
+          ;; If we can't find a .el file, search for "C source code"
+          (re-search-forward "`C source"))
+    (backward-char 2)
+    (push-button))
+  ;; Delete the window showing buffer *Help*
+  (delete-windows-on "*Help*"))
+
+(global-set-key (kbd "C-c j") 'rolando-help-jump-to-source-file)
