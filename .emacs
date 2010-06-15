@@ -1,4 +1,4 @@
-; Time-stamp: <2010-03-30 17:13:05 (rolando)>
+; Time-stamp: <2010-06-15 01:17:04 (rolando)>
 
 ;; TODO: Arranjar uma keybind para find-function (podera funcionar melhor que as tags)
 
@@ -227,9 +227,10 @@ it moves the cursor to the beginning-of-line"
   (require 'zenburn)
   ;(require 'color-theme-sunburst)
   (color-theme-initialize)
+  (color-theme-taming-mr-arneson))
 ;  (color-theme-goldenrod)
   ;(color-theme-tango))
-  (color-theme-zenburn))
+  ;(color-theme-zenburn))
   ;(color-theme-sunburst))
   ;(color-theme-taylor))
 ; Other themes: midnight, white on black, charcoal black, Calm Forest, Billw,
@@ -1380,7 +1381,8 @@ point."
                                         (nnimap-stream ssl)
                                         ;(remove-prefix "INBOX.")
                                         (nnimap-authinfo-file
-                                          "/home/jcarlos/.authinfo"))))
+                                          "/home/jcarlos/.authinfo"))
+                                       (nntp "news.gmane.org")))
 
 (setq gnus-summary-line-format "%U%R%z %(%&user-date;  %-15,15f %* %B%s%)\n"
   gnus-user-date-format-alist '((t . "%d.%m.%Y %H:%M"))
@@ -1441,3 +1443,159 @@ point."
 ;; (setq smtpmail-smtp-server "smtp.fe.up.pt")
 ;; (setq smtpmail-smtp-service 465)
 ;; (setq smtpmail-local-domain "sapo.pt")
+
+
+;(require 'vimpulse)
+;; Activate occur easily inside isearch
+;; From http://github.com/technomancy/emacs-starter-kit/blob/master/starter-kit-bindings.el
+(define-key isearch-mode-map (kbd "C-o")
+  (lambda () (interactive)
+    (let ((case-fold-search isearch-case-fold-search))
+      (occur (if isearch-regexp isearch-string (regexp-quote isearch-string))))))
+
+(defun rolando-find-prev-good-buffer ()
+  "Goto to the previous buffer, ignoring buffers that start and end with a *"
+  (previous-buffer)
+  (if (and (string-match "\\\*.*\\\*" (buffer-name))
+        (not (string-match "\\\*scratch\\\*" (buffer-name))))
+    (rolando-find-prev-good-buffer)))
+
+(defun rolando-find-next-good-buffer ()
+  "Goto to the next buffer, ignoring buffers that start and end with a *"
+  (next-buffer)
+  (if (and (string-match "\\\*.*\\\*" (buffer-name))
+        (not (string-match "\\\*scratch\\\*" (buffer-name))))
+    (rolando-find-next-good-buffer)))
+
+;; Viper keys to quickly change buffers
+;; (define-key viper-vi-basic-map (kbd "<right>")
+;;   (lambda ()
+;;     (interactive)
+;;     (rolando-find-next-good-buffer)))
+
+;; (define-key viper-vi-basic-map (kbd "<left>")
+;;   (lambda ()
+;;     (interactive)
+;;       (rolando-find-prev-good-buffer)))
+
+;; From http://github.com/technomancy/emacs-starter-kit/blob/master/starter-kit-misc.el
+(eval-after-load 'diff-mode
+  '(progn
+     (set-face-foreground 'diff-added "green4")
+     (set-face-foreground 'diff-removed "red3")))
+
+;; Default to unified diffs
+(setq diff-switches "-u")
+
+;; This should be a defadvice
+;; Change the color of the mode line when entering insert-mode and vi-mode
+;; (defun viper-change-state (new-state)
+;;   ;; Keep viper-post/pre-command-hooks fresh.
+;;   ;; We remove then add viper-post/pre-command-sentinel since it is very
+;;   ;; desirable that viper-pre-command-sentinel is the last hook and
+;;   ;; viper-post-command-sentinel is the first hook.
+
+;;   (when (eq new-state 'insert-state)
+;;     (set-face-background 'modeline "steelblue4")
+;;     (set-face-foreground 'modeline "black"))
+;;   (when (eq new-state 'vi-state)
+;;     (set-face-background 'modeline "gray50")
+;;     (set-face-foreground 'modeline "black"))
+
+    
+;;   (when (featurep 'xemacs)
+;;     (make-local-hook 'viper-after-change-functions)
+;;     (make-local-hook 'viper-before-change-functions)
+;;     (make-local-hook 'viper-post-command-hooks)
+;;     (make-local-hook 'viper-pre-command-hooks))
+
+;;   (remove-hook 'post-command-hook 'viper-post-command-sentinel)
+;;   (add-hook 'post-command-hook 'viper-post-command-sentinel)
+;;   (remove-hook 'pre-command-hook 'viper-pre-command-sentinel)
+;;   (add-hook 'pre-command-hook 'viper-pre-command-sentinel t)
+;;   ;; These hooks will be added back if switching to insert/replace mode
+;;   (remove-hook 'viper-post-command-hooks
+;; 	       'viper-insert-state-post-command-sentinel 'local)
+;;   (remove-hook 'viper-pre-command-hooks
+;; 	       'viper-insert-state-pre-command-sentinel 'local)
+;;   (setq viper-intermediate-command nil)
+;;   (cond ((eq new-state 'vi-state)
+;; 	 (cond ((member viper-current-state '(insert-state replace-state))
+
+;; 		;; move viper-last-posn-while-in-insert-state
+;; 		;; This is a normal hook that is executed in insert/replace
+;; 		;; states after each command.  In Vi/Emacs state, it does
+;; 		;; nothing.  We need to execute it here to make sure that
+;; 		;; the last posn was recorded when we hit ESC.
+;; 		;; It may be left unrecorded if the last thing done in
+;; 		;; insert/repl state was dabbrev-expansion or abbrev
+;; 		;; expansion caused by hitting ESC
+;; 		(viper-insert-state-post-command-sentinel)
+
+;; 		(condition-case conds
+;; 		    (progn
+;; 		      (viper-save-last-insertion
+;; 		       viper-insert-point
+;; 		       viper-last-posn-while-in-insert-state)
+;; 		      (if viper-began-as-replace
+;; 			  (setq viper-began-as-replace nil)
+;; 			;; repeat insert commands if numerical arg > 1
+;; 			(save-excursion
+;; 			  (viper-repeat-insert-command))))
+;; 		  (error
+;; 		   (viper-message-conditions conds)))
+
+;; 		(if (> (length viper-last-insertion) 0)
+;; 		    (viper-push-onto-ring viper-last-insertion
+;; 					  'viper-insertion-ring))
+
+;; 		(if viper-ESC-moves-cursor-back
+;; 		    (or (bolp) (viper-beginning-of-field) (backward-char 1))))
+;; 	       ))
+
+;; 	;; insert or replace
+;; 	((memq new-state '(insert-state replace-state))
+;; 	 (if (memq viper-current-state '(emacs-state vi-state))
+;; 	     (viper-move-marker-locally 'viper-insert-point (point)))
+;; 	 (viper-move-marker-locally
+;; 	  'viper-last-posn-while-in-insert-state (point))
+;; 	 (add-hook 'viper-post-command-hooks
+;; 		   'viper-insert-state-post-command-sentinel t 'local)
+;; 	 (add-hook 'viper-pre-command-hooks
+;; 		   'viper-insert-state-pre-command-sentinel t 'local))
+;; 	) ; outermost cond
+
+;;   ;; Nothing needs to be done to switch to emacs mode! Just set some
+;;   ;; variables, which is already done in viper-change-state-to-emacs!
+
+;;   ;; ISO accents
+;;   ;; always turn off iso-accents-mode in vi-state, or else we won't be able to
+;;   ;; use the keys `,',^ , as they will do accents instead of Vi actions.
+;;   (cond ((eq new-state 'vi-state) (viper-set-iso-accents-mode nil));accents off
+;; 	(viper-automatic-iso-accents (viper-set-iso-accents-mode t));accents on
+;; 	(t (viper-set-iso-accents-mode nil)))
+;;   ;; Always turn off quail mode in vi state
+;;   (cond ((eq new-state 'vi-state) (viper-set-input-method nil)) ;intl input off
+;; 	(viper-special-input-method (viper-set-input-method t)) ;intl input on
+;; 	(t (viper-set-input-method nil)))
+
+;;   (setq viper-current-state new-state)
+
+;;   (viper-update-syntax-classes)
+;;   (viper-normalize-minor-mode-map-alist)
+;;   (viper-adjust-keys-for new-state)
+;;   (viper-set-mode-vars-for new-state)
+;;   (viper-refresh-mode-line)
+;; )
+
+
+;; (set-face-background 'modeline-inactive "black")
+
+;; (custom-set-faces
+;;   '(mode-line ((t (:box (:line-width 1 :color "orange"))))))
+
+;; Register jumping: ‘C-x r j e’ to open DotEmacs,
+;; ‘C-x r j i’ to open an ‘ideas’ file:
+;; http://www.emacswiki.org/emacs-en/EmacsNiftyTricks
+(set-register ?e '(file . "~/.emacs"))
+(set-register ?i '(file . "~/org/ideas.org"))
