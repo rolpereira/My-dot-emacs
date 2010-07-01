@@ -1,4 +1,4 @@
-; Time-stamp: <2010-06-15 13:26:35 (rolando)>
+; Time-stamp: <2010-06-16 02:45:42 (rolando)>
 
 ;; TODO: Arranjar uma keybind para find-function (podera funcionar melhor que as tags)
 
@@ -733,7 +733,7 @@ it moves the cursor to the beginning-of-line"
 
 ;; Lista de canais a fazer auto-join
 (setq erc-autojoin-channels-alist
-  '(("freenode.net" "#emacs" "#haskell" "#python" "#xmonad")
+  '(("freenode.net" "#emacs"); "#haskell" "#python" "#xmonad")
       ;"#pygame" ;"#latex") ;"#debian")
      ("ptnet.org" "#p@p")
      ("efnet.org" "#gccg")))
@@ -1628,3 +1628,10 @@ point."
 ;; http://www.emacswiki.org/emacs-en/EmacsNiftyTricks
 (global-set-key (kbd "RET") 'reindent-then-newline-and-indent)
 
+;; XXX: Workaround a bug where ispell doesn't work with words that contain the
+;; char ç or Ç
+(defun ispell-get-casechars ()
+  "[a-zA-ZÁÂÉÓàáâéêíóãúçÇ]")
+
+(defun ispell-get-not-casechars ()
+  "[^a-zA-ZÁÂÉÓàáâéêíóãúçÇ]")
