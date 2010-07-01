@@ -1,4 +1,4 @@
-; Time-stamp: <2010-07-01 22:09:37 (rolando)>
+; Time-stamp: <2010-07-01 22:12:27 (rolando)>
 
 ;; TODO: Arranjar uma keybind para find-function (podera funcionar melhor que as tags)
 
@@ -1389,30 +1389,6 @@ point."
 
 (message "My .emacs loaded in %ds" (destructuring-bind (hi lo ms) (current-time)
                            (- (+ hi lo) (+ (first *emacs-load-start*) (second *emacs-load-start*)))))
-
-;; ;; FIXME: nao esta a funcionar
-;; (setq smtpmail-default-smtp-server "smtp.fe.up.pt")
-;; (require 'smtpmail)
-;; (setq smtpmail-mail-address "ei08150@fe.up.pt")
-;; (setq smtpmail-debug-info t)
-;; (setq smtpmail-warn-about-unknown-extensions t)
-;; (require 'starttls)
-;; (setq starttls-use-gnutls t)
-;; (setq starttls-gnutls-program "gnutls-cli")
-;; (setq starttls-extra-arguments nil)
-
-;; (setq send-mail-function 'smtpmail-send-it)
-;; (setq message-send-mail-function 'smtpmail-send-it)
-;; ;(setq send-mail-function 'message-send-mail-with-sendmail)
-;; ;(setq message-send-mail-function 'message-send-mail-with-sendmail)
-
-;; (setq message-send-mail-function 'smtpmail-send-it)
-;; (setq smtpmail-starttls-credentials '(("smtp.fe.up.pt" 465 nil nil)))
-;; (setq smtpmail-auth-credentials '(("smtp.fe.up.pt" 465 "ei08150@fe.up.pt" nil)))
-;; (setq smtpmail-default-smtp-server "smtp.fe.up.pt")
-;; (setq smtpmail-smtp-server "smtp.fe.up.pt")
-;; (setq smtpmail-smtp-service 465)
-;; (setq smtpmail-local-domain "sapo.pt")
 
 
 ;(require 'vimpulse)
