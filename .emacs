@@ -1,4 +1,4 @@
-; Time-stamp: <2010-07-01 22:17:53 (rolando)>
+; Time-stamp: <2010-07-01 22:22:07 (rolando)>
 
 ;; TODO: Arranjar uma keybind para find-function (podera funcionar melhor que as tags)
 
@@ -191,12 +191,6 @@ it moves the cursor to the beginning-of-line"
 
 ;; C/C++/Java/C# Mode
 (defun my-c-mode-common-hook ()
-  (c-set-offset 'substatement-open 0)
-  (c-set-offset 'statement-cont 4)
-  (c-set-offset 'topmost-intro-cont 0)
-  (c-set-offset 'block-open 0)
-  (c-set-offset 'arglist-intro 4)
-  (c-set-offset 'arglist-cont-nonempty 4)
   (setq show-paren-style 'parenthesis)
   ;(setq c-hungry-delete-key t)
   ;(setq c-auto-newline 1)
@@ -207,9 +201,10 @@ it moves the cursor to the beginning-of-line"
   ;    '(("\\<\\(FIXME\\|TODO\\|BUG\\):" 1 font-lock-warning-face t))))
   ;(flymake-mode t)
   ;(yas/minor-mode)
+
+  ;; Show line numbers
+  (linum-mode)
   )
-
-
 
 (message "Stop 2 %ds" (destructuring-bind (hi lo ms) (current-time)
                            (- (+ hi lo) (+ (first *emacs-load-start*) (second *emacs-load-start*)))))
@@ -489,7 +484,6 @@ it moves the cursor to the beginning-of-line"
 (add-hook 'emacs-lisp-mode-hook 'linum-mode)
 (add-hook 'python-mode-hook 'linum-mode)
 (add-hook 'haskell-mode-hook 'linum-mode)
-(add-hook 'c-mode-common-hook 'linum-mode)
 
 (global-set-key (kbd "<f2>") 'linum-mode)
 ;;;
