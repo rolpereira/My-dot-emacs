@@ -73,7 +73,7 @@ it moves the cursor to the beginning-of-line"
 
 
 ;; E necessario muitas vezes
-;(require 'cl)
+(require 'cl)
 
 ; Load Emacs Code Browser
 ;; (add-to-list 'load-path (concat home ".emacs.d/elisp/ecb-snap"))
