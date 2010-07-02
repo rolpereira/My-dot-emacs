@@ -1,4 +1,4 @@
-; Time-stamp: <2010-07-01 22:22:07 (rolando)>
+; Time-stamp: <2010-07-02 02:45:14 (rolando)>
 
 ;; TODO: Arranjar uma keybind para find-function (podera funcionar melhor que as tags)
 
@@ -87,6 +87,12 @@ it moves the cursor to the beginning-of-line"
 (setq visible-bell t)
 
 (add-to-list 'load-path (concat home "elisp"))
+(add-to-list 'load-path (concat home "elpa"))
+
+;; Activate packages installed using package.el
+(load "package")
+(package-initialize)
+
 
 ;; (if iamlaptop
 ;;     (add-to-list 'load-path (concat "/media/JCARLOS/.emacs.d/elisp"))
