@@ -1,4 +1,4 @@
-; Time-stamp: <2010-07-04 01:13:45 (rolando)>
+; Time-stamp: <2010-07-04 14:43:25 (rolando)>
 
 ;; TODO: Arranjar uma keybind para find-function (podera funcionar melhor que as tags)
 
@@ -385,8 +385,8 @@ it moves the cursor to the beginning-of-line"
 ;;;;
 
 ;; ;Activar o AUCTeX
-;(require 'tex-site)
-;(load "preview-latex.el" nil t t)
+                                        ;(require 'tex-site)
+                                        ;(load "preview-latex.el" nil t t)
 ;; ;;;;;
 
 ;; spellcheck in LaTex mode
@@ -398,12 +398,12 @@ it moves the cursor to the beginning-of-line"
 
 
 (message "Stop 4 %ds" (destructuring-bind (hi lo ms) (current-time)
-                           (- (+ hi lo) (+ (first *emacs-load-start*) (second *emacs-load-start*)))))
+                        (- (+ hi lo) (+ (first *emacs-load-start*) (second *emacs-load-start*)))))
 
 
 
 
-; Dias do calendario traduzidos para PT
+                                        ; Dias do calendario traduzidos para PT
 (setq calendar-date-style 'european)
 (setq calendar-week-start-day 1
   calendar-day-name-array
@@ -415,22 +415,22 @@ it moves the cursor to the beginning-of-line"
     "Outubro" "Novembro" "Dezembro"])
 ;;;;;
 
-; Colocar o calendario mais bonito
+                                        ; Colocar o calendario mais bonito
 (setq calendar-view-diary-initially-flag t
-    calendar-mark-diary-entries-flag t
-    number-of-diary-entries 7)
+  calendar-mark-diary-entries-flag t
+  number-of-diary-entries 7)
 (add-hook 'diary-display-hook 'fancy-diary-display)
 (add-hook 'today-visible-calendar-hook 'calendar-mark-today)
 ;;;;;
 
-; Mostrar imagens do site icanhascheezburger.com
+                                        ; Mostrar imagens do site icanhascheezburger.com
 (autoload 'cheezburger "cheezburger" "" t)
 ;;;;;
 
-; Fazer highline das palavras TODO e FIXME, entre outras
+                                        ; Fazer highline das palavras TODO e FIXME, entre outras
 (autoload 'highlight-fixmes-mode "highlight-fixmes-mode" "" t)
 ;; FIXME: Add this to programming hooks
-;(highlight-fixmes-mode t)
+                                        ;(highlight-fixmes-mode t)
 ;;;
 
 ;; Show line-number and column-number in the mode line
@@ -478,14 +478,14 @@ it moves the cursor to the beginning-of-line"
 ;; setup font
 ;; This ones don't work on Windows
 (if (not (Are-We-On-Windows))
-    (if (= emacs-major-version 23)
-        ;(set-default-font "Bitstream Vera Sans Mono-12")
-      (set-frame-font "Inconsolata 14")
-      (set-frame-font
-       "-adobe-courier-medium-r-normal-*-14-100-*-*-*-*-iso10646-1"))
+  (if (= emacs-major-version 23)
+                                        ;(set-default-font "Bitstream Vera Sans Mono-12")
+    (set-frame-font "Inconsolata 14")
+    (set-frame-font
+      "-adobe-courier-medium-r-normal-*-14-100-*-*-*-*-iso10646-1"))
   (set-frame-font "-outline-Consolas-normal-r-normal-normal-14-97-96-96-c-*-iso8859-1"))
 
-; Mostrar linhas lado esquerdo
+                                        ; Mostrar linhas lado esquerdo
 
 (add-hook 'emacs-lisp-mode-hook 'linum-mode)
 (add-hook 'python-mode-hook 'linum-mode)
@@ -498,7 +498,7 @@ it moves the cursor to the beginning-of-line"
 
 
 (message "Stop 5 %ds" (destructuring-bind (hi lo ms) (current-time)
-                           (- (+ hi lo) (+ (first *emacs-load-start*) (second *emacs-load-start*)))))
+                        (- (+ hi lo) (+ (first *emacs-load-start*) (second *emacs-load-start*)))))
 
 
 
@@ -524,17 +524,17 @@ it moves the cursor to the beginning-of-line"
 ;; Behaviour
 ;; ===========================
 
-; See the commands I'm writing
+                                        ; See the commands I'm writing
 (setq echo-keystrokes 0.1)
 
 ;; Pgup/dn will return exactly to the starting point.
 (setq scroll-preserve-screen-position 1)
 
-;Define mnemonic key bindings for moving to 'M-x compile' and 'M-x grep' matches
+                                        ;Define mnemonic key bindings for moving to 'M-x compile' and 'M-x grep' matches
 (global-set-key "\C-cn" 'next-error)
 (global-set-key "\C-cp" 'previous-error)
 
-; Don't bother entering search and replace args if the buffer is read-only
+                                        ; Don't bother entering search and replace args if the buffer is read-only
 (defadvice query-replace-read-args (before barf-if-buffer-read-only activate)
   "Signal a 'buffer-read-only' error if the current buffer is read-only."
   (barf-if-buffer-read-only))
@@ -545,7 +545,7 @@ it moves the cursor to the beginning-of-line"
 
 ;; show a menu only when running within X (save real estate when
 ;; in console)
-;(menu-bar-mode (if window-system 1 -1))
+                                        ;(menu-bar-mode (if window-system 1 -1))
 
 ;; resize the mini-buffer when necessary
 (setq resize-minibuffer-mode t)
@@ -567,21 +567,21 @@ it moves the cursor to the beginning-of-line"
 ;; ===========================
 ;; Custom Functions
 ;; ===========================
-; resize man page to take up whole screen
+                                        ; resize man page to take up whole screen
 (setq Man-notify 'bully)
 ;;
 
-; SSH, etc.
+                                        ; SSH, etc.
 (require 'tramp)
 (setq tramp-default-method "telnet")
 (setq tramp-debug-buffer t)
 (setq tramp-verbose 10)
-; host + user > proxy
+                                        ; host + user > proxy
 ;; (add-to-list 'tramp-default-proxies-alist
 ;;   '("\\." nil "/telnet:ei08150@tcpgate.fe.up.pt:"))
 ;; (add-to-list 'tramp-default-proxies-alist
 ;;   '("\\.riff\\.fe\\.up\\.pt\\'" nil nil))
-; Aceder ao site da sapo
+                                        ; Aceder ao site da sapo
 (setenv "SITE" "/ftp:rolando.do.sapo.pt@ftp.homepages.sapo.pt:~")
 ;;
 
@@ -597,7 +597,7 @@ it moves the cursor to the beginning-of-line"
 
 
 (message "Stop 6 %ds" (destructuring-bind (hi lo ms) (current-time)
-                           (- (+ hi lo) (+ (first *emacs-load-start*) (second *emacs-load-start*)))))
+                        (- (+ hi lo) (+ (first *emacs-load-start*) (second *emacs-load-start*)))))
 
 
 
@@ -626,42 +626,42 @@ it moves the cursor to the beginning-of-line"
 (setq
   ido-ignore-buffers                 ; ignore these guys
   '("\\` " "^\*Mess" "^\*Back" ".*Completion" "^\*Ido" "\*scratch\*")
-;  ido-work-directory-list '("~/" "~/Desktop")
+                                        ;  ido-work-directory-list '("~/" "~/Desktop")
   ido-case-fold  t                   ; be case-insensitive
-;  ido-use-filename-at-point nil      ; don't use filename at point (annoying)
-;  ido-use-url-at-point nil           ;  don't use url at point (annoying)
+                                        ;  ido-use-filename-at-point nil      ; don't use filename at point (annoying)
+                                        ;  ido-use-url-at-point nil           ;  don't use url at point (annoying)
   ido-enable-flex-matching t         ; be flexible
-;  ido-max-prospects 10               ; don't spam my minibuffer
-;  ido-confirm-unique-completion t ; wait for RET, even with unique completion
+                                        ;  ido-max-prospects 10               ; don't spam my minibuffer
+                                        ;  ido-confirm-unique-completion t ; wait for RET, even with unique completion
   ido-create-new-buffer 'always) ; I'm always creating new buffers
 
 
-; Saltar para onde se estava quando abrir um ficheiro
+                                        ; Saltar para onde se estava quando abrir um ficheiro
 (require 'saveplace)
 (setq-default save-place t)
 ;;;;;
 
-; Cursor do rato nao cobre o texto
+                                        ; Cursor do rato nao cobre o texto
 (mouse-avoidance-mode 'jump)
 ;;;;;
 
-; Yasnippet
+                                        ; Yasnippet
 (add-to-list 'load-path (concat home "plugins/yasnippet"))
 (load "yasnippet.el") ;; not yasnippet-bundle
 (yas/initialize)
 (yas/load-directory (concat home "plugins/yasnippet/snippets"))
 ;;;;;
 
-; Remove splash screen
+                                        ; Remove splash screen
 (setq inhibit-splash-screen t)
 ;;;
 
-; Enter faz automaticamente o indent do codigo
-;(define-key global-map (kbd "RET") 'newline-and-indent)
+                                        ; Enter faz automaticamente o indent do codigo
+                                        ;(define-key global-map (kbd "RET") 'newline-and-indent)
 ;;;
 
-; Detaching the custom-file
-; http://www.emacsblog.org/2008/12/06/quick-tip-detaching-the-custom-file/
+                                        ; Detaching the custom-file
+                                        ; http://www.emacsblog.org/2008/12/06/quick-tip-detaching-the-custom-file/
 (setq custom-file "~/.emacs.d/custom.el")
 (load custom-file 'noerror)
 ;;;
@@ -699,7 +699,7 @@ it moves the cursor to the beginning-of-line"
 
 
 (message "Stop 7 %ds" (destructuring-bind (hi lo ms) (current-time)
-                           (- (+ hi lo) (+ (first *emacs-load-start*) (second *emacs-load-start*)))))
+                        (- (+ hi lo) (+ (first *emacs-load-start*) (second *emacs-load-start*)))))
 
 
 
@@ -710,7 +710,7 @@ it moves the cursor to the beginning-of-line"
 
 
 (message "Stop 8 %ds" (destructuring-bind (hi lo ms) (current-time)
-                           (- (+ hi lo) (+ (first *emacs-load-start*) (second *emacs-load-start*)))))
+                        (- (+ hi lo) (+ (first *emacs-load-start*) (second *emacs-load-start*)))))
 
 
 ;; Load bookmarks
@@ -731,7 +731,7 @@ it moves the cursor to the beginning-of-line"
 
 
 (message "Stop 9 %ds" (destructuring-bind (hi lo ms) (current-time)
-                           (- (+ hi lo) (+ (first *emacs-load-start*) (second *emacs-load-start*)))))
+                        (- (+ hi lo) (+ (first *emacs-load-start*) (second *emacs-load-start*)))))
 
 
 
@@ -747,7 +747,7 @@ it moves the cursor to the beginning-of-line"
 ;;;;;;;;;;;;;
 
 ;; Need to find some keybindings for the laptop
-  (require 'fold-dwim)
+(require 'fold-dwim)
 (if (equal whereami 'laptop)
   (progn
     (global-set-key [(C J)] 'fold-dwim-hide-all)
@@ -821,14 +821,14 @@ it moves the cursor to the beginning-of-line"
 
 
 
-(message "Stop 10 %ds" (destructuring-bind (hi lo ms) (current-time)
+  (message "Stop 10 %ds" (destructuring-bind (hi lo ms) (current-time)
                            (- (+ hi lo) (+ (first *emacs-load-start*) (second *emacs-load-start*)))))
 
 
                                         ; Usar o fit-window-to-buffer, display-buffer
   (let ((name "*Python Documentation*"))
     (save-excursion
-  ;    (python-describe-symbol symbol) ; Cria um buffer com o nome *Help*
+                                        ;    (python-describe-symbol symbol) ; Cria um buffer com o nome *Help*
       (get-buffer-create name)
       (set-buffer name)
       (save-excursion
@@ -873,7 +873,7 @@ it moves the cursor to the beginning-of-line"
 
 ;; View chm on w3m
 ;; Requires archmage installed
-;(require 'chm-view)
+                                        ;(require 'chm-view)
 ;;
 
 ;; Cor hexadecimal no HTML
@@ -918,7 +918,7 @@ it moves the cursor to the beginning-of-line"
 
 
 (message "Stop 11 %ds" (destructuring-bind (hi lo ms) (current-time)
-                           (- (+ hi lo) (+ (first *emacs-load-start*) (second *emacs-load-start*)))))
+                         (- (+ hi lo) (+ (first *emacs-load-start*) (second *emacs-load-start*)))))
 
 
 
@@ -930,11 +930,11 @@ it moves the cursor to the beginning-of-line"
   (interactive "aMode to use: ")
 
   (save-excursion
-(let ((old-mode major-mode))
-  (narrow-to-region (region-beginning) (region-end))
-  (funcall other-mode)
-  (indent-region (region-beginning) (region-end) nil)
-  (funcall old-mode)))
+    (let ((old-mode major-mode))
+      (narrow-to-region (region-beginning) (region-end))
+      (funcall other-mode)
+      (indent-region (region-beginning) (region-end) nil)
+      (funcall old-mode)))
   (widen))
 ;;;;
 
@@ -958,9 +958,9 @@ it moves the cursor to the beginning-of-line"
 ;; Show free space on device
 ;; http://www.emacswiki.org/emacs/DfMode
 (if (not (Are-We-On-Windows))
-    (progn
-      (autoload 'df-mode "df-mode" nil t)
-      (df-mode 1)))
+  (progn
+    (autoload 'df-mode "df-mode" nil t)
+    (df-mode 1)))
 
 
 
@@ -969,10 +969,10 @@ it moves the cursor to the beginning-of-line"
 ;;; interfacing with ELPA, the package archive.
 ;;; Move this code earlier if you want to reference
 ;;; packages in your .emacs.
-;(when
-;  (load
-;    (expand-file-name "~/.emacs.d/elpa/package.el"))
-;  (package-initialize))
+                                        ;(when
+                                        ;  (load
+                                        ;    (expand-file-name "~/.emacs.d/elpa/package.el"))
+                                        ;  (package-initialize))
 
 ;; ;; Configuracao para Haskell
 (when (file-exists-p (concat home "elisp/haskell-mode-2.4/haskell-site-file.el"))
@@ -1018,7 +1018,7 @@ it moves the cursor to the beginning-of-line"
 
 
 (message "Stop 12 %ds" (destructuring-bind (hi lo ms) (current-time)
-                           (- (+ hi lo) (+ (first *emacs-load-start*) (second *emacs-load-start*)))))
+                         (- (+ hi lo) (+ (first *emacs-load-start*) (second *emacs-load-start*)))))
 
 
 ;; ;; FIXME: Usar hippie-expand
@@ -1038,30 +1038,30 @@ it moves the cursor to the beginning-of-line"
   "If the character before pressing enter is a ',' change it into a ';' instead
 while also doing a newline-and-indent.
 If the character is not a ';' simply do a newline-and-indent"
-  ; Find a way to see if where inside a function call
+                                        ; Find a way to see if where inside a function call
   (interactive)
   (unless (= (point) 1)
     (if (char-equal ?\, (char-before))
-        (progn
-          (delete-backward-char 1)
-          (insert ";"))))
-    (newline-and-indent))
+      (progn
+        (delete-backward-char 1)
+        (insert ";"))))
+  (newline-and-indent))
 
 ;; TODO: This probably only makes sense in c-mode or c++-mode
-;(define-key global-map (kbd "RET") 'rolando-change-comma-to-semicolon)
+                                        ;(define-key global-map (kbd "RET") 'rolando-change-comma-to-semicolon)
 
 ;; Experimentar o Hippie-Expand
 ;; http://stackoverflow.com/questions/151639/yasnippet-and-pabbrev-working-together-in-emacs
 (require 'hippie-exp)
 
 (setq hippie-expand-try-functions-list
-      '(try-expand-dabbrev
-        try-expand-dabbrev-all-buffers
-        try-expand-dabbrev-from-kill
-        try-complete-file-name-partially 
-        try-complete-file-name
-        try-complete-lisp-symbol-partially
-        try-complete-lisp-symbol))
+  '(try-expand-dabbrev
+     try-expand-dabbrev-all-buffers
+     try-expand-dabbrev-from-kill
+     try-complete-file-name-partially 
+     try-complete-file-name
+     try-complete-lisp-symbol-partially
+     try-complete-lisp-symbol))
 
 (global-set-key "\M- " 'hippie-expand)
 
@@ -1075,44 +1075,44 @@ point."
   (interactive "*P")
   (unless (minibufferp (current-buffer))
     (if (and
-         (or (bobp) (= ?w (char-syntax (char-before))))
-         (or (eobp) (not (= ?w (char-syntax (char-after))))))
-        ;(dabbrev-expand arg)
+          (or (bobp) (= ?w (char-syntax (char-before))))
+          (or (eobp) (not (= ?w (char-syntax (char-after))))))
+                                        ;(dabbrev-expand arg)
       (hippie-expand arg)))
-      ;(indent-according-to-mode)
-  ; indent-according-to-mode doesn't work on regions
-;  (indent-region (region-beginning) (region-end)))
+                                        ;(indent-according-to-mode)
+                                        ; indent-according-to-mode doesn't work on regions
+                                        ;  (indent-region (region-beginning) (region-end)))
   (indent-for-tab-command))
 
 (defun my-tab-fix ()
   (local-set-key [(tab)] 'indent-or-expand))
- 
-;(add-hook 'c-mode-hook          'my-tab-fix)
+
+                                        ;(add-hook 'c-mode-hook          'my-tab-fix)
 (add-hook 'sh-mode-hook         'my-tab-fix)
 (add-hook 'emacs-lisp-mode-hook 'my-tab-fix)
 
 ;; (global-set-key [(tab)] 'indent-or-expand)
 
 
-; TODO: Melhorar isto
+                                        ; TODO: Melhorar isto
 (defun lisp-switch-keys ()
   (local-set-key (kbd "8") (lambda ()
                              (interactive)
-                             ;(insert-parentheses)
+                                        ;(insert-parentheses)
                              (insert "(")))
   (local-set-key (kbd "(") (lambda ()
                              (interactive)
                              (insert "8")))
   (local-set-key (kbd "9") (lambda ()
                              (interactive)
-                             ;(move-past-close-and-reindent)
+                                        ;(move-past-close-and-reindent)
                              (insert ")")))
   (local-set-key (kbd ")") (lambda ()
                              (interactive)
                              (insert "9"))))
 
 (message "Stop 13 %ds" (destructuring-bind (hi lo ms) (current-time)
-                           (- (+ hi lo) (+ (first *emacs-load-start*) (second *emacs-load-start*)))))
+                         (- (+ hi lo) (+ (first *emacs-load-start*) (second *emacs-load-start*)))))
 
 
 
@@ -1127,10 +1127,10 @@ point."
   "Replace current buffer if file is a directory."
   (interactive)
   (let ((orig (current-buffer))
-	(filename (dired-get-filename)))
+         (filename (dired-get-filename)))
     ad-do-it
     (when (and (file-directory-p filename)
-	       (not (eq (current-buffer) orig)))
+            (not (eq (current-buffer) orig)))
       (kill-buffer orig))))
 
 ;; Using the methods above will still create a new buffer if you invoke ^
@@ -1141,16 +1141,16 @@ point."
      "Run Dired on parent directory of current directory."
      (interactive "P")
      (let* ((dir (dired-current-directory))
-     	    (orig (current-buffer))
-     	    (up (file-name-directory (directory-file-name dir))))
+             (orig (current-buffer))
+             (up (file-name-directory (directory-file-name dir))))
        (or (dired-goto-file (directory-file-name dir))
-     	   ;; Only try dired-goto-subdir if buffer has more than one dir.
-     	   (and (cdr dired-subdir-alist)
-     		(dired-goto-subdir up))
-     	   (progn
-     	     (kill-buffer orig)
-     	     (dired up)
-     	     (dired-goto-file dir))))))
+         ;; Only try dired-goto-subdir if buffer has more than one dir.
+         (and (cdr dired-subdir-alist)
+           (dired-goto-subdir up))
+         (progn
+           (kill-buffer orig)
+           (dired up)
+           (dired-goto-file dir))))))
 
 ;; Get the size of all marked files in dired
 ;; http://www.emacswiki.org/emacs/DiredGetFileSize
@@ -1160,9 +1160,9 @@ point."
     (with-temp-buffer
       (apply 'call-process "/usr/bin/du" nil t nil "-sch" files)
       (message "Size of all marked files: %s"
-               (progn 
-                 (re-search-backward "\\(^[0-9.,]+[A-Za-z]+\\).*total$")
-		 (match-string 1))))))
+        (progn 
+          (re-search-backward "\\(^[0-9.,]+[A-Za-z]+\\).*total$")
+          (match-string 1))))))
 
 (define-key dired-mode-map (kbd "?") 'dired-get-size)
 
@@ -1185,7 +1185,7 @@ point."
 (setq dired-listing-switches "-alh")
 
 (message "Stop 14 %ds" (destructuring-bind (hi lo ms) (current-time)
-                           (- (+ hi lo) (+ (first *emacs-load-start*) (second *emacs-load-start*)))))
+                         (- (+ hi lo) (+ (first *emacs-load-start*) (second *emacs-load-start*)))))
 
 
 (defun autocompile nil
@@ -1198,17 +1198,17 @@ point."
 (add-hook 'after-save-hook 'autocompile)
 
 
-;(set-scroll-bar-mode 'right)
+                                        ;(set-scroll-bar-mode 'right)
 (tool-bar-mode 0)
 (scroll-bar-mode 0)
 (menu-bar-mode 0)
 
 
 (message "My .emacs loaded in %ds" (destructuring-bind (hi lo ms) (current-time)
-                           (- (+ hi lo) (+ (first *emacs-load-start*) (second *emacs-load-start*)))))
+                                     (- (+ hi lo) (+ (first *emacs-load-start*) (second *emacs-load-start*)))))
 
 
-;(require 'vimpulse)
+                                        ;(require 'vimpulse)
 ;; Activate occur easily inside isearch
 ;; From http://github.com/technomancy/emacs-starter-kit/blob/master/starter-kit-bindings.el
 (define-key isearch-mode-map (kbd "C-o")
@@ -1265,7 +1265,7 @@ point."
 ;;     (set-face-background 'modeline "gray50")
 ;;     (set-face-foreground 'modeline "black"))
 
-    
+
 ;;   (when (featurep 'xemacs)
 ;;     (make-local-hook 'viper-after-change-functions)
 ;;     (make-local-hook 'viper-before-change-functions)
@@ -1385,10 +1385,10 @@ point."
 (global-set-key (kbd "C-c i") 'string-rectangle)
 
 ;; Not so sure about this one
-;(global-set-key (kbd "C-c k") 'kill-rectangle)
+                                        ;(global-set-key (kbd "C-c k") 'kill-rectangle)
 
 ;; Didn't I had a reason to remove this a while ago?
-;(define-key global-map (kbd "RET") 'newline-and-indent)
+                                        ;(define-key global-map (kbd "RET") 'newline-and-indent)
 
 ;; Lets try this
 ;; http://www.emacswiki.org/emacs-en/EmacsNiftyTricks
@@ -1403,6 +1403,18 @@ point."
   "[^a-zA-ZÁÂÉÓàáâéêíóãúçÇ]")
 
 ;; Define movement keys for man mode
+(require 'man)
 (define-key Man-mode-map "j" 'next-line)
 (define-key Man-mode-map "k" 'previous-line)
 (define-key Man-mode-map "K" 'Man-kill)
+
+;; Only show files matching the regexp on a Dired buffer
+(defun dired-show-files-match-regexp (regexp)
+  "Show on the dired buffer the files that match a certain regexp"
+  (interactive "s files (regexp): ")
+  (dired-mark-files-regexp regexp)
+  (dired-toggle-marks)
+  (dired-do-kill-lines))
+
+;; r isn't the best keybinding, but it will work
+(define-key dired-mode-map (kbd "r") 'dired-show-files-match-regexp)
