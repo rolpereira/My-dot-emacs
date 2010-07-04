@@ -1,4 +1,4 @@
-; Time-stamp: <2010-07-02 02:45:14 (rolando)>
+; Time-stamp: <2010-07-04 01:13:45 (rolando)>
 
 ;; TODO: Arranjar uma keybind para find-function (podera funcionar melhor que as tags)
 
@@ -1362,6 +1362,7 @@ point."
 ;; http://www.emacswiki.org/emacs-en/EmacsNiftyTricks
 (set-register ?e '(file . "~/.emacs"))
 (set-register ?i '(file . "~/org/ideas.org"))
+(set-register ?h '(file . "~/Área de Trabalho/humor.txt"))
 
 (defun rolando-help-jump-to-source-file ()
   "Open up the file where the function/variable definition is defined."
@@ -1400,3 +1401,8 @@ point."
 
 (defun ispell-get-not-casechars ()
   "[^a-zA-ZÁÂÉÓàáâéêíóãúçÇ]")
+
+;; Define movement keys for man mode
+(define-key Man-mode-map "j" 'next-line)
+(define-key Man-mode-map "k" 'previous-line)
+(define-key Man-mode-map "K" 'Man-kill)
