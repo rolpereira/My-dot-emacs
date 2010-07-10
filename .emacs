@@ -1,4 +1,4 @@
-; Time-stamp: <2010-07-04 14:43:25 (rolando)>
+; Time-stamp: <2010-07-10 14:40:06 (rolando)>
 
 ;; TODO: Arranjar uma keybind para find-function (podera funcionar melhor que as tags)
 
@@ -96,7 +96,7 @@ it moves the cursor to the beginning-of-line"
 
 ;; (if iamlaptop
 ;;     (add-to-list 'load-path (concat "/media/JCARLOS/.emacs.d/elisp"))
-;;   (add-to-list 'load-path (concat 
+;;   (add-to-list 'load-path (concat
 ;; ;; (if iamlaptop
 ;; ;;   (setq load-path (append '("/media/JCARLOS/.emacs.d/elisp") load-path))
 ;; ;;   (setq load-path (append '("~/.emacs.d/elisp") load-path)))
@@ -368,7 +368,6 @@ it moves the cursor to the beginning-of-line"
      (setq w3m-session-autosave-period 30)
      (setq w3m-session-duplicate-tabs 'always)
 
-     (message "teste")
      ;; Utitilizar numeros para saltar para links
      ;; http://emacs.wordpress.com/2008/04/12/numbered-links-in-emacs-w3m/
      (require 'w3m-lnum)
@@ -381,12 +380,42 @@ it moves the cursor to the beginning-of-line"
            (w3m-move-numbered-anchor (read-number "Anchor number: "))
            (when (not active) (w3m-link-numbering-mode)))))
 
-     (define-key w3m-mode-map "f" 'jao-w3m-go-to-linknum)))
+     (define-key w3m-mode-map "f" 'jao-w3m-go-to-linknum)
+
+     ;; Use sessions on w3m (from Emacs Wiki)
+
+     (require 'w3m-session)
+
+     (define-key w3m-mode-map "S" 'w3m-session-save)
+     (define-key w3m-mode-map "L" 'w3m-session-load)
+
+     ;; Download youtube video at point
+     (defun w3m-yt-view ()
+       "View a YouTube link with mplayer."
+       (interactive)
+       (let ((url (or (w3m-anchor) (w3m-image))))
+         (cond ((string-match "youtube" url)
+                 (string-match "[^v]*v.\\([^&]*\\)" url)
+                 (let* ((vid (match-string 1 url))
+                         (info (with-temp-buffer
+                                 (w3m-retrieve
+                                   (format "http://www.youtube.com/get_video_info?video_id=%s"
+                                     vid))
+                                 (buffer-string))))
+                   (string-match "&token=\\([^%]*\\)" info)
+                   (let ((vurl (format "http://www.youtube.com/get_video?video_id=%s&t=%s=&fmt=18"
+                                 vid
+                                 (match-string 1 info))))
+                     (start-process "mplayer" nil "mplayer" "-quiet" "-cache" " 8192"
+                       (nth 5 (w3m-attributes vurl))))))
+           (t
+             (message "Not yt URL.")))))
+     ))
 ;;;;
 
 ;; ;Activar o AUCTeX
-                                        ;(require 'tex-site)
-                                        ;(load "preview-latex.el" nil t t)
+;(require 'tex-site)
+;(load "preview-latex.el" nil t t)
 ;; ;;;;;
 
 ;; spellcheck in LaTex mode
@@ -668,7 +697,7 @@ it moves the cursor to the beginning-of-line"
 
 
 (defun djcb-term-start-or-switch (prg &optional use-existing)
-  "* run program PRG in a terminal buffer. If USE-EXISTING is non-nil 
+  "* run program PRG in a terminal buffer. If USE-EXISTING is non-nil
    and PRG is already running, switch to that buffer instead of starting
    a new instance."
   (interactive)
@@ -882,7 +911,7 @@ it moves the cursor to the beginning-of-line"
   '(("#[abcdef[:digit:]]\\{6\\}"
       (0 (put-text-property (match-beginning 0)
            (match-end 0)
-           'face (list :background 
+           'face (list :background
                    (match-string-no-properties 0)))))))
 
 ;; Why is this function defined twice?
@@ -983,23 +1012,23 @@ it moves the cursor to the beginning-of-line"
 (org-remember-insinuate)
 
 ;; http://metajack.im/2008/12/30/gtd-capture-with-emacs-orgmode/
-(defadvice remember-finalize (after delete-remember-frame activate)  
-  "Advise remember-finalize to close the frame if it is the remember frame"  
-  (if (equal "*Remember*" (frame-parameter nil 'name))  
-    (delete-frame)))  
+(defadvice remember-finalize (after delete-remember-frame activate)
+  "Advise remember-finalize to close the frame if it is the remember frame"
+  (if (equal "*Remember*" (frame-parameter nil 'name))
+    (delete-frame)))
 
-(defadvice remember-destroy (after delete-remember-frame activate)  
-  "Advise remember-destroy to close the frame if it is the remember frame"  
-  (if (equal "*Remember*" (frame-parameter nil 'name))  
-    (delete-frame)))  
+(defadvice remember-destroy (after delete-remember-frame activate)
+  "Advise remember-destroy to close the frame if it is the remember frame"
+  (if (equal "*Remember*" (frame-parameter nil 'name))
+    (delete-frame)))
 
-;; make the frame contain a single window. by default org-remember  
-;; splits the window.  
-(add-hook 'remember-mode-hook  'delete-other-windows)  
+;; make the frame contain a single window. by default org-remember
+;; splits the window.
+(add-hook 'remember-mode-hook  'delete-other-windows)
 
-(defun make-remember-frame ()  
+(defun make-remember-frame ()
   "Create a new frame and run org-remember"
-  (interactive)  
+  (interactive)
   (make-frame '((name . "*Remember*")
                  (width . 80)
                  (height . 10)
@@ -1009,10 +1038,10 @@ it moves the cursor to the beginning-of-line"
   (select-frame-by-name "*Remember*")
   (org-remember))
 
-(setq org-remember-templates 
+(setq org-remember-templates
   '(("Clipboard" ?c "* %T %^{Description}\n %x"
       "~/remember.org" "Interesting")
-     ("ToDo" ?t "* TODO %T %^{Summary}" 
+     ("ToDo" ?t "* TODO %T %^{Summary}"
        "~/remember.org" "Todo")))
 
 
@@ -1058,7 +1087,7 @@ If the character is not a ';' simply do a newline-and-indent"
   '(try-expand-dabbrev
      try-expand-dabbrev-all-buffers
      try-expand-dabbrev-from-kill
-     try-complete-file-name-partially 
+     try-complete-file-name-partially
      try-complete-file-name
      try-complete-lisp-symbol-partially
      try-complete-lisp-symbol))
@@ -1160,7 +1189,7 @@ point."
     (with-temp-buffer
       (apply 'call-process "/usr/bin/du" nil t nil "-sch" files)
       (message "Size of all marked files: %s"
-        (progn 
+        (progn
           (re-search-backward "\\(^[0-9.,]+[A-Za-z]+\\).*total$")
           (match-string 1))))))
 
@@ -1172,7 +1201,7 @@ point."
   "Sort dired listings with directories first."
   (save-excursion
     (let (buffer-read-only)
-      (forward-line 2) ;; beyond dir. header 
+      (forward-line 2) ;; beyond dir. header
       (sort-regexp-fields t "^.*$" "[ ]*." (point) (point-max)))
     (set-buffer-modified-p nil)))
 
@@ -1418,3 +1447,31 @@ point."
 
 ;; r isn't the best keybinding, but it will work
 (define-key dired-mode-map (kbd "r") 'dired-show-files-match-regexp)
+
+;; Turn off yasnippet mode on the debugger
+(add-hook 'gdb-mode-hook 'yas/minor-mode-off)
+
+;; (set-face-background 'modeline-inactive "black")
+
+;; (custom-set-faces
+;;   '(mode-line ((t (:box (:line-width 1 :color "orange"))))))
+
+(add-hook 'c-mode-common-hook
+  (lambda ()
+    (local-set-key  (kbd "C-c o") 'ff-find-other-file)))
+
+(add-hook 'c-mode-common-hook
+  (lambda ()
+    (setq indent-tabs-mode t)))
+
+;; Yes, you can do this same trick with the cool "It's All Text"
+;; firefox add-on :-)
+(add-to-list 'auto-mode-alist '("/mutt-\\|itsalltext.*mail\\.google" .  mail-mode))
+(add-hook 'mail-mode-hook 'turn-on-auto-fill)
+(add-hook 'mail-mode-hook
+  (lambda ()
+    (define-key mail-mode-map [(control c) (control c)]
+      (lambda ()
+        (interactive)
+        (save-buffer)
+        (server-edit)))))

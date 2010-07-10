@@ -5,7 +5,7 @@
                                         (nnimap-stream ssl)
                                         ;(remove-prefix "INBOX.")
                                         (nnimap-authinfo-file
-                                          "/home/jcarlos/.authinfo"))
+                                          "/home/rolando/.authinfo"))
                                        (nntp "news.gmane.org")))
 
 (setq gnus-summary-line-format "%U%R%z %(%&user-date;  %-15,15f %* %B%s%)\n"
@@ -23,4 +23,16 @@
 
 (add-hook 'gnus-summary-mode-hook 'my-setup-hl-line)
 (add-hook 'gnus-group-mode-hook 'my-setup-hl-line)
+
+;; http://www.faqs.org/faqs/gnus-faq
+;; Don't show the first article when pressing SPC
+(setq gnus-auto-select-first nil)
+
+;; Collapse threads when entering a group
+(add-hook 'gnus-summary-prepared-hook 'gnus-summary-hide-all-threads)
+
+;; Change hl-line face to underline and foreground and background to nil
+
+;; Automatically jump to the next group
+(setq gnus-auto-select-next 'quietly)
 

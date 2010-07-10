@@ -46,8 +46,8 @@
         'read-only t 'rear-nonsticky t 'front-nonsticky t))))
 
 ;; Mudar o charset
-(setq erc-server-coding-system '(iso-8859-1 . iso-8859-1))
-;(setq erc-server-coding-system '(utf-8 . utf-8))
+;(setq erc-server-coding-system '(iso-8859-1 . iso-8859-1))
+(setq erc-server-coding-system '(utf-8 . utf-8))
 
 ;; ;; Transformar links em butoes que abrem o browser
 ;; (setq erc-button-url-regexp
