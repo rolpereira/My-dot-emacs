@@ -1,4 +1,4 @@
-; Time-stamp: <2010-07-10 14:40:06 (rolando)>
+; Time-stamp: <2010-07-13 21:36:52 (rolando)>
 
 ;; TODO: Arranjar uma keybind para find-function (podera funcionar melhor que as tags)
 
@@ -226,14 +226,16 @@ it moves the cursor to the beginning-of-line"
   (require 'color-theme)
   ;(require 'color-theme-tango)
   (require 'zenburn)
+  (require 'color-theme-dark-bliss)
   ;(require 'color-theme-sunburst)
   (color-theme-initialize)
-  (color-theme-taming-mr-arneson))
+  ;(color-theme-taming-mr-arneson))
 ;  (color-theme-goldenrod)
   ;(color-theme-tango))
   ;(color-theme-zenburn))
   ;(color-theme-sunburst))
   ;(color-theme-taylor))
+  (color-theme-dark-bliss))
 ; Other themes: midnight, white on black, charcoal black, Calm Forest, Billw,
 ; Arjen, Clarity and Beauty, Cooper Dark, Comidia, Dark Blue 2, Dark Laptop,
 ; Deep Blue, Hober, Late Night, Lethe, Linh Dang Dark, Taming Mr Arneson,
