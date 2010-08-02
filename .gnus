@@ -36,3 +36,6 @@
 ;; Automatically jump to the next group
 (setq gnus-auto-select-next 'quietly)
 
+;; Don't show articles below this score
+(setq-default gnus-summary-expunge-below -1000)
+

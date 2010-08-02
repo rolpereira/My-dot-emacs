@@ -1,4 +1,4 @@
-; Time-stamp: <2010-07-13 21:36:52 (rolando)>
+; Time-stamp: <2010-08-03 00:42:48 (rolando)>
 
 ;; TODO: Arranjar uma keybind para find-function (podera funcionar melhor que as tags)
 
@@ -78,8 +78,6 @@ it moves the cursor to the beginning-of-line"
 ; Load Emacs Code Browser
 ;; (add-to-list 'load-path (concat home ".emacs.d/elisp/ecb-snap"))
 ;; (require 'ecb)
-
-
 
 
 (setq eldoc-idle-delay 0)
@@ -229,13 +227,15 @@ it moves the cursor to the beginning-of-line"
   (require 'color-theme-dark-bliss)
   ;(require 'color-theme-sunburst)
   (color-theme-initialize)
+  ;(color-theme-charcoal-black))
   ;(color-theme-taming-mr-arneson))
 ;  (color-theme-goldenrod)
   ;(color-theme-tango))
   ;(color-theme-zenburn))
   ;(color-theme-sunburst))
   ;(color-theme-taylor))
-  (color-theme-dark-bliss))
+                                        ;(color-theme-dark-bliss)
+  (color-theme-midnight))
 ; Other themes: midnight, white on black, charcoal black, Calm Forest, Billw,
 ; Arjen, Clarity and Beauty, Cooper Dark, Comidia, Dark Blue 2, Dark Laptop,
 ; Deep Blue, Hober, Late Night, Lethe, Linh Dang Dark, Taming Mr Arneson,
@@ -1419,11 +1419,12 @@ point."
                                         ;(global-set-key (kbd "C-c k") 'kill-rectangle)
 
 ;; Didn't I had a reason to remove this a while ago?
-                                        ;(define-key global-map (kbd "RET") 'newline-and-indent)
+(define-key global-map (kbd "RET") 'newline-and-indent)
 
 ;; Lets try this
 ;; http://www.emacswiki.org/emacs-en/EmacsNiftyTricks
-(global-set-key (kbd "RET") 'reindent-then-newline-and-indent)
+; Not so useful
+;(global-set-key (kbd "RET") 'newline-and-indent)
 
 ;; XXX: Workaround a bug where ispell doesn't work with words that contain the
 ;; char ç or Ç
@@ -1477,3 +1478,10 @@ point."
         (interactive)
         (save-buffer)
         (server-edit)))))
+
+;; My general lisp configurations
+(defun lisp-hook-function
+  (lisp-switch-keys)
+  (yas/minor-mode-off))
+
+(add-hook 'lisp-mode-hook 'lisp-hook-function)

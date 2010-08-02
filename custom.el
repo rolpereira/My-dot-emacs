@@ -6,6 +6,7 @@
  '(canlock-password "b729cbb4108fd17f15d489d034f9a7f06c542e83")
  '(ecb-options-version "2.33beta2")
  '(erc-modules (quote (autojoin button completion fill irccontrols list match menu move-to-prompt netsplit networks noncommands readonly ring smiley stamp track)))
+ '(mode-line-inverse-video nil)
  '(org-agenda-files (quote ("~/notes/escola.org"))))
 (custom-set-faces
   ;; custom-set-faces was added by Custom.
@@ -15,5 +16,4 @@
  '(column-marker-1 ((t (:background "gray20"))))
  '(diff-added ((t (:inherit diff-changed :foreground "blue" :weight bold))))
  '(diff-removed ((t (:inherit diff-changed :foreground "red" :weight bold))))
- '(show-paren-match ((((class color) (background dark)) (:background "grey30"))))
  '(which-func ((((class color) (min-colors 88) (background dark)) (:background "White" :foreground "Blue1")))))
