@@ -1,4 +1,4 @@
-; Time-stamp: <2010-08-03 00:42:48 (rolando)>
+; Time-stamp: <2010-08-03 01:21:32 (rolando)>
 
 ;; TODO: Arranjar uma keybind para find-function (podera funcionar melhor que as tags)
 
@@ -416,8 +416,10 @@ it moves the cursor to the beginning-of-line"
 ;;;;
 
 ;; ;Activar o AUCTeX
-;(require 'tex-site)
-;(load "preview-latex.el" nil t t)
+(setq load-path (cons (concat home "elisp/auctex-11.85/") load-path))
+(setq load-path (cons (concat home "elisp/auctex-11.85/preview/") load-path))
+(require 'tex-site)
+(load "preview-latex.el" nil t t)
 ;; ;;;;;
 
 ;; spellcheck in LaTex mode
