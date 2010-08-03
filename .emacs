@@ -1,4 +1,4 @@
-; Time-stamp: <2010-08-03 01:21:32 (rolando)>
+; Time-stamp: <2010-08-03 01:52:36 (rolando)>
 
 ;; TODO: Arranjar uma keybind para find-function (podera funcionar melhor que as tags)
 
@@ -1487,3 +1487,15 @@ point."
   (yas/minor-mode-off))
 
 (add-hook 'lisp-mode-hook 'lisp-hook-function)
+ ; Doesn't seem to function if it's inside `lisp-hook-function'
+(add-hook 'lisp-mode-hook 'lisp-switch-keys)
+
+;; Slime stuff
+(add-to-list 'load-path (concat home "elisp/slime/"))
+(autoload 'slime "slime" "" t)
+(eval-after-load "slime"
+  '(progn
+     (setq inferior-lisp-program "sbcl")
+     (require 'slime)
+     (slime-setup '(slime-fancy))
+     ))
