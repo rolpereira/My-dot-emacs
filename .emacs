@@ -1,4 +1,4 @@
-; Time-stamp: <2010-08-03 01:52:36 (rolando)>
+; Time-stamp: <2010-08-17 02:29:11 (rolando)>
 
 ;; TODO: Arranjar uma keybind para find-function (podera funcionar melhor que as tags)
 
@@ -73,7 +73,8 @@ it moves the cursor to the beginning-of-line"
 
 
 ;; E necessario muitas vezes
-(require 'cl)
+(with-no-warnings 
+  (require 'cl))
 
 ; Load Emacs Code Browser
 ;; (add-to-list 'load-path (concat home ".emacs.d/elisp/ecb-snap"))
@@ -369,6 +370,9 @@ it moves the cursor to the beginning-of-line"
      (setq w3m-session-load-always t)
      (setq w3m-session-autosave-period 30)
      (setq w3m-session-duplicate-tabs 'always)
+
+     ; Load last sessions
+     (setq w3m-session-load-last-sessions t)
 
      ;; Utitilizar numeros para saltar para links
      ;; http://emacs.wordpress.com/2008/04/12/numbered-links-in-emacs-w3m/
@@ -1482,13 +1486,15 @@ point."
         (server-edit)))))
 
 ;; My general lisp configurations
-(defun lisp-hook-function
-  (lisp-switch-keys)
-  (yas/minor-mode-off))
-
-(add-hook 'lisp-mode-hook 'lisp-hook-function)
+(add-hook 'lisp-mode-hook 'yas/minor-mode-off)
  ; Doesn't seem to function if it's inside `lisp-hook-function'
 (add-hook 'lisp-mode-hook 'lisp-switch-keys)
+
+;; If slime is on, then <f7> evals the entire buffers
+(add-hook 'lisp-mode-hook (lambda ()
+                            (local-set-key (kbd "<f7>")
+                                   'slime-eval-buffer)))
+
 
 ;; Slime stuff
 (add-to-list 'load-path (concat home "elisp/slime/"))
@@ -1499,3 +1505,14 @@ point."
      (require 'slime)
      (slime-setup '(slime-fancy))
      ))
+
+;; Save history of minibuffer between emacs sessions
+(savehist-mode 1)
+
+;; "a" key on a dired buffer opens the folder without opening a new buffer
+;; unlike RET.
+(put 'dired-find-alternate-file 'disabled nil)
+
+;; Smex - Search M-x
+(require 'smex)
+(smex-initialize)
