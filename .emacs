@@ -1,4 +1,4 @@
-; Time-stamp: <2010-08-17 02:29:11 (rolando)>
+; Time-stamp: <2010-09-14 10:21:00 (rolando)>
 
 ;; TODO: Arranjar uma keybind para find-function (podera funcionar melhor que as tags)
 
@@ -1508,6 +1508,11 @@ point."
 
 ;; Save history of minibuffer between emacs sessions
 (savehist-mode 1)
+;; Also save kill-ring between emacs sessions
+;; From news://gnu.emacs.help
+(setq savehist-additional-variables '(kill-ring
+                                       ;compile-command
+                                       ))
 
 ;; "a" key on a dired buffer opens the folder without opening a new buffer
 ;; unlike RET.
@@ -1516,3 +1521,13 @@ point."
 ;; Smex - Search M-x
 (require 'smex)
 (smex-initialize)
+
+(defun total-number-lines ()
+  "Total number of lines on a buffer.
+
+To add this to the mode-line, place (:EVAL (format '%s' (total-number-lines)))
+somewhere on the variable mode-line-format."
+  (interactive)
+  (save-excursion
+    (goto-char (point-max))
+    (line-number-at-pos)))
