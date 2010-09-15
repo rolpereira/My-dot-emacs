@@ -8,6 +8,7 @@
                                           "/home/rolando/.authinfo"))
                                        (nntp "news.gmane.org")))
 
+
 (setq gnus-summary-line-format "%U%R%z %(%&user-date;  %-15,15f %* %B%s%)\n"
   gnus-user-date-format-alist '((t . "%d.%m.%Y %H:%M"))
   gnus-sum-thread-tree-false-root ""
@@ -19,7 +20,8 @@
 
 (defun my-setup-hl-line ()
   (hl-line-mode 1)
-  (setq cursor-type nil)) ; Don't show the cursor
+  (setq cursor-type nil) ; Don't show the cursor
+  (visual-line-mode 1))
 
 (add-hook 'gnus-summary-mode-hook 'my-setup-hl-line)
 (add-hook 'gnus-group-mode-hook 'my-setup-hl-line)
@@ -31,7 +33,9 @@
 ;; Collapse threads when entering a group
 (add-hook 'gnus-summary-prepared-hook 'gnus-summary-hide-all-threads)
 
-;; Change hl-line face to underline and foreground and background to nil
+(add-hook 'gnus-summary-prepared-hook '(lambda () (setq line-move-visual nil)))
+
+;; TODO: Change hl-line face to underline and foreground and background to nil
 
 ;; Automatically jump to the next group
 (setq gnus-auto-select-next 'quietly)
