@@ -1,4 +1,4 @@
-; Time-stamp: <2010-09-14 10:21:00 (rolando)>
+; Time-stamp: <2010-09-20 15:00:54 (rolando)>
 
 ;; TODO: Arranjar uma keybind para find-function (podera funcionar melhor que as tags)
 
