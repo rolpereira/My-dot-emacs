@@ -877,7 +877,8 @@ it moves the cursor to the beginning-of-line"
 ;; Automatically close the compilation buffer after a successful compilation
 ;; http://www.emacswiki.org/emacs/ModeCompile
 (defun compile-autoclose (buffer string)
-  (cond ((string-match "finished" string)
+  (cond ((and (string-match "finished" string)
+           (string= (buffer-name) "*compilation*")) ; No need to hide buffer *grep* or *find*
           (bury-buffer "*compilation*")
           (winner-undo)
           (message "Build successful."))
