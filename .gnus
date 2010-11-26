@@ -33,7 +33,7 @@
 ;; Collapse threads when entering a group
 (add-hook 'gnus-summary-prepared-hook 'gnus-summary-hide-all-threads)
 
-(add-hook 'gnus-summary-prepared-hook '(lambda () (setq line-move-visual nil)))
+;(add-hook 'gnus-summary-prepared-hook '(lambda () (setq line-move-visual nil)))
 
 ;; TODO: Change hl-line face to underline and foreground and background to nil
 
