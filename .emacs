@@ -1563,3 +1563,7 @@ somewhere on the variable mode-line-format."
 ;; From: http://www.emacswiki.org/emacs/EdiffMode
 (setq ediff-window-setup-function 'ediff-setup-windows-plain)
 
+;; Para o trabalho de laig
+(setq auto-mode-alist (append
+                        '(("\\.sgx$" . xml-mode))
+                        auto-mode-alist))
