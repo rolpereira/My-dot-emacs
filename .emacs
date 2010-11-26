@@ -1552,6 +1552,23 @@ somewhere on the variable mode-line-format."
 ;; file you are editing
 ;; (http://emacs.wordpress.com/2007/01/24/imenu-with-a-workaround/#comment-51)
 (global-set-key [mouse-3] 'imenu)
+
+
+;; TODO: Work in progress, insert defun form on buffer
+(defun find-help ()
+  (save-excursion
+    (describe-function 'eshell)
+    (pop-to-buffer "*Help*")
+    (goto-char (point-min))
+    (when (re-search-forward "`.*\.el'" nil t)
+      (backward-char 2)
+      (push-button)
+      (delete-windows-on "*Help*"))
+    (let ((begin (point)))
+      (forward-sexp 1)
+      (kill-ring-save begin (point))))
+  (yank))
+
 (defun download-youtube-video (url)
   (eshell-eval-command
     (eshell-command
