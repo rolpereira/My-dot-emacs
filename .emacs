@@ -1533,3 +1533,7 @@ somewhere on the variable mode-line-format."
   (save-excursion
     (goto-char (point-max))
     (line-number-at-pos)))
+
+(require 'uniquify)
+(setq uniquify-buffer-name-style 'forward)
+
