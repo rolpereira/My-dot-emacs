@@ -1552,3 +1552,7 @@ somewhere on the variable mode-line-format."
 ;; file you are editing
 ;; (http://emacs.wordpress.com/2007/01/24/imenu-with-a-workaround/#comment-51)
 (global-set-key [mouse-3] 'imenu)
+(defun download-youtube-video (url)
+  (eshell-eval-command
+    (eshell-command
+      (concat "~/Área\\ de\\ Trabalho/youtube-dl.py -t " url))))
