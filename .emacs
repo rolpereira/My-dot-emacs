@@ -1556,3 +1556,10 @@ somewhere on the variable mode-line-format."
   (eshell-eval-command
     (eshell-command
       (concat "~/Área\\ de\\ Trabalho/youtube-dl.py -t " url))))
+
+;; To make ediff operate on selected-frame add next:
+;; This is what you probably want if you are using a tiling window
+;; manager under X, such as ratpoison.
+;; From: http://www.emacswiki.org/emacs/EdiffMode
+(setq ediff-window-setup-function 'ediff-setup-windows-plain)
+
