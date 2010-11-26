@@ -1537,3 +1537,14 @@ somewhere on the variable mode-line-format."
 (require 'uniquify)
 (setq uniquify-buffer-name-style 'forward)
 
+;; Some custom commands for eshell
+(defun eshell/ff (file)
+  (find-file file))
+
+(defun change-to-eshell-or-to-prev-buffer ()
+  (interactive)
+  (if (string= (buffer-name) "*eshell*") ; Doesn't work with multiple eshells
+    (switch-to-buffer (other-buffer))
+    (eshell)))
+
+(global-set-key (kbd "<f9>") 'change-to-eshell-or-to-prev-buffer)
