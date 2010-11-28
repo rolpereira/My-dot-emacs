@@ -1531,3 +1531,24 @@ somewhere on the variable mode-line-format."
   (save-excursion
     (goto-char (point-max))
     (line-number-at-pos)))
+
+(defun rolando-call-vc ()
+  "Call magit or psvn depending on the vc-backend."
+  (interactive)
+  (let ((backend (vc-backend (buffer-file-name))))
+    (cond ((string= backend "Git")
+            (load "magit")
+            (magit-status (magit-get-top-dir default-directory)))
+      ((string= backend "SVN")
+        (svn-status default-directory)))))
+
+(global-set-key "\C-ck" 'rolando-call-vc)
+
+;; Seen on #emacs
+;; If file size is > 100MB, don't display line number -- can use what-line function if you want anyway
+(setq line-number-display-limit 100000000)
+
+;; Zap-up-to-char (like Vi "dt" command)
+(require 'misc)
+(global-set-key (kbd "M-z") 'zap-up-to-char)
+(global-set-key (kbd "M-Z") 'zap-to-char)
