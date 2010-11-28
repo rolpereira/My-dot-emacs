@@ -1,4 +1,4 @@
-; Time-stamp: <2010-09-20 15:00:54 (rolando)>
+; Time-stamp: <2010-09-27 21:54:56 (rolando)>
 
 ;; TODO: Arranjar uma keybind para find-function (podera funcionar melhor que as tags)
 
@@ -1398,7 +1398,7 @@ point."
 ;; ‘C-x r j i’ to open an ‘ideas’ file:
 ;; http://www.emacswiki.org/emacs-en/EmacsNiftyTricks
 (set-register ?e '(file . "~/.emacs"))
-(set-register ?i '(file . "~/org/ideas.org"))
+(set-register ?f '(file . "~/Área de Trabalho/feup/3_ano/escola.org"))
 (set-register ?h '(file . "~/Área de Trabalho/humor.txt"))
 
 (defun rolando-help-jump-to-source-file ()
