@@ -1,4 +1,3 @@
-; Time-stamp: <2010-09-27 21:54:56 (rolando)>
 
 ;; TODO: Arranjar uma keybind para find-function (podera funcionar melhor que as tags)
 
@@ -394,6 +393,7 @@ it moves the cursor to the beginning-of-line"
 
      (define-key w3m-mode-map "S" 'w3m-session-save)
      (define-key w3m-mode-map "L" 'w3m-session-load)
+     (define-key w3m-mode-map (kbd "C-j") 'w3m-search)
 
      ;; Download youtube video at point
      (defun w3m-yt-view ()
@@ -876,7 +876,8 @@ it moves the cursor to the beginning-of-line"
 ;; Automatically close the compilation buffer after a successful compilation
 ;; http://www.emacswiki.org/emacs/ModeCompile
 (defun compile-autoclose (buffer string)
-  (cond ((string-match "finished" string)
+  (cond ((and (string-match "finished" string)
+           (string= (buffer-name) "*compilation*")) ; No need to hide buffer *grep* or *find*
           (bury-buffer "*compilation*")
           (winner-undo)
           (message "Build successful."))
@@ -1552,3 +1553,87 @@ somewhere on the variable mode-line-format."
 (require 'misc)
 (global-set-key (kbd "M-z") 'zap-up-to-char)
 (global-set-key (kbd "M-Z") 'zap-to-char)
+
+(require 'uniquify)
+(setq uniquify-buffer-name-style 'forward)
+
+;; Some custom commands for eshell
+(defun eshell/ff (file)
+  (find-file file))
+
+(defun change-to-eshell-or-to-prev-buffer ()
+  (interactive)
+  (if (string= (buffer-name) "*eshell*") ; Doesn't work with multiple eshells
+    (switch-to-buffer (other-buffer))
+    (eshell)))
+
+(global-set-key (kbd "<f9>") 'change-to-eshell-or-to-prev-buffer)
+
+;; Para o swi-prolog
+(autoload 'run-prolog "prolog" "Start a Prolog sub-process." t)
+(autoload 'prolog-mode "prolog" "Major mode for editing Prolog programs." t)
+(autoload 'mercury-mode "prolog" "Major mode for editing Mercury programs." t)
+(setq prolog-system 'sicstus)
+(setq auto-mode-alist (append
+                        '(("\\.pl$" . prolog-mode)
+                           ("\\.m$" . mercury-mode))
+                        auto-mode-alist))
+
+(defun prolog-quick-help ()
+  "Show help for predicate on point"
+  (interactive)
+  (funcall prolog-help-function-i (prolog-atom-under-point)))
+
+(defun inferior-prolog-electric-semicolon ()
+  "If waiting for input, send `comint-send-input' at the same time ; is pressed."
+  (let ((a 0)
+         (b 0))
+    (save-excursion
+      (setq a (re-search-backward "?- ")))
+    (save-excursion
+      (setq b (re-search-backward "")))
+  (progn
+    (insert ";")
+    (comint-send-input nil t))))
+
+
+(add-hook 'prolog-hook
+  '(define-key prolog-mode-map (kbd "C-c ?") 'prolog-quick-help))
+
+
+;; This is sweet!  right-click, get a list of functions in the source
+;; file you are editing
+;; (http://emacs.wordpress.com/2007/01/24/imenu-with-a-workaround/#comment-51)
+(global-set-key [mouse-3] 'imenu)
+
+
+;; TODO: Work in progress, insert defun form on buffer
+(defun find-help ()
+  (save-excursion
+    (describe-function 'eshell)
+    (pop-to-buffer "*Help*")
+    (goto-char (point-min))
+    (when (re-search-forward "`.*\.el'" nil t)
+      (backward-char 2)
+      (push-button)
+      (delete-windows-on "*Help*"))
+    (let ((begin (point)))
+      (forward-sexp 1)
+      (kill-ring-save begin (point))))
+  (yank))
+
+(defun download-youtube-video (url)
+  (eshell-eval-command
+    (eshell-command
+      (concat "~/Área\\ de\\ Trabalho/youtube-dl.py -t " url))))
+
+;; To make ediff operate on selected-frame add next:
+;; This is what you probably want if you are using a tiling window
+;; manager under X, such as ratpoison.
+;; From: http://www.emacswiki.org/emacs/EdiffMode
+(setq ediff-window-setup-function 'ediff-setup-windows-plain)
+
+;; Para o trabalho de laig
+(setq auto-mode-alist (append
+                        '(("\\.sgx$" . xml-mode))
+                        auto-mode-alist))
