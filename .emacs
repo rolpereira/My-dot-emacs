@@ -1400,7 +1400,7 @@ point."
 ;; ‘C-x r j i’ to open an ‘ideas’ file:
 ;; http://www.emacswiki.org/emacs-en/EmacsNiftyTricks
 (set-register ?e '(file . "~/.emacs"))
-(set-register ?i '(file . "~/org/ideas.org"))
+(set-register ?f '(file . "~/Área de Trabalho/feup/3_ano/escola.org"))
 (set-register ?h '(file . "~/Área de Trabalho/humor.txt"))
 
 (defun rolando-help-jump-to-source-file ()
@@ -1533,6 +1533,27 @@ somewhere on the variable mode-line-format."
   (save-excursion
     (goto-char (point-max))
     (line-number-at-pos)))
+
+(defun rolando-call-vc ()
+  "Call magit or psvn depending on the vc-backend."
+  (interactive)
+  (let ((backend (vc-backend (buffer-file-name))))
+    (cond ((string= backend "Git")
+            (load "magit")
+            (magit-status (magit-get-top-dir default-directory)))
+      ((string= backend "SVN")
+        (svn-status default-directory)))))
+
+(global-set-key "\C-ck" 'rolando-call-vc)
+
+;; Seen on #emacs
+;; If file size is > 100MB, don't display line number -- can use what-line function if you want anyway
+(setq line-number-display-limit 100000000)
+
+;; Zap-up-to-char (like Vi "dt" command)
+(require 'misc)
+(global-set-key (kbd "M-z") 'zap-up-to-char)
+(global-set-key (kbd "M-Z") 'zap-to-char)
 
 (require 'uniquify)
 (setq uniquify-buffer-name-style 'forward)
