@@ -1,3 +1,4 @@
+; Time-stamp: <2010-12-03 19:31:07 (rolando)>
 
 ;; TODO: Arranjar uma keybind para find-function (podera funcionar melhor que as tags)
 
@@ -134,9 +135,9 @@ it moves the cursor to the beginning-of-line"
   user-full-name "Rolando Pereira")
 ;;;
 
-;; Activar Org-Mode
-(setq load-path (cons (concat home "elisp/org-6.31a/lisp") load-path))
-(setq load-path (cons (concat home "elisp/org-6.31a/contrib/lisp") load-path))
+; Activar Org-Mode
+(setq load-path (cons (concat home "elisp/org-mode/lisp") load-path))
+(setq load-path (cons (concat home "elisp/org-mode/contrib/lisp") load-path))
 ;;;;;
 
 ; Mostra so a * mais a direita no org-mode
