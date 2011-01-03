@@ -1504,8 +1504,9 @@ point."
   '(progn
      (setq inferior-lisp-program "sbcl")
      (require 'slime)
-     (slime-setup '(slime-fancy))
-     ))
+     (slime-setup '(slime-fancy slime-sbcl-exts slime-sprof
+                     ;; slime-highlight-edits slime-hyperdoc slime-mdot-fu
+                     ))))
 
 ;; Save history of minibuffer between emacs sessions
 (savehist-mode 1)
