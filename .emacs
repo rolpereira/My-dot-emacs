@@ -1562,44 +1562,31 @@ somewhere on the variable mode-line-format."
 (defun eshell/ff (file)
   (find-file file))
 
-(defun change-to-eshell-or-to-prev-buffer ()
+(defun rolando-change-to-eshell-or-to-prev-buffer ()
   (interactive)
   (if (string= (buffer-name) "*eshell*") ; Doesn't work with multiple eshells
     (switch-to-buffer (other-buffer))
     (eshell)))
 
-(global-set-key (kbd "<f9>") 'change-to-eshell-or-to-prev-buffer)
+(global-set-key (kbd "<f9>") 'rolando-change-to-eshell-or-to-prev-buffer)
 
 ;; Para o swi-prolog
 (autoload 'run-prolog "prolog" "Start a Prolog sub-process." t)
 (autoload 'prolog-mode "prolog" "Major mode for editing Prolog programs." t)
 (autoload 'mercury-mode "prolog" "Major mode for editing Mercury programs." t)
-(setq prolog-system 'sicstus)
+(setq prolog-system 'swi-prolog)
 (setq auto-mode-alist (append
                         '(("\\.pl$" . prolog-mode)
                            ("\\.m$" . mercury-mode))
                         auto-mode-alist))
 
-(defun prolog-quick-help ()
-  "Show help for predicate on point"
-  (interactive)
-  (funcall prolog-help-function-i (prolog-atom-under-point)))
-
-(defun inferior-prolog-electric-semicolon ()
-  "If waiting for input, send `comint-send-input' at the same time ; is pressed."
-  (let ((a 0)
-         (b 0))
-    (save-excursion
-      (setq a (re-search-backward "?- ")))
-    (save-excursion
-      (setq b (re-search-backward "")))
-  (progn
-    (insert ";")
-    (comint-send-input nil t))))
-
-
 (add-hook 'prolog-hook
-  '(define-key prolog-mode-map (kbd "C-c ?") 'prolog-quick-help))
+  '(progn
+     (defun prolog-quick-help ()
+       "Show help for predicate on point"
+       (interactive)
+       (funcall prolog-help-function-i (prolog-atom-under-point)))
+  	(define-key prolog-mode-map (kbd "C-c ?") 'prolog-quick-help)))
 
 
 ;; This is sweet!  right-click, get a list of functions in the source
