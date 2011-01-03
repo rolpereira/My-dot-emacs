@@ -4,7 +4,7 @@
 (defvar *emacs-load-start* (current-time))
 
 
-; Experimentar usar a variavel default-directory
+;; Experimentar usar a variavel default-directory
 
 (defun Where-Am-i ()
   "If it returns t, then I am on the laptop, otherwise I am on the desktop."
@@ -75,7 +75,7 @@ it moves the cursor to the beginning-of-line"
 (with-no-warnings 
   (require 'cl))
 
-; Load Emacs Code Browser
+;; Load Emacs Code Browser
 ;; (add-to-list 'load-path (concat home ".emacs.d/elisp/ecb-snap"))
 ;; (require 'ecb)
 
@@ -91,15 +91,10 @@ it moves the cursor to the beginning-of-line"
 (load "package")
 (package-initialize)
 
+;; Check to see if the pydb emacs package is installed
+(when (file-directory-p "/user/share/emacs/site-lisp/pydb")
+  (setq load-path (append '("/usr/share/emacs/site-lisp/pydb") load-path)))
 
-;; (if iamlaptop
-;;     (add-to-list 'load-path (concat "/media/JCARLOS/.emacs.d/elisp"))
-;;   (add-to-list 'load-path (concat
-;; ;; (if iamlaptop
-;; ;;   (setq load-path (append '("/media/JCARLOS/.emacs.d/elisp") load-path))
-;; ;;   (setq load-path (append '("~/.emacs.d/elisp") load-path)))
-
-(setq load-path (append '("/usr/share/emacs/site-lisp/pydb") load-path))
 (setq c-default-style "bsd")
 
 
@@ -111,8 +106,8 @@ it moves the cursor to the beginning-of-line"
 
 (setq require-final-newline t)                ; Always newline at end of file
 
-; Mostrar os espacos vazios no final das linhas
-; FIXME: This should only be on the programming mode
+;; Mostrar os espacos vazios no final das linhas
+;; FIXME: This should only be on the programming mode
 (setq show-trailing-whitespace t)
 
 (when window-system
@@ -122,7 +117,7 @@ it moves the cursor to the beginning-of-line"
 (setq ispell-dictionary "portugues")             ; Set ispell dictionary
 
 (setq frame-title-format "%b - emacs")
-; Tabs colocam 4 espacos
+; Tabs expand to 4 spaces
 (setq-default c-basic-offset 4
   tab-width 4
   indent-tabs-mode nil)
@@ -130,16 +125,16 @@ it moves the cursor to the beginning-of-line"
   tab-width 4)
 ;;;
 
-; Coisas SVN
-(load "psvn.el")
+;; SVN browser
+(autoload 'svn-status "psvn" "SVN browser" t)
 ;;
 
-;Alguns modos precisam disto
+;; Some modes require this
 (setq user-mail-address "finalyugi@sapo.pt"
   user-full-name "Rolando Pereira")
 ;;;
 
-; Activar Org-Mode
+;; Activar Org-Mode
 (setq load-path (cons (concat home "elisp/org-6.31a/lisp") load-path))
 (setq load-path (cons (concat home "elisp/org-6.31a/contrib/lisp") load-path))
 ;;;;;
@@ -156,7 +151,7 @@ it moves the cursor to the beginning-of-line"
 (global-set-key "\C-cb" 'org-iswitchb)
 ;;;;;
 
-; Activar flymake-mode para o python usando o pyflakes
+;; Activar flymake-mode para o python usando o pyflakes
 (when (and (load "flymake" t) (file-in-exec-path-p "pyflakes"))
   (defun flymake-pyflakes-init ()
     (let* ((temp-file (flymake-init-create-temp-buffer-copy
@@ -689,16 +684,12 @@ it moves the cursor to the beginning-of-line"
 (yas/load-directory (concat home "plugins/yasnippet/snippets"))
 ;;;;;
 
-                                        ; Remove splash screen
+;; Remove splash screen
 (setq inhibit-splash-screen t)
 ;;;
 
-                                        ; Enter faz automaticamente o indent do codigo
-                                        ;(define-key global-map (kbd "RET") 'newline-and-indent)
-;;;
-
-                                        ; Detaching the custom-file
-                                        ; http://www.emacsblog.org/2008/12/06/quick-tip-detaching-the-custom-file/
+;; Detaching the custom-file
+;; http://www.emacsblog.org/2008/12/06/quick-tip-detaching-the-custom-file/
 (setq custom-file "~/.emacs.d/custom.el")
 (load custom-file 'noerror)
 ;;;
@@ -740,7 +731,7 @@ it moves the cursor to the beginning-of-line"
 
 
 
-;; Mover para as janelas usando o ALT+setas
+;; Move between windows using Meta+arrow keys
 ;; http://www.emacsblog.org/2008/05/01/quick-tip-easier-window-switching-in-emacs/
 (windmove-default-keybindings 'meta)
 ;;
@@ -796,7 +787,7 @@ it moves the cursor to the beginning-of-line"
   (global-set-key [(C kp-right)] 'fold-dwim-show-all)) ; Key 6
 
 
-;; % igual ao Vim
+;; % works the same as vim
 ;; http://mewde.blogspot.com/2007_05_01_archive.html
 (global-set-key "%" 'match-paren)
 (defun match-paren (arg)
@@ -807,7 +798,7 @@ it moves the cursor to the beginning-of-line"
     (t (self-insert-command (or arg 1)))))
 ;;;;;
 
-;; Fazer perguntas sobre keybindings
+;; A little game to help learn the keybindings
 ;; http://mewde.blogspot.com/2007_05_01_archive.html
 (autoload 'keywiz "keywiz" "" t)
 ;;
@@ -846,7 +837,6 @@ it moves the cursor to the beginning-of-line"
 (defun rolando-complete-python-symbol (symbol)
   "Show the documentation for the python symbol on the cursor on a resized frame"
   (interactive)
-
   ;; (interactive
   ;;   (let ((symbol (with-syntax-table python-dotty-syntax-table
   ;;                   (current-word)))
@@ -855,23 +845,19 @@ it moves the cursor to the beginning-of-line"
   ;;                          (format "Describe symbol (default %s): " symbol)
   ;;                          "Describe symbol: ")
   ;;             nil nil symbol))))
-
-
-
-  (message "Stop 10 %ds" (destructuring-bind (hi lo ms) (current-time)
-                           (- (+ hi lo) (+ (first *emacs-load-start*) (second *emacs-load-start*)))))
-
-
-                                        ; Usar o fit-window-to-buffer, display-buffer
+  ;; Usar o fit-window-to-buffer, display-buffer
   (let ((name "*Python Documentation*"))
     (save-excursion
-                                        ;    (python-describe-symbol symbol) ; Cria um buffer com o nome *Help*
+      ;;(python-describe-symbol symbol) ; Cria um buffer com o nome *Help*
       (get-buffer-create name)
       (set-buffer name)
       (save-excursion
         (display-buffer name)
         (select-window (next-window))
         (fit-window-to-buffer (selected-window) 10 4)))))
+
+(message "Stop 10 %ds" (destructuring-bind (hi lo ms) (current-time)
+                           (- (+ hi lo) (+ (first *emacs-load-start*) (second *emacs-load-start*)))))
 
 ;; Automatically close the compilation buffer after a successful compilation
 ;; http://www.emacswiki.org/emacs/ModeCompile
@@ -911,7 +897,7 @@ it moves the cursor to the beginning-of-line"
 
 ;; View chm on w3m
 ;; Requires archmage installed
-                                        ;(require 'chm-view)
+;;(require 'chm-view)
 ;;
 
 ;; Cor hexadecimal no HTML
@@ -982,12 +968,11 @@ it moves the cursor to the beginning-of-line"
 (autoload 'accent-html "html-accent" "HTML codes to accent" t)
 ;;
 
-(require 'show-wspace)
-
-;; http://www.reddit.com/r/programming/comments/86x46/mx_donuts_pic/
-(defun donuts ()
-  (interactive)
-  (print "Mmmm, donuts."))
+;; Stuff that shows the whitespace on a buffer
+(autoload 'toggle-show-hard-spaces-show-ws "show-wspace" "" t)
+(autoload 'show-ws-toggle-show-hard-spaces "show-wspace" "" t)
+(autoload 'toggle-show-trailing-whitespace-show-ws "show-wspace" "" t)
+(autoload 'show-ws-toggle-show-trailing-whitespace "show-wspace" "" t)
 
 ;; Browse Kill Ring
 ;; http://www.emacswiki.org/emacs/BrowseKillRing
@@ -1012,7 +997,7 @@ it moves the cursor to the beginning-of-line"
                                         ;    (expand-file-name "~/.emacs.d/elpa/package.el"))
                                         ;  (package-initialize))
 
-;; ;; Configuracao para Haskell
+;; Haskell configurations
 (when (file-exists-p (concat home "elisp/haskell-mode-2.4/haskell-site-file.el"))
   (load (concat home "elisp/haskell-mode-2.4/haskell-site-file"))
   (add-hook 'haskell-mode-hook 'turn-on-haskell-doc-mode)
@@ -1086,7 +1071,7 @@ If the character is not a ';' simply do a newline-and-indent"
   (newline-and-indent))
 
 ;; TODO: This probably only makes sense in c-mode or c++-mode
-                                        ;(define-key global-map (kbd "RET") 'rolando-change-comma-to-semicolon)
+;;(define-key global-map (kbd "RET") 'rolando-change-comma-to-semicolon)
 
 ;; Experimentar o Hippie-Expand
 ;; http://stackoverflow.com/questions/151639/yasnippet-and-pabbrev-working-together-in-emacs
@@ -1125,7 +1110,7 @@ point."
 (defun my-tab-fix ()
   (local-set-key [(tab)] 'indent-or-expand))
 
-                                        ;(add-hook 'c-mode-hook          'my-tab-fix)
+;;(add-hook 'c-mode-hook          'my-tab-fix)
 (add-hook 'sh-mode-hook         'my-tab-fix)
 (add-hook 'emacs-lisp-mode-hook 'my-tab-fix)
 
@@ -1202,6 +1187,7 @@ point."
           (re-search-backward "\\(^[0-9.,]+[A-Za-z]+\\).*total$")
           (match-string 1))))))
 
+(require 'dired)
 (define-key dired-mode-map (kbd "?") 'dired-get-size)
 
 ;; Place the directories on top of the dired buffer
