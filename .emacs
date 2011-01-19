@@ -1493,7 +1493,10 @@ point."
      (require 'slime)
      (slime-setup '(slime-fancy slime-sbcl-exts slime-sprof
                      ;; slime-highlight-edits slime-hyperdoc slime-mdot-fu
-                     ))))
+                     ))
+     (setq common-lisp-hyperspec-root "/usr/share/doc/hyperspec/")
+     (setq common-lisp-hyperspec-symbol-table
+       (concat common-lisp-hyperspec-root "Data/Map_Sym.txt"))))
 
 ;; Save history of minibuffer between emacs sessions
 (savehist-mode 1)
