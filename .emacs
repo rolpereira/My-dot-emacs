@@ -513,7 +513,7 @@ it moves the cursor to the beginning-of-line"
 (if (not (Are-We-On-Windows))
   (if (= emacs-major-version 23)
                                         ;(set-default-font "Bitstream Vera Sans Mono-12")
-    (set-frame-font "Inconsolata 14")
+    (set-frame-font "Inconsolata 16")
     (set-frame-font
       "-adobe-courier-medium-r-normal-*-14-100-*-*-*-*-iso10646-1"))
   (set-frame-font "-outline-Consolas-normal-r-normal-normal-14-97-96-96-c-*-iso8859-1"))
