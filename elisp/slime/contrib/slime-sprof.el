@@ -12,7 +12,7 @@
            `("--"
              [ "Start sb-sprof"  slime-sprof-start ,C ]
              [ "Stop sb-sprof"   slime-sprof-stop ,C ]
-             [ "Report sb-sprof" slime-sprof-browser ,C ])))))
+             [ "Report sb-sprof" slime-sprof-report ,C ])))))
 
 (defvar slime-sprof-exclude-swank nil
   "*Display swank functions in the report.")
@@ -37,9 +37,17 @@
 
 ;; Start / stop profiling
 
-(defun slime-sprof-start ()
+(defun* slime-sprof-start (&optional (mode :cpu))
   (interactive)
-  (slime-eval `(swank:swank-sprof-start)))
+  (slime-eval `(swank:swank-sprof-start :mode ,mode)))
+
+(defun slime-sprof-start-alloc ()
+  (interactive)
+  (slime-sprof-start :alloc))
+
+(defun slime-sprof-start-time ()
+  (interactive)
+  (slime-sprof-start :time))
 
 (defun slime-sprof-stop ()
   (interactive)
@@ -66,7 +74,9 @@
                       :exclude-swank ,exclude-swank)
                     'slime-sprof-format))
 
-(defun slime-sprof-browser ()
+(defalias 'slime-sprof-browser 'slime-sprof-report)
+
+(defun slime-sprof-report ()
   (interactive)
   (slime-with-popup-buffer ((slime-buffer-name :sprof)
                             :connection t
