@@ -1,11 +1,11 @@
-; Time-stamp: <2010-12-03 19:31:07 (rolando)>
+; Time-stamp: <2011-01-19 18:20:07 (rolando)>
 
 ;; TODO: Arranjar uma keybind para find-function (podera funcionar melhor que as tags)
 
 (defvar *emacs-load-start* (current-time))
 
 
-;; Experimentar usar a variavel default-directory
+;; Experimentar usar a variavel default-directory ou user-emacs-directory
 
 (defun Where-Am-i ()
   "If it returns t, then I am on the laptop, otherwise I am on the desktop."
@@ -346,7 +346,8 @@ it moves the cursor to the beginning-of-line"
      ;;         ))
 
      (require 'w3m)
-     (setq browse-url-browser-function 'w3m-browse-url)
+     (setq browse-url-browser-function (lambda (url ignore)
+                                         (w3m-browse-url url t)))
      (autoload 'w3m-browse-url "w3m" "Ask a WWW browser to show a URL." t)
      (setq w3m-use-cookies t)
 
