@@ -1,4 +1,4 @@
-; Time-stamp: <2011-01-19 18:20:07 (rolando)>
+; Time-stamp: <2011-01-24 21:12:08 (rolando)>
 
 ;; TODO: Arranjar uma keybind para find-function (podera funcionar melhor que as tags)
 
@@ -24,7 +24,7 @@
     nil))
 
 (defconst iamwindows (Are-We-On-Windows)
-  "If t, then we are on a windows system, otherwise se assume we are in a linux system")
+  "If t, then we are on a windows system, otherwise assume we are in a linux system")
 
 (defconst whereami (Where-Am-i)
   "If 'laptop, then we are on the laptop and in the linux system.
@@ -46,7 +46,6 @@ it moves the cursor to the beginning-of-line"
 
 (global-set-key (kbd "C-a") 'rolando-back-to-indentation-or-move-beginning-of-line)
 (global-set-key (kbd "<home>") 'rolando-back-to-indentation-or-move-beginning-of-line)
-
 
 
 (defun set-home-folder ()
@@ -1492,12 +1491,10 @@ point."
   '(progn
      (setq inferior-lisp-program "sbcl")
      (require 'slime)
+     (add-hook 'slime-repl-mode-hook 'lisp-switch-keys)
      (slime-setup '(slime-fancy slime-sbcl-exts slime-sprof
                      ;; slime-highlight-edits slime-hyperdoc slime-mdot-fu
-                     ))
-     (setq common-lisp-hyperspec-root "/usr/share/doc/hyperspec/")
-     (setq common-lisp-hyperspec-symbol-table
-       (concat common-lisp-hyperspec-root "Data/Map_Sym.txt"))))
+                     ))))
 
 ;; Save history of minibuffer between emacs sessions
 (savehist-mode 1)
