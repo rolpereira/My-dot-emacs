@@ -512,7 +512,7 @@ it moves the cursor to the beginning-of-line"
 ;; setup font
 ;; This ones don't work on Windows
 (if (not (Are-We-On-Windows))
-  (if (= emacs-major-version 23)
+  (if (>= emacs-major-version 23)
                                         ;(set-default-font "Bitstream Vera Sans Mono-12")
     (set-frame-font "Inconsolata 16")
     (set-frame-font
