@@ -659,7 +659,8 @@ it moves the cursor to the beginning-of-line"
 (ido-mode t)                         ; for both buffers and files
 (setq
   ido-ignore-buffers                 ; ignore these guys
-  '("\\` " "^\*Mess" "^\*Back" ".*Completion" "^\*Ido" "\*scratch\*")
+  '("\\` " "^\*Mess" "^\*Back" ".*Completion" "^\*Ido" "\*scratch\*" "^\*w3m" "^irc\."
+     "\*slime-events\*")
                                         ;  ido-work-directory-list '("~/" "~/Desktop")
   ido-case-fold  t                   ; be case-insensitive
                                         ;  ido-use-filename-at-point nil      ; don't use filename at point (annoying)
