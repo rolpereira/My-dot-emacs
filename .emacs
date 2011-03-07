@@ -1,4 +1,4 @@
-; Time-stamp: <2011-01-24 21:18:56 (rolando)>
+; Time-stamp: <2011-03-07 00:59:31 (rolando)>
 
 ;; TODO: Arranjar uma keybind para find-function (podera funcionar melhor que as tags)
 
@@ -830,6 +830,7 @@ it moves the cursor to the beginning-of-line"
 ;; ;;;;
 
 ;; F20 = Right Windows key
+;; use "xmodmap -e 'keycode 133 = F20'" to set it
 (defun rolando-switch-buffer ()
   "Alternates buffers like GNU Screen and Ratpoison"
   (interactive)
@@ -1634,3 +1635,15 @@ somewhere on the variable mode-line-format."
 
 (global-set-key (kbd "C-x C-b") 'ibuffer)
 
+;; Hint from
+;; http://www.reddit.com/r/emacs/comments/d7p2n/autojump_for_emacs/
+;; I've just found precisely what I'm after: after hitting C-x C-f or
+;; C-x d, you can press M-s, and it does precisely what I want.
+
+;; From http://bc.tech.coop/blog/031002.html
+;; CL Hyperspec in Info format in Emacs
+;; (global-set-key [(control meta f1)]
+;; 		'(lambda ()
+;; 		   (interactive)
+;; 		   (ignore-errors
+;; 		     (info (concatenate 'string "(gcl) " (thing-at-point 'symbol))))))
