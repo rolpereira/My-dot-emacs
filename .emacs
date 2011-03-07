@@ -1489,6 +1489,7 @@ point."
 ;; Slime stuff
 (add-to-list 'load-path (concat home "elisp/slime/"))
 (autoload 'slime "slime" "" t)
+(autoload 'slime-connect "slime" "" t)
 (eval-after-load "slime"
   '(progn
      (setq inferior-lisp-program "sbcl")
@@ -1497,6 +1498,12 @@ point."
      (slime-setup '(slime-fancy slime-sbcl-exts slime-sprof
                      ;; slime-highlight-edits slime-hyperdoc slime-mdot-fu
                      ))
+     (slime-autodoc-mode)
+     (setq slime-autodoc-use-multiline-p t
+       	   slime-complete-symbol*-fancy t
+           slime-complete-symbol-function 'slime-fuzzy-complete-symbol
+           slime-when-complete-filename-expand t)
+           ;slime-truncate-lines nil)
      (setq common-lisp-hyperspec-root "/usr/share/doc/hyperspec/")
      (setq common-lisp-hyperspec-symbol-table
        (concat common-lisp-hyperspec-root "Data/Map_Sym.txt"))))
