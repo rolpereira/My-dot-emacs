@@ -1,4 +1,4 @@
-; Time-stamp: <2011-03-07 00:59:31 (rolando)>
+; Time-stamp: <2011-03-19 00:17:36 (rolando)>
 
 ;; TODO: Arranjar uma keybind para find-function (podera funcionar melhor que as tags)
 
@@ -681,10 +681,10 @@ it moves the cursor to the beginning-of-line"
 ;;;;;
 
                                         ; Yasnippet
-(add-to-list 'load-path (concat home "plugins/yasnippet"))
-(load "yasnippet.el") ;; not yasnippet-bundle
+(add-to-list 'load-path (concat home "plugins/yasnippet-0.6.1c"))
+(require 'yasnippet)
 (yas/initialize)
-(yas/load-directory (concat home "plugins/yasnippet/snippets"))
+(yas/load-directory (concat home "plugins/yasnippet-0.6.1c/snippets"))
 ;;;;;
 
 ;; Remove splash screen
@@ -879,6 +879,9 @@ it moves the cursor to the beginning-of-line"
 ;; Quick compile
 (global-set-key [f11] 'compile)
 (global-set-key [f12] 'recompile)
+(global-set-key [f7] 'recompile)        ; temporary fix for the fact
+                                        ; that my F12 key isn't
+                                        ; working anymore
 
 (setq compilation-scroll-output t)
 (setq compilation-window-height 16)
@@ -1389,7 +1392,7 @@ point."
 ;; ‘C-x r j i’ to open an ‘ideas’ file:
 ;; http://www.emacswiki.org/emacs-en/EmacsNiftyTricks
 (set-register ?e '(file . "~/.emacs"))
-(set-register ?f '(file . "~/Área de Trabalho/feup/3_ano/escola.org"))
+(set-register ?f '(file . "~/Área de Trabalho/feup/3_ano/2_semestre/escola.org"))
 (set-register ?h '(file . "~/Área de Trabalho/humor.txt"))
 
 (defun rolando-help-jump-to-source-file ()
@@ -1647,3 +1650,17 @@ somewhere on the variable mode-line-format."
 ;; 		   (interactive)
 ;; 		   (ignore-errors
 ;; 		     (info (concatenate 'string "(gcl) " (thing-at-point 'symbol))))))
+
+;; Java-specific configurations
+(add-to-list 'load-path (concat home "elisp/emacs-java"))
+
+;; (require 'java-mode-plus)
+;; (require 'java-docs)
+;; (java-docs "~/src/java-documentation/docs/api")
+
+;; (setq-default mode-line-position
+;;   (cons '(:eval (format "[width: %s] " (window-width)))
+;;     mode-line-position))
+
+;; TODO: Ver a variavel tags-apropos-additional-actions e
+;; tags-revert-without-query
