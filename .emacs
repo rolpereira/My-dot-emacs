@@ -1664,3 +1664,13 @@ somewhere on the variable mode-line-format."
 
 ;; TODO: Ver a variavel tags-apropos-additional-actions e
 ;; tags-revert-without-query
+
+(require 'gtags)
+(add-hook 'java-mode-hook '(lambda () (gtags-mode 1)))
+
+;; From: http://emacs-fu.blogspot.com/2009/01/navigating-through-source-code-using.html
+(add-hook 'gtags-mode-hook 
+  (lambda()
+    (local-set-key (kbd "M-.") 'gtags-find-tag)   ; find a tag, also M-.
+    (local-set-key (kbd "M-,") 'gtags-find-rtag)))  ; reverse tag
+
