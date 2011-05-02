@@ -1668,9 +1668,14 @@ somewhere on the variable mode-line-format."
 ;; Java-specific configurations
 (add-to-list 'load-path (concat home "elisp/emacs-java"))
 
-;; (require 'java-mode-plus)
-;; (require 'java-docs)
-;; (java-docs "~/src/java-documentation/docs/api")
+
+(add-hook 'java-mode-hook
+  '(lambda ()
+     (require 'java-docs)
+     (require 'java-mode-plus)))
+
+(eval-after-load "java-docs"
+  '(java-docs "~/src/java-documentation/docs/api"))
 
 ;; (setq-default mode-line-position
 ;;   (cons '(:eval (format "[width: %s] " (window-width)))
@@ -1684,7 +1689,7 @@ somewhere on the variable mode-line-format."
 
 ;; From: http://emacs-fu.blogspot.com/2009/01/navigating-through-source-code-using.html
 (add-hook 'gtags-mode-hook 
-  (lambda()
+  (lambda ()
     (local-set-key (kbd "M-.") 'gtags-find-tag)   ; find a tag, also M-.
     (local-set-key (kbd "M-,") 'gtags-find-rtag)))  ; reverse tag
 

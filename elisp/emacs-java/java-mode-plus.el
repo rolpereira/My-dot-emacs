@@ -79,17 +79,17 @@
 ;;     certain target. This is used in the java-mode hook to set up
 ;;     bindings for common Ant targets.
 ;;
-;;     * C-x c - the default Ant target
-;;     * C-x C - "clean" target
-;;     * C-x r - "run" target
-;;     * C-x t - "test" target
-;;     * C-x y - "check" target, if you're using Checkstyle
-;;     * C-x f - "format" target, if you set up a Java indenter
+;;     * C-c C-j c - the default Ant target
+;;     * C-c C-j C - "clean" target
+;;     * C-c C-j r - "run" target
+;;     * C-c C-j t - "test" target
+;;     * C-c C-j y - "check" target, if you're using Checkstyle
+;;     * C-c C-j f - "format" target, if you set up a Java indenter
 
 ;; * `insert-java-import' - If you have java-docs set up, you can
 ;;     access the quick import insertion function.
 ;;
-;;     * C-x I - quickly select an import to insert
+;;     * C-c C-j i - quickly select an import to insert
 
 ;; Recommended usage:
 
@@ -147,14 +147,14 @@
 ;; </target>
 
 ;; Hack away at the code, using `dabbrev-expand' and family to help
-;; save time typing. When it comes time to compile, use the C-x c
-;; binding. Need to run your program? Use the C-x r binding, and it
-;; will launch from Emacs. Use C-x ` to step through and correct the
-;; errors.
+;; save time typing. When it comes time to compile, use the C-c C-j c
+;; binding. Need to run your program? Use the C-c C-j r binding, and
+;; it will launch from Emacs. Use C-x ` to step through and correct
+;; the errors.
 
 ;; With tabs turned off (`indent-tabs-mode'), Emacs should do a good
 ;; job of indentation, but a tool like Artistic Style (AStyle) can
-;; tidy up a bit better. Use C-x f to syntactically tidy up your
+;; tidy up a bit better. Use C-c C-j f to syntactically tidy up your
 ;; changes (and you'll need to `revert-buffer' to get the style fixes
 ;; in the buffer, so I recommend binding it to something). I recommend
 ;; setting up a "format" target to do this like so,
@@ -172,16 +172,16 @@
 
 ;; AStyle checked your syntax style, so next Checkstyle can check your
 ;; semantic style. So if you're using Checkstyle, which I also
-;; recommend, you'll use C-x y to check and correct (with C-x `) any
-;; issues.
+;; recommend, you'll use C-c C-j y to check and correct (with C-x `)
+;; any issues.
 
 ;; Once you're satisfied, use your preferred Emacs SCM interface to
 ;; check in your code. Repeat.
 
 ;; If you want to run a particular target not bound to a short key
-;; binding, use `ant-compile' with C-x C-k, which will ask you for the
-;; Ant command you want to use. You can run this from any source file,
-;; and it will go find your build.xml. No need to add a "-find".
+;; binding, use `ant-compile', which will ask you for the Ant command
+;; you want to use. You can run this from any source file, and it will
+;; go find your build.xml. No need to add a "-find".
 
 ;; Closing remarks:
 
@@ -225,30 +225,33 @@ the given directory."
       (find-file-noselect dir)
       (open-java-project dir))))
 
-;; ID: c7db6dec-e7ab-3b0f-bf26-0fa268674c6c
-(defun expose (function)
-  "Return an interactive version of FUNCTION."
-  (lexical-let ((lex-func function))
-    (lambda ()
-      (interactive)
-      (funcall lex-func))))
+;; Add the very handy binding from java-docs
+(define-key java-mode-map (kbd "C-c C-j i") 'add-java-import)
 
-(defun create-ant-target (name)
-  "Creates an interactive compile function for the target."
-  (expose (apply-partially 'compile (concat "ant -emacs " name " -find"))))
+;;; Define bindings for various Ant targets
 
-(add-hook 'java-mode-hook
-          (lambda ()
-	    "Enhance java-mode with some extra features."
-	    (local-set-key "\C-c\C-k" 'ant-compile)
-	    (setq indent-tabs-mode nil)
-	    (local-set-key "\C-cc" (create-ant-target "")) ; default
-	    (local-set-key "\C-cC" (create-ant-target "clean"))
-	    (local-set-key "\C-cr" (create-ant-target "run"))
-	    (local-set-key "\C-ct" (create-ant-target "test"))
-	    (local-set-key "\C-cy" (create-ant-target "check"))
-	    (local-set-key "\C-cf" (create-ant-target "format"))
-	    (local-set-key "\C-cI" 'add-java-import))) ; from java-docs
+(defmacro ant-bind (key target)
+  "Define a key binding for an Ant target in java-mode."
+  `(define-key java-mode-map ,key (lambda () (interactive)
+				    (compile (concat "ant -emacs " ,target " -find")))))
+
+(ant-bind (kbd "C-c C-j c") "")		; default Ant target
+(ant-bind (kbd "C-c C-j C") "clean")
+(ant-bind (kbd "C-c C-j r") "run")
+(ant-bind (kbd "C-c C-j t") "test")
+(ant-bind (kbd "C-c C-j y") "check")
+(ant-bind (kbd "C-c C-j f") "format")
+
+(defun java-mode-short-keybindings ()
+  "Create (old) short bindings for java-mode."
+  (interactive)
+  (ant-bind (kbd "C-x c") "")
+  (ant-bind (kbd "C-x C") "clean")
+  (ant-bind (kbd "C-x r") "run")
+  (ant-bind (kbd "C-x t") "test")
+  (ant-bind (kbd "C-x y") "check")
+  (ant-bind (kbd "C-x f") "format")
+  (define-key java-mode-map (kbd "C-x I") 'add-java-import))
 
 ;; This is here for the sake of the "run" Ant target above, so you can
 ;; see your program's output live.
