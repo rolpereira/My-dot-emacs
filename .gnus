@@ -1,7 +1,12 @@
-(setq gnus-nntp-server "news.eternal-september.org")
+;; (setq gnus-nntp-server "nntp.aioe.org"
+;;       nntp-port-number "563")
+
+
+(setq gnus-nntp-server "news.eternal-september.org"
+  nntp-port-number "563")
 
 (setq gnus-secondary-select-methods '((nnimap "feup"
-                                        (nnimap-address "maila.fe.up.pt")
+                                        (nnimap-address "mail.fe.up.pt")
                                         (nnimap-stream ssl)
                                         ;(remove-prefix "INBOX.")
                                         (nnimap-authinfo-file

@@ -1,4 +1,4 @@
-; Time-stamp: <2011-03-19 00:17:36 (rolando)>
+; Time-stamp: <2011-06-25 21:30:35 (rolando)>
 
 ;; TODO: Arranjar uma keybind para find-function (podera funcionar melhor que as tags)
 
@@ -421,6 +421,7 @@ it moves the cursor to the beginning-of-line"
 (setq load-path (cons (concat home "elisp/auctex-11.85/preview/") load-path))
 (require 'tex-site)
 (load "preview-latex.el" nil t t)
+(setq TeX-save-query nil) ;;autosave before compiling
 ;; ;;;;;
 
 ;; spellcheck in LaTex mode
@@ -1693,3 +1694,43 @@ somewhere on the variable mode-line-format."
     (local-set-key (kbd "M-.") 'gtags-find-tag)   ; find a tag, also M-.
     (local-set-key (kbd "M-,") 'gtags-find-rtag)))  ; reverse tag
 
+;; From:
+;; http://mytechrants.wordpress.com/2010/03/25/emacs-tip-of-the-day-start-using-ibuffer-asap/
+(setq ibuffer-default-sorting-mode 'major-mode)
+
+;; A couple more tips for ibuffer. After marking a couple of buffers:
+;; * 'O' - ibuffer-do-occur - Do an occur on the selected buffers.
+;; * 'M-s a C-s' - ibuffer-do-isearch - Do an incremental search in the marked buffers.
+;; * 'Q' - ibuffer-do-query-replace - Query replace in each of the marked buffers.
+;; * '=' - View the differences between this buffer and its associated file.
+
+;; From: http://www.reddit.com/r/emacs/comments/i05v3/emacs_and_pylint/
+;; Create configurations for flymake
+(defmacro def-flymake-init (mode checker-file)
+  "Writes a function called flymake-MODE-init which contains the usual boilerplate for a default flymake initialization."
+  `(defun ,(intern (format "flymake-%s-init" mode)) () 
+      (let* ((temp-file (flymake-init-create-temp-buffer-copy 
+                   'flymake-create-temp-inplace)) 
+       (local-file (file-relative-name 
+                    temp-file 
+                    (file-name-directory buffer-file-name)))) 
+  (list (expand-file-name ,checker-file *kanak-flychecker-directory*) (list local-file)))))
+
+(defmacro def-flymake-cleanup (mode extlist)
+  "Writes a function called flymake-MODE-cleanup which removes files with specified extensions in current directory."
+  `(defun ,(intern (format "flymake-%s-cleanup" mode)) ()
+ (when flymake-temp-source-file-name
+   (let* ((temp-files
+           (mapcar (lambda (ext)
+                     (concat 
+                      (file-name-sans-extension flymake-temp-source-file-name) ext))
+                   ,extlist)))
+     (dolist (f temp-files)
+       (when (file-exists-p f)
+         (flymake-safe-delete-file f)))))
+ (flymake-simple-cleanup)))
+
+;; How to use it:
+;; (def-flymake-init "python" "pychecker.sh")
+;; (add-to-list 'flymake-allowed-file-name-masks '("\\.py\\'" flymake-python-init)) 
+;; Note: a shell script needs to return 'true' for it to work with flymake
