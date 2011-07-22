@@ -1734,3 +1734,6 @@ somewhere on the variable mode-line-format."
 ;; (def-flymake-init "python" "pychecker.sh")
 ;; (add-to-list 'flymake-allowed-file-name-masks '("\\.py\\'" flymake-python-init)) 
 ;; Note: a shell script needs to return 'true' for it to work with flymake
+
+(setq slime-net-coding-system 'utf-8-unix)
+
