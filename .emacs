@@ -1,4 +1,4 @@
-; Time-stamp: <2011-06-25 21:30:35 (rolando)>
+; Time-stamp: <2011-07-22 13:36:23 (rolando)>
 
 ;; TODO: Arranjar uma keybind para find-function (podera funcionar melhor que as tags)
 
@@ -18,21 +18,22 @@
       (t
         'undefined))))
 
-(defun Are-We-On-Windows ()
-  (if (equal system-type 'windows-nt)
-      t
-    nil))
+(defun running-linux-p ()
+  (equal system-type 'gnu/linux))
 
-(defconst iamwindows (Are-We-On-Windows)
-  "If t, then we are on a windows system, otherwise se assume we are in a linux system")
+(defun running-windows-p ()
+  (equal system-type 'windows-nt))
 
 (defconst whereami (Where-Am-i)
   "If 'laptop, then we are on the laptop and in the linux system.
 If 'desktop, then we are on the desktop system and in the linux system.
 If 'undefined, then we don't know where we are.")
 
-(if (not iamwindows)
+(when (and (running-linux-p)
+        (not (server-running-p)))
   (server-start))
+
+    
 
 ;; Idea from http://nflath.com/2009/07/more-random-emacs-config/
 (defun rolando-back-to-indentation-or-move-beginning-of-line ()
@@ -53,7 +54,7 @@ it moves the cursor to the beginning-of-line"
   (cond ((and (equal whereami 'laptop) (not iamwindows))
           ;"/media/JCARLOS/")
          "/home/rolando/")
-    (iamwindows
+    ((running-windows-p)
       (substring default-directory 0 -9))
     ((equal whereami 'desktop)
       "/home/rolando/")))
@@ -232,6 +233,8 @@ it moves the cursor to the beginning-of-line"
   ;(color-theme-taylor))
                                         ;(color-theme-dark-bliss)
   (color-theme-midnight))
+  ;(require 'color-theme-twilight)
+  ;; (color-theme-twilight))
 ; Other themes: midnight, white on black, charcoal black, Calm Forest, Billw,
 ; Arjen, Clarity and Beauty, Cooper Dark, Comidia, Dark Blue 2, Dark Laptop,
 ; Deep Blue, Hober, Late Night, Lethe, Linh Dang Dark, Taming Mr Arneson,
@@ -1074,7 +1077,7 @@ If the character is not a ';' simply do a newline-and-indent"
   (unless (= (point) 1)
     (if (char-equal ?\, (char-before))
       (progn
-        (delete-backward-char 1)
+        (delete-char -1)
         (insert ";"))))
   (newline-and-indent))
 
