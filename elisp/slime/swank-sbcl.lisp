@@ -410,6 +410,7 @@
 
 
 (defvar *buffer-name* nil)
+(defvar *buffer-tmpfile* nil)
 (defvar *buffer-offset*)
 (defvar *buffer-substring* nil)
 
@@ -492,11 +493,22 @@ information."
 (defun compiling-from-buffer-p (filename)
   (and *buffer-name*
        ;; The following is to trigger COMPILING-FROM-GENERATED-CODE-P
-       ;; in LOCATE-COMPILER-NOTE.
-       (not (eq filename :lisp))))
+       ;; in LOCATE-COMPILER-NOTE, and allows handling nested
+       ;; compilation from eg. hitting C-C on (eval-when ... (require ..))).
+       ;;
+       ;; PROBE-FILE to handle tempfile directory being a symlink.
+       (pathnamep filename)
+       (let ((true1 (probe-file filename))
+             (true2 (probe-file *buffer-tmpfile*)))
+         (and true1 (equal true1 true2)))))
 
 (defun compiling-from-file-p (filename)
-  (and (pathnamep filename) (null *buffer-name*)))
+  (and (pathnamep filename)
+       (or (null *buffer-name*)
+           (null *buffer-tmpfile*)
+           (let ((true1 (probe-file filename))
+                 (true2 (probe-file *buffer-tmpfile*)))
+             (not (and true1 (equal true1 true2)))))))
 
 (defun compiling-from-generated-code-p (filename source)
   (and (eq filename :lisp) (stringp source)))
@@ -562,7 +574,7 @@ compiler state."
     (funcall function)))
 
 
-(defvar *trap-load-time-warnings* nil)
+(defvar *trap-load-time-warnings* t)
 
 (defun compiler-policy (qualities)
   "Return compiler policy qualities present in the QUALITIES alist.
@@ -629,7 +641,7 @@ QUALITIES is an alist with (quality . value)"
   (let ((*buffer-name* buffer)
         (*buffer-offset* position)
         (*buffer-substring* string)
-        (temp-file-name (temp-file-name)))
+        (*buffer-tmpfile* (temp-file-name)))
     (flet ((load-it (filename)
              (when filename (load filename)))
            (compile-it (cont)
@@ -638,13 +650,15 @@ QUALITIES is an alist with (quality . value)"
                    (:source-plist (list :emacs-buffer buffer
                                         :emacs-filename filename
                                         :emacs-string string
-                                        :emacs-position position))
+                                        :emacs-position position)
+                    :source-namestring filename
+                    :allow-other-keys t)
                  (multiple-value-bind (output-file warningsp failurep)
-                     (compile-file temp-file-name)
+                     (compile-file *buffer-tmpfile*)
                    (declare (ignore warningsp))
                    (unless failurep
                      (funcall cont output-file)))))))
-      (with-open-file (s temp-file-name :direction :output :if-exists :error)
+      (with-open-file (s *buffer-tmpfile* :direction :output :if-exists :error)
         (write-string string s))
       (unwind-protect
            (with-compiler-policy policy
@@ -652,8 +666,8 @@ QUALITIES is an alist with (quality . value)"
                 (compile-it #'load-it)
                 (load-it (compile-it #'identity))))
         (ignore-errors
-          (delete-file temp-file-name)
-          (delete-file (compile-file-pathname temp-file-name)))))))
+          (delete-file *buffer-tmpfile*)
+          (delete-file (compile-file-pathname *buffer-tmpfile*)))))))
 
 ;;;; Definitions
 
@@ -1582,10 +1596,10 @@ stack."
 
 #+unix
 (progn
-  (sb-alien:define-alien-routine ("execv" sys-execv) sb-alien:int 
+  (sb-alien:define-alien-routine ("execv" sys-execv) sb-alien:int
     (program sb-alien:c-string)
     (argv (* sb-alien:c-string)))
-  
+
   (defun execv (program args)
     "Replace current executable with another one."
     (let ((a-args (sb-alien:make-alien sb-alien:c-string
@@ -1598,7 +1612,7 @@ stack."
                             item))
              (when (minusp
                     (sys-execv program a-args))
-               (sb-posix:syscall-error)))
+               (error "execv(3) returned.")))
         (sb-alien:free-alien a-args))))
 
   (defun runtime-pathname ()
@@ -1629,6 +1643,13 @@ stack."
                          :buffering :full
                          :dual-channel-p t                         
                          :external-format external-format))
+
+(defimplementation call-with-io-timeout (function &key seconds)
+  (handler-case
+      (sb-sys:with-deadline (:seconds seconds)
+        (funcall function))
+    (sb-sys:deadline-timeout ()
+      nil)))
 
 #-win32
 (defimplementation background-save-image (filename &key restart-function

@@ -64,7 +64,8 @@
            #:default-directory
            #:set-default-directory
            #:quit-lisp
-           #:eval-for-emacs))
+           #:eval-for-emacs
+           #:eval-in-emacs))
 
 (in-package :swank)
 
@@ -177,11 +178,13 @@ bound to the corresponding VALUE.")
 (defun call-with-bindings (alist fun)
   "Call FUN with variables bound according to ALIST.
 ALIST is a list of the form ((VAR . VAL) ...)."
-  (let* ((rlist (reverse alist))
-         (vars (mapcar #'car rlist))
-         (vals (mapcar #'cdr rlist)))
-    (progv vars vals
-      (funcall fun))))
+  (if (null alist)
+      (funcall fun)
+      (let* ((rlist (reverse alist))
+             (vars (mapcar #'car rlist))
+             (vals (mapcar #'cdr rlist)))
+        (progv vars vals
+          (funcall fun)))))
 
 (defmacro with-bindings (alist &body body)
   "See `call-with-bindings'."
@@ -1119,11 +1122,15 @@ The processing is done in the extent of the toplevel restart."
 
 (defun auto-flush-loop (stream)
   (loop
-   (when (not (and (open-stream-p stream) 
-                   (output-stream-p stream)))
-     (return nil))
-   (finish-output stream)
-   (sleep *auto-flush-interval*)))
+    (when (not (and (open-stream-p stream) 
+                    (output-stream-p stream)))
+      (return nil))
+    ;; Use an IO timeout to avoid deadlocks
+    ;; on the stream we're flushing.
+    (call-with-io-timeout
+     (lambda () (finish-output stream))
+     :seconds 0.1)
+    (sleep *auto-flush-interval*)))
 
 (defun find-repl-thread (connection)
   (cond ((not (use-threads-p))
@@ -1816,7 +1823,8 @@ converted to lower case."
               (princ-to-string form)))))
 
 (defun eval-in-emacs (form &optional nowait)
-  "Eval FORM in Emacs."
+  "Eval FORM in Emacs.
+`slime-enable-evaluate-in-emacs' should be set to T on the Emacs side."
   (cond (nowait 
          (send-to-emacs `(:eval-no-wait ,(process-form-for-emacs form))))
         (t
@@ -1827,6 +1835,7 @@ converted to lower case."
 	   (let ((value (caddr (wait-for-event `(:emacs-return ,tag result)))))
 	     (destructure-case value
 	       ((:ok value) value)
+               ((:error kind . data) (error "~a: ~{~a~}" kind data))
 	       ((:abort) (abort))))))))
 
 (defvar *swank-wire-protocol-version* nil
@@ -2030,7 +2039,8 @@ considered to represent a symbol internal to some current package.)"
                  (char-upcase char)))))
 
 
-(defun find-symbol-with-status (symbol-name status &optional (package *package*))
+(defun find-symbol-with-status (symbol-name status 
+                                &optional (package *package*))
   (multiple-value-bind (symbol flag) (find-symbol symbol-name package)
     (if (and flag (eq flag status))
         (values symbol flag)
@@ -2593,8 +2603,12 @@ format suitable for Emacs."
     (loop for restart in *sldb-restarts* collect 
           (list (format nil "~:[~;*~]~a" 
                         (eq restart *sldb-quit-restart*)
-                        (restart-name restart) )
-                (princ-to-string restart)))))
+                        (restart-name restart))
+                (with-output-to-string (stream)
+                  (without-printing-errors (:object restart
+                                            :stream stream
+                                            :msg "<<error printing restart>>")
+                    (princ restart stream)))))))
 
 ;;;;; SLDB entry points
 
@@ -2762,6 +2776,9 @@ TAGS has is a list of strings."
 (defslimefun toggle-break-on-signals ()
   (setq *break-on-signals* (not *break-on-signals*))
   (format nil "*break-on-signals* = ~a" *break-on-signals*))
+
+(defslimefun sdlb-print-condition ()
+  (princ-to-string *swank-debugger-condition*))
 
 
 ;;;; Compilation Commands.
@@ -3301,9 +3318,10 @@ Include the nicknames if NICKNAMES is true."
 (defslimefun find-definitions-for-emacs (name)
   "Return a list ((DSPEC LOCATION) ...) of definitions for NAME.
 DSPEC is a string and LOCATION a source location. NAME is a string."
-  (multiple-value-bind (sexp error) (ignore-errors (from-string name))
-    (unless error
-      (mapcar #'xref>elisp (find-definitions sexp)))))
+  (multiple-value-bind (symbol found) (with-buffer-syntax () 
+                                        (parse-symbol name))
+    (when found
+      (mapcar #'xref>elisp (find-definitions symbol)))))
 
 ;;; Generic function so contribs can extend it.
 (defgeneric xref-doit (type thing)
@@ -3750,7 +3768,8 @@ a time.")
 LABELS is a list of attribute names and the remaining lists are the
 corresponding attribute values per thread."
   (setq *thread-list* (all-threads))
-  (when (and (use-threads-p)
+  (when (and *emacs-connection*
+             (use-threads-p)
              (equalp (thread-name (current-thread)) "worker"))
     (setf *thread-list* (delete (current-thread) *thread-list*)))
   (let* ((plist (thread-attributes (car *thread-list*)))
@@ -3869,34 +3888,63 @@ instead, we only do a full scan if the set of packages has changed."
 (defun perform-indentation-update (connection force)
   "Update the indentation cache in CONNECTION and update Emacs.
 If FORCE is true then start again without considering the old cache."
-  (let ((cache (connection.indentation-cache connection)))
-    (when force (clrhash cache))
-    (let ((delta (update-indentation/delta-for-emacs cache force)))
-      (setf (connection.indentation-cache-packages connection)
-            (list-all-packages))
-      (unless (null delta)
-        (send-to-emacs (list :indentation-update delta))))))
+  (let ((pkg *buffer-package*))
+    (flet ((perform-it ()
+             (let ((cache (connection.indentation-cache connection))
+                   ;; Rebind for spawned thread.
+                   (*emacs-connection* connection)
+                   (*buffer-package* pkg))
+               (multiple-value-bind (delta cache)
+                   (update-indentation/delta-for-emacs cache force)
+                 (setf (connection.indentation-cache-packages connection)
+                       (list-all-packages))
+                 (unless (null delta)
+                   (setf (connection.indentation-cache connection) cache)
+                   (send-to-emacs (list :indentation-update delta)))))))
+      (if (use-threads-p)
+          (spawn #'perform-it :name "indentation-update-thread")
+          (perform-it)))))
 
 (defun update-indentation/delta-for-emacs (cache &optional force)
-  "Update the cache and return the changes in a (SYMBOL . INDENT) list.
+  "Update the cache and return the changes in a (SYMBOL INDENT PACKAGES) list.
 If FORCE is true then check all symbols, otherwise only check symbols
 belonging to the buffer package."
-  (let ((alist '()))
-      (flet ((consider (symbol)
+  (let ((alist '())
+        (must-copy (use-threads-p)))
+    ;; The hash-table copying hair here is to ensure no two threads ever
+    ;; operate on the same hash-table -- except in the worst case with
+    ;; parallel readers. (Hash-tables aren't guaranteed to be thread-safe at
+    ;; all, but we make the hopefully-portable assumption that parallel
+    ;; readers are OK.)
+    (flet ((consider (symbol)
              (let ((indent (symbol-indentation symbol)))
                (when indent
                  (unless (equal (gethash symbol cache) indent)
+                   (when must-copy
+                     (setf cache (let ((new (make-hash-table :test #'eq)))
+                                   (maphash (lambda (k v)
+                                              (setf (gethash k new) v))
+                                            cache)
+                                   new)
+                           must-copy nil))
                    (setf (gethash symbol cache) indent)
-                   (push (cons (string-downcase symbol) indent) alist))))))
-      (if force
-          (do-all-symbols (symbol)
-            (consider symbol))
-          (do-symbols (symbol *buffer-package*)
-            ;; We're really just interested in the symbols of *BUFFER-PACKAGE*,
-            ;; and *not* all symbols that are _present_ (cf. SYMBOL-STATUS.)
-            (when (eq (symbol-package symbol) *buffer-package*)
-              (consider symbol)))))
-    alist))
+                   (let ((pkgs (loop for p in (list-all-packages)
+                                     when (eq symbol (find-symbol (string symbol) p))
+                                     collect (package-name p)))
+                         (name (string-downcase symbol)))
+                     (push (list name indent pkgs) alist)))))))
+      (cond (force
+             (setf cache (make-hash-table :test 'eq)
+                   must-copy nil)
+             (do-all-symbols (symbol)
+               (consider symbol)))
+            (t
+             (do-symbols (symbol *buffer-package*)
+               ;; We're really just interested in the symbols of *BUFFER-PACKAGE*,
+               ;; and *not* all symbols that are _present_ (cf. SYMBOL-STATUS.)
+               (when (eq (symbol-package symbol) *buffer-package*)
+                 (consider symbol)))))
+      (values alist cache))))
 
 (defun package-names (package)
   "Return the name and all nicknames of PACKAGE in a fresh list."
