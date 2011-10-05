@@ -5,3 +5,11 @@ autosaves
 backups
 history
 image-dired
+.emacs~
+savehist
+saveplace
+tramp
+url/*
+ac-comphist.dat
+w3m-session
+abbrev_defs
