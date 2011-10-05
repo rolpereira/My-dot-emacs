@@ -5,6 +5,10 @@
 (defvar *emacs-load-start* (current-time))
 
 
+(when window-system
+  (load-theme 'wombat))
+
+
 ;; Experimentar usar a variavel default-directory ou user-emacs-directory
 
 (defun Where-Am-i ()
