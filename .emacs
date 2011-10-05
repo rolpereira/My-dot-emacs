@@ -138,7 +138,7 @@ it moves the cursor to the beginning-of-line"
   (require 'cl))
 
 ;; Load Emacs Code Browser
-;; (add-to-list 'load-path (concat home ".emacs.d/elisp/ecb-snap"))
+;; (add-to-list 'load-path (concat +dot-emacs-home+ ".emacs.d/elisp/ecb-snap"))
 ;; (require 'ecb)
 
 
@@ -146,8 +146,8 @@ it moves the cursor to the beginning-of-line"
 
 (setq visible-bell t)
 
-(add-to-list 'load-path (concat home "elisp"))
-(add-to-list 'load-path (concat home "elpa"))
+(add-to-list 'load-path (concat +dot-emacs-home+ "elisp"))
+(add-to-list 'load-path (concat +dot-emacs-home+ "elpa"))
 
 ;; Activate packages installed using package.el
 (load "package")
@@ -197,8 +197,8 @@ it moves the cursor to the beginning-of-line"
 ;;;
 
 ; Activar Org-Mode
-(setq load-path (cons (concat home "elisp/org-mode/lisp") load-path))
-(setq load-path (cons (concat home "elisp/org-mode/contrib/lisp") load-path))
+(setq load-path (cons (concat +dot-emacs-home+ "elisp/org-mode/lisp") load-path))
+(setq load-path (cons (concat +dot-emacs-home+ "elisp/org-mode/contrib/lisp") load-path))
 ;;;;;
 
 ; Mostra so a * mais a direita no org-mode
@@ -399,12 +399,12 @@ it moves the cursor to the beginning-of-line"
 ;;;
 
 ;; W3m configurations
-(add-to-list 'load-path (concat home "elisp/emacs-w3m"))
+(add-to-list 'load-path (concat +dot-emacs-home+ "elisp/emacs-w3m"))
 (autoload 'w3m "w3m" "" t)
 (eval-after-load "w3m"
-  '(when (not (Are-We-On-Windows)) ; Can't use W3m in Windows
+  '(when (not (running-windows-p)) ; Can't use W3m in Windows
      ;; (cond ((= emacs-major-version 23)
-     ;;         (add-to-list 'load-path (concat home "elisp/emacs-w3m"))
+     ;;         (add-to-list 'load-path (concat +dot-emacs-home+ "elisp/emacs-w3m"))
      ;;         ;;    (require 'w3m-load)
      ;;         ))
 
@@ -480,8 +480,8 @@ it moves the cursor to the beginning-of-line"
 ;;;;
 
 ;; ;Activar o AUCTeX
-(setq load-path (cons (concat home "elisp/auctex-11.85/") load-path))
-(setq load-path (cons (concat home "elisp/auctex-11.85/preview/") load-path))
+(setq load-path (cons (concat +dot-emacs-home+ "elisp/auctex-11.85/") load-path))
+(setq load-path (cons (concat +dot-emacs-home+ "elisp/auctex-11.85/preview/") load-path))
 (require 'tex-site)
 (load "preview-latex.el" nil t t)
 (setq TeX-save-query nil) ;;autosave before compiling
@@ -745,10 +745,10 @@ it moves the cursor to the beginning-of-line"
 ;;;;;
 
                                         ; Yasnippet
-(add-to-list 'load-path (concat home "plugins/yasnippet-0.6.1c"))
+(add-to-list 'load-path (concat +dot-emacs-home+ "plugins/yasnippet-0.6.1c"))
 (require 'yasnippet)
 (yas/initialize)
-(yas/load-directory (concat home "plugins/yasnippet-0.6.1c/snippets"))
+(yas/load-directory (concat +dot-emacs-home+ "plugins/yasnippet-0.6.1c/snippets"))
 ;;;;;
 
 ;; Remove splash screen
@@ -1069,8 +1069,8 @@ it moves the cursor to the beginning-of-line"
                                         ;  (package-initialize))
 
 ;; Haskell configurations
-(when (file-exists-p (concat home "elisp/haskell-mode-2.4/haskell-site-file.el"))
-  (load (concat home "elisp/haskell-mode-2.4/haskell-site-file"))
+(when (file-exists-p (concat +dot-emacs-home+ "elisp/haskell-mode-2.4/haskell-site-file.el"))
+  (load (concat +dot-emacs-home+ "elisp/haskell-mode-2.4/haskell-site-file"))
   (add-hook 'haskell-mode-hook 'turn-on-haskell-doc-mode)
   (add-hook 'haskell-mode-hooj 'turn-on-haskell-indent))
 
@@ -1555,7 +1555,7 @@ point."
 
 
 ;; Slime stuff
-(add-to-list 'load-path (concat home "elisp/slime/"))
+(add-to-list 'load-path (concat +dot-emacs-home+ "elisp/slime/"))
 (autoload 'slime "slime" "" t)
 (autoload 'slime-connect "slime" "" t)
 (eval-after-load "slime"
@@ -1730,7 +1730,7 @@ somewhere on the variable mode-line-format."
 ;; 		     (info (concatenate 'string "(gcl) " (thing-at-point 'symbol))))))
 
 ;; Java-specific configurations
-(add-to-list 'load-path (concat home "elisp/emacs-java"))
+(add-to-list 'load-path (concat +dot-emacs-home+ "elisp/emacs-java"))
 
 
 (add-hook 'java-mode-hook
