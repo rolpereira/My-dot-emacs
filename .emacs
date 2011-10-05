@@ -415,11 +415,9 @@ it moves the cursor to the beginning-of-line"
      (setq w3m-use-cookies t)
 
      ;; Mudar keybinding
-     (eval-after-load 'w3m
-       '(progn
-          (define-key w3m-mode-map "q" 'w3m-previous-buffer)
-          (define-key w3m-mode-map "w" 'w3m-next-buffer)
-          (define-key w3m-mode-map "x" 'w3m-delete-buffer)))
+     (define-key w3m-mode-map "q" 'w3m-previous-buffer)
+     (define-key w3m-mode-map "w" 'w3m-next-buffer)
+     (define-key w3m-mode-map "x" 'w3m-delete-buffer)
 
      ;; Gravar sessions
      ;; (cond ((= emacs-major-version 22)
