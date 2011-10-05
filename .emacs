@@ -55,7 +55,7 @@
 
 ;; Experimentar usar a variavel default-directory ou user-emacs-directory
 
-(defun Where-Am-i ()
+(defun where-am-i ()
   "If it returns t, then I am on the laptop, otherwise I am on the desktop."
   (let ((LAPTOP-HOSTNAME "rolando-laptop")
           (DESKTOP-HOSTNAME "rolando-desktop"))
@@ -66,16 +66,28 @@
       (t
         'undefined))))
 
+(defun running-on-laptop-p ()
+  (equal (where-am-i) 'laptop))
+
+(defun running-on-desktop-p ()
+  (equal (where-am-i) 'desktop))
+
+(defun running-on-undefined-p ()
+  (equal (where-am-i) 'undefined))
+
+
 (defun running-linux-p ()
   (equal system-type 'gnu/linux))
 
 (defun running-windows-p ()
   (equal system-type 'windows-nt))
 
-(defconst whereami (Where-Am-i)
-  "If 'laptop, then we are on the laptop and in the linux system.
-If 'desktop, then we are on the desktop system and in the linux system.
-If 'undefined, then we don't know where we are.")
+;; (defconst +dot-emacs-whereami+ (Where-Am-i)
+;;   "If 'laptop, then we are on the laptop and in the linux system.
+;; If 'desktop, then we are on the desktop system and in the linux system.
+;; If 'undefined, then we don't know where we are.")
+
+(require 'server)
 
 (when (and (running-linux-p)
         (not (server-running-p)))
@@ -99,22 +111,22 @@ it moves the cursor to the beginning-of-line"
 
 
 (defun set-home-folder ()
-  (cond ((and (equal whereami 'laptop) (not iamwindows))
+  (cond ((and (running-on-laptop-p) (not (running-windows-p)))
           ;"/media/JCARLOS/")
          "/home/rolando/")
     ((running-windows-p)
       (substring default-directory 0 -9))
-    ((equal whereami 'desktop)
+    ((running-on-desktop-p)
       "/home/rolando/")))
 
 ;(message (file-name-directory load-file-name))
 
-(defconst home (concat (set-home-folder) ".emacs.d/"))
+(defconst +dot-emacs-home+ (concat (set-home-folder) ".emacs.d/"))
 ;(defconst home (file-name-directory load-file-name))
 
 (defun file-in-exec-path-p (filename)
   "Returns t if FILENAME is in the system exec-path, otherwise returns nil"
-  (if (locate-file filename exec-path)
+  (if (executable-find filename)
     t
     nil))
 
@@ -563,7 +575,7 @@ it moves the cursor to the beginning-of-line"
 
 ;; setup font
 ;; This ones don't work on Windows
-(if (not (Are-We-On-Windows))
+(if (not (running-windows-p))
   (if (>= emacs-major-version 23)
                                         ;(set-default-font "Bitstream Vera Sans Mono-12")
     (set-frame-font "Inconsolata 16")
@@ -831,7 +843,7 @@ it moves the cursor to the beginning-of-line"
 
 ;; Need to find some keybindings for the laptop
 (require 'fold-dwim)
-(if (equal whereami 'laptop)
+(if (running-on-laptop-p)
   (progn
     (global-set-key [(C J)] 'fold-dwim-hide-all)
     (global-set-key [(C K)] 'fold-dwim-toggle)
@@ -1039,7 +1051,7 @@ it moves the cursor to the beginning-of-line"
 
 ;; Show free space on device
 ;; http://www.emacswiki.org/emacs/DfMode
-(if (not (Are-We-On-Windows))
+(if (not (running-windows-p))
   (progn
     (autoload 'df-mode "df-mode" nil t)
     (df-mode 1)))
