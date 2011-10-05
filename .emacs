@@ -1490,12 +1490,12 @@ point."
 ;(global-set-key (kbd "RET") 'newline-and-indent)
 
 ;; XXX: Workaround a bug where ispell doesn't work with words that contain the
-;; char ç or Ç
+;; char ç or Ç or ô or Ô or õ or Õ
 (defun ispell-get-casechars ()
-  "[a-zA-ZÁÂÉÓàáâéêíóãúçÇ]")
+  "[a-zA-ZÁÂÉÓàáâéêíóãúçÇôÔõÕ]")
 
 (defun ispell-get-not-casechars ()
-  "[^a-zA-ZÁÂÉÓàáâéêíóãúçÇ]")
+  "[^a-zA-ZÁÂÉÓàáâéêíóãúçÇôÔõÕ]")
 
 ;; Define movement keys for man mode
 (require 'man)
