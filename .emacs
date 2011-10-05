@@ -1573,7 +1573,41 @@ point."
            ;slime-truncate-lines nil)
      (setq common-lisp-hyperspec-root "/usr/share/doc/hyperspec/")
      (setq common-lisp-hyperspec-symbol-table
-       (concat common-lisp-hyperspec-root "Data/Map_Sym.txt"))))
+       (concat common-lisp-hyperspec-root "Data/Map_Sym.txt"))
+
+     ;; From: http://www.emacswiki.org/emacs-en/SlimeMode
+     ;; Improve usability of slime-apropos: slime-apropos-minor-mode
+     (defvar slime-apropos-anchor-regexp "^[^ ]")
+     (defun slime-apropos-next-anchor ()
+       (interactive)
+       (let ((pt (point)))
+         (forward-line 1)
+         (if (re-search-forward slime-apropos-anchor-regexp nil t)
+           (goto-char (match-beginning 0))
+           (goto-char pt)
+           (error "anchor not found"))))
+
+     (defun slime-apropos-prev-anchor ()
+       (interactive)
+       (let ((p (point)))
+         (if (re-search-backward slime-apropos-anchor-regexp nil t)
+           (goto-char (match-beginning 0))
+           (goto-char p)
+           (error "anchor not found"))))
+
+     (defvar slime-apropos-minor-mode-map (make-sparse-keymap))
+     (define-key slime-apropos-minor-mode-map "\C-m" 'slime-describe-symbol)
+     (define-key slime-apropos-minor-mode-map "l" 'slime-describe-symbol)
+     (define-key slime-apropos-minor-mode-map "j" 'slime-apropos-next-anchor)
+     (define-key slime-apropos-minor-mode-map "k" 'slime-apropos-prev-anchor)
+     (define-minor-mode slime-apropos-minor-mode "")
+
+     (defadvice slime-show-apropos (after slime-apropos-minor-mode activate)
+       ""
+       (when (get-buffer "*slime-apropos*")
+         (with-current-buffer "*slime-apropos*" (slime-apropos-minor-mode 1))))
+
+     (setq slime-net-coding-system 'utf-8-unix)))
 
 ;; Save history of minibuffer between emacs sessions
 (savehist-mode 1)
@@ -1797,7 +1831,7 @@ somewhere on the variable mode-line-format."
 ;; (add-to-list 'flymake-allowed-file-name-masks '("\\.py\\'" flymake-python-init)) 
 ;; Note: a shell script needs to return 'true' for it to work with flymake
 
-(setq slime-net-coding-system 'utf-8-unix)
+
 
 ;; From https://github.com/al3x/emacs (although I've seen something like this before)
 (defun rename-file-and-buffer (new-name)
