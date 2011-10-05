@@ -1303,11 +1303,8 @@ point."
 
                                         ;(require 'vimpulse)
 ;; Activate occur easily inside isearch
-;; From http://github.com/technomancy/emacs-starter-kit/blob/master/starter-kit-bindings.el
-(define-key isearch-mode-map (kbd "C-o")
-  (lambda () (interactive)
-    (let ((case-fold-search isearch-case-fold-search))
-      (occur (if isearch-regexp isearch-string (regexp-quote isearch-string))))))
+;; From: http://www.masteringemacs.org/articles/2011/07/20/searching-buffers-occur-mode/ (comments)
+(define-key isearch-mode-map (kbd "C-o") 'isearch-occur)
 
 (defun rolando-find-prev-good-buffer ()
   "Goto to the previous buffer, ignoring buffers that start and end with a *"
