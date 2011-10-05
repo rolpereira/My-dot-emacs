@@ -277,29 +277,29 @@ it moves the cursor to the beginning-of-line"
 (add-hook 'c-mode-common-hook 'my-c-mode-common-hook)
 
 ; Mudar a theme do emacs
-(when window-system
-  (require 'color-theme)
-  ;(require 'color-theme-tango)
-  (require 'zenburn)
-  (require 'color-theme-dark-bliss)
-  ;(require 'color-theme-sunburst)
-  (color-theme-initialize)
-  ;(color-theme-charcoal-black))
-  ;(color-theme-taming-mr-arneson))
-;  (color-theme-goldenrod)
-  ;(color-theme-tango))
-  ;(color-theme-zenburn))
-  ;(color-theme-sunburst))
-  ;(color-theme-taylor))
-                                        ;(color-theme-dark-bliss)
-  (color-theme-midnight))
-  ;(require 'color-theme-twilight)
-  ;; (color-theme-twilight))
-; Other themes: midnight, white on black, charcoal black, Calm Forest, Billw,
-; Arjen, Clarity and Beauty, Cooper Dark, Comidia, Dark Blue 2, Dark Laptop,
-; Deep Blue, Hober, Late Night, Lethe, Linh Dang Dark, Taming Mr Arneson,
-; Subtle Hacker, TTY Dark, Taylor,  White On Black, Robin Hood
-;;;
+;; (when window-system
+;;   (require 'color-theme)
+;;   ;(require 'color-theme-tango)
+;;   (require 'zenburn)
+;;   (require 'color-theme-dark-bliss)
+;;   ;(require 'color-theme-sunburst)
+;;   (color-theme-initialize)
+;;   ;(color-theme-charcoal-black))
+;;   ;(color-theme-taming-mr-arneson))
+;; ;  (color-theme-goldenrod)
+;;   ;(color-theme-tango))
+;;   ;(color-theme-zenburn))
+;;   ;(color-theme-sunburst))
+;;   ;(color-theme-taylor))
+;;                                         ;(color-theme-dark-bliss)
+;;   (color-theme-midnight))
+;;   ;(require 'color-theme-twilight)
+;;   ;; (color-theme-twilight))
+;; ; Other themes: midnight, white on black, charcoal black, Calm Forest, Billw,
+;; ; Arjen, Clarity and Beauty, Cooper Dark, Comidia, Dark Blue 2, Dark Laptop,
+;; ; Deep Blue, Hober, Late Night, Lethe, Linh Dang Dark, Taming Mr Arneson,
+;; ; Subtle Hacker, TTY Dark, Taylor,  White On Black, Robin Hood
+;; ;;;
 
 ; Add colors to shell
 (add-hook 'shell-mode-hook 'ansi-color-for-comint-mode-on)
