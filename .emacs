@@ -1628,9 +1628,7 @@ point."
 To add this to the mode-line, place (:EVAL (format '%s' (total-number-lines)))
 somewhere on the variable mode-line-format."
   (interactive)
-  (save-excursion
-    (goto-char (point-max))
-    (line-number-at-pos)))
+  (1+ (count-lines (point-min) (point-max))))
 
 (defun rolando-call-vc ()
   "Call magit or psvn depending on the vc-backend."
