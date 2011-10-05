@@ -2,8 +2,8 @@
 
 ;; Copyright (C) 2002 David Ponce
 
-;; Author: José Carlos <jcarlos@jcarlos-laptop>
-;; Created: 2009-08-09 16:08:49+0100
+;; Author: Rolando Pereira <rolando@rolando-desktop>
+;; Created: 2011-09-01 21:33:29+0100
 ;; Keywords: syntax
 ;; X-RCS: $Id$
 
@@ -28,9 +28,6 @@
 ;;
 ;; PLEASE DO NOT MANUALLY EDIT THIS FILE!  It is automatically
 ;; generated from the grammar file wisent-cim.wy.
-
-;;; History:
-;;
 
 ;;; Code:
 

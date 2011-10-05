@@ -3,7 +3,7 @@
 ;; Copyright (C) 2007, 2008, 2009 Eric M. Ludlam
 
 ;; Author: Eric M. Ludlam <eric@siege-engine.com>
-;; X-RCS: $Id: semantic-analyze-fcn.el,v 1.28 2009/04/11 16:50:09 zappo Exp $
+;; X-RCS: $Id: semantic-analyze-fcn.el,v 1.30 2010-03-15 13:40:54 xscript Exp $
 
 ;; This program is free software; you can redistribute it and/or
 ;; modify it under the terms of the GNU General Public License as
@@ -30,24 +30,6 @@
 ;;
 ;; These queries allow a major mode to help the analyzer make decisions.
 ;;
-(define-overloadable-function semantic-analyze-tag-prototype-p (tag)
-  "Non-nil if TAG is a prototype."
-  )
-
-(defun semantic-analyze-tag-prototype-p-default (tag)
-  "Non-nil if TAG is a prototype."
-  (let ((p (semantic-tag-get-attribute tag :prototype-flag)))
-    (cond
-     ;; Trust the parser author.
-     (p p)
-     ;; Empty types might be a prototype.
-     ((eq (semantic-tag-class tag) 'type)
-      (not (semantic-tag-type-members tag)))
-     ;; No other heuristics.
-     (t nil))
-    ))
-
-;;------------------------------------------------------------
 
 (define-overloadable-function semantic-analyze-split-name (name)
   "Split a tag NAME into a sequence.
@@ -113,16 +95,16 @@ tags of TAGCLASS."
 	    (notypeinfo nil)
 	    )
 	(while (and (not best) sequence)
-	
+
 	  ;; 3) select a non-prototype.
 	  (if (not (semantic-tag-type (car sequence)))
 	      (setq notypeinfo (car sequence))
 
 	    (setq best (car sequence))
 	    )
-	
+
 	  (setq sequence (cdr sequence)))
-      
+
 	;; Select the best, or at least the prototype.
 	(or best notypeinfo)))))
 
@@ -144,7 +126,7 @@ Almost all searches use the same arguments."
     ;; Search just this file because there is no DB available.
     (semantic-find-tags-for-completion
      prefix (current-buffer))))
- 
+
 ;;; Finding Datatypes
 ;;
 ;; Finding a data type by name within a project.
@@ -189,7 +171,7 @@ used by the analyzer debugger."
     (if (and type-declaration
 	     (semantic-tag-p type-declaration)
 	     (semantic-tag-of-class-p type-declaration 'type)
-	     (not (semantic-analyze-tag-prototype-p type-declaration))
+	     (not (semantic-tag-prototype-p type-declaration))
 	     )
 	;; We have an anonymous type for TAG with children.
 	;; Use this type directly.
@@ -269,16 +251,16 @@ SCOPE is the scope object with additional items in which to search for names."
   (catch 'default-behavior
     (let* ((ans-tuple (:override
                        ;; Nothing fancy, just return type by default.
-                       (throw 'default-behavior (list type type-declaration))))           
+                       (throw 'default-behavior (list type type-declaration))))
            (ans-type (car ans-tuple))
-           (ans-type-declaration (cadr ans-tuple)))      
+           (ans-type-declaration (cadr ans-tuple)))
        (list (semantic-analyze-dereference-metatype-1 ans-type scope) ans-type-declaration))))
 
 ;; @ TODO - the typecache can also return a stack of scope names.
 
 (defun semantic-analyze-dereference-metatype-1 (ans scope)
   "Do extra work after dereferencing a metatype.
-ANS is the answer from the the language specific query.
+ANS is the answer from the language specific query.
 SCOPE is the current scope."
   ;; If ANS is a string, or if ANS is a short tag, we
   ;; need to do some more work to look it up.
@@ -301,7 +283,7 @@ SCOPE is the current scope."
     (when (and (semantic-tag-p ans)
 	       (eq (semantic-tag-class ans) 'type))
       ;; We have a tag.
-      (if (semantic-analyze-tag-prototype-p ans)
+      (if (semantic-tag-prototype-p ans)
 	  ;; It is a prototype.. find the real one.
 	  (or (and scope
 		   (car-safe
@@ -322,4 +304,5 @@ SCOPE is the current scope."
     ))
 
 (provide 'semantic-analyze-fcn)
+
 ;;; semantic-analyze-fcn.el ends here

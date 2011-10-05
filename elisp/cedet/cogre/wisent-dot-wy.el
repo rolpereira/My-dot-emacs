@@ -2,8 +2,8 @@
 
 ;; Copyright (C) 2003, 2004, 2009 Eric M. Ludlam
 
-;; Author: José Carlos <jcarlos@jcarlos-laptop>
-;; Created: 2009-08-09 16:10:53+0100
+;; Author: Rolando Pereira <rolando@rolando-desktop>
+;; Created: 2011-09-01 21:34:15+0100
 ;; Keywords: syntax
 ;; X-RCS: $Id$
 
@@ -28,9 +28,6 @@
 ;;
 ;; PLEASE DO NOT MANUALLY EDIT THIS FILE!  It is automatically
 ;; generated from the grammar file wisent-dot.wy.
-
-;;; History:
-;;
 
 ;;; Code:
 
@@ -218,10 +215,6 @@
 ;;
 (require 'semantic-lex)
 
-(define-lex-keyword-type-analyzer wisent-dot-wy--<keyword>-keyword-analyzer
-  "keyword analyzer for <keyword> tokens."
-  "\\(\\sw\\|\\s_\\)+")
-
 (define-lex-block-type-analyzer wisent-dot-wy--<block>-block-analyzer
   "block analyzer for <block> tokens."
   "\\s(\\|\\s)"
@@ -239,11 +232,6 @@
   nil
   'symbol)
 
-(define-lex-sexp-type-analyzer wisent-dot-wy--<string>-sexp-analyzer
-  "sexp analyzer for <string> tokens."
-  "\\s\""
-  'string)
-
 (define-lex-regex-type-analyzer wisent-dot-wy--<number>-regexp-analyzer
   "regexp analyzer for <number> tokens."
   semantic-lex-number-expression
@@ -259,6 +247,15 @@
     (LINK . "--")
     (DILINK . "->"))
   'punctuation)
+
+(define-lex-sexp-type-analyzer wisent-dot-wy--<string>-sexp-analyzer
+  "sexp analyzer for <string> tokens."
+  "\\s\""
+  'string)
+
+(define-lex-keyword-type-analyzer wisent-dot-wy--<keyword>-keyword-analyzer
+  "keyword analyzer for <keyword> tokens."
+  "\\(\\sw\\|\\s_\\)+")
 
 
 ;;; Epilogue

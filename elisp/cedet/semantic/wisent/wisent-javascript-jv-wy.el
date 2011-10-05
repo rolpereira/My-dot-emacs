@@ -2,8 +2,8 @@
 
 ;; Copyright (C) 2005 Joakim Verona, Eric Ludlam
 
-;; Author: José Carlos <jcarlos@jcarlos-laptop>
-;; Created: 2009-08-09 16:09:05+0100
+;; Author: Rolando Pereira <rolando@rolando-desktop>
+;; Created: 2011-09-01 21:33:42+0100
 ;; Keywords: syntax
 ;; X-RCS: $Id$
 
@@ -28,9 +28,6 @@
 ;;
 ;; PLEASE DO NOT MANUALLY EDIT THIS FILE!  It is automatically
 ;; generated from the grammar file wisent-javascript-jv.wy.
-
-;;; History:
-;;
 
 ;;; Code:
 
@@ -392,10 +389,6 @@
 ;;
 (require 'semantic-lex)
 
-(define-lex-keyword-type-analyzer wisent-javascript-jv-wy--<keyword>-keyword-analyzer
-  "keyword analyzer for <keyword> tokens."
-  "\\(\\sw\\|\\s_\\)+")
-
 (define-lex-block-type-analyzer wisent-javascript-jv-wy--<block>-block-analyzer
   "block analyzer for <block> tokens."
   "\\s(\\|\\s)"
@@ -412,11 +405,6 @@
   "\\(\\sw\\|\\s_\\)+"
   nil
   'VARIABLE)
-
-(define-lex-sexp-type-analyzer wisent-javascript-jv-wy--<string>-sexp-analyzer
-  "sexp analyzer for <string> tokens."
-  "\\s\""
-  'STRING)
 
 (define-lex-regex-type-analyzer wisent-javascript-jv-wy--<number>-regexp-analyzer
   "regexp analyzer for <number> tokens."
@@ -468,6 +456,15 @@
     (BITWISE_AND . "&")
     (ASSIGN_SYMBOL . "="))
   'punctuation)
+
+(define-lex-sexp-type-analyzer wisent-javascript-jv-wy--<string>-sexp-analyzer
+  "sexp analyzer for <string> tokens."
+  "\\s\""
+  'STRING)
+
+(define-lex-keyword-type-analyzer wisent-javascript-jv-wy--<keyword>-keyword-analyzer
+  "keyword analyzer for <keyword> tokens."
+  "\\(\\sw\\|\\s_\\)+")
 
 
 ;;; Epilogue

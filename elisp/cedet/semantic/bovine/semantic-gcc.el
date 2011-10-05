@@ -1,9 +1,9 @@
 ;;; semantic-gcc.el --- gcc querying special code for the C parser
 
-;; Copyright (C) 2008, 2009 Eric M. Ludlam
+;; Copyright (C) 2008, 2009, 2010 Eric M. Ludlam
 
 ;; Author: Eric M. Ludlam <eric@siege-engine.com>
-;; X-RCS: $Id: semantic-gcc.el,v 1.16 2009/08/09 01:24:35 zappo Exp $
+;; X-RCS: $Id: semantic-gcc.el,v 1.19 2010-03-15 13:40:55 xscript Exp $
 
 ;; This program is free software; you can redistribute it and/or
 ;; modify it under the terms of the GNU General Public License as
@@ -35,11 +35,10 @@ to give to the program."
   ;; $ gcc -v
   ;;
   (let ((buff (get-buffer-create " *gcc-query*"))
-        (old-lc-messages (getenv "LC_MESSAGES")))
-    (save-excursion
-      (set-buffer buff)
+        (old-lc-messages (getenv "LC_ALL")))
+    (with-current-buffer buff
       (erase-buffer)
-      (setenv "LC_MESSAGES" "C")
+      (setenv "LC_ALL" "C")
       (condition-case nil
           (apply 'call-process gcc-cmd nil (cons buff t) nil gcc-options)
         (error ;; Some bogus directory for the first time perhaps?
@@ -48,7 +47,7 @@ to give to the program."
                (apply 'call-process gcc-cmd nil (cons buff t) nil gcc-options)
              (error ;; gcc doesn't exist???
               nil)))))
-      (setenv "LC_MESSAGES" old-lc-messages)
+      (setenv "LC_ALL" old-lc-messages)
       (prog1
           (buffer-string)
         (kill-buffer buff)
@@ -58,7 +57,7 @@ to give to the program."
 ;;(semantic-gcc-get-include-paths "c")
 ;;(semantic-gcc-get-include-paths "c++")
 (defun semantic-gcc-get-include-paths (lang)
-  "Return include paths as gcc use them for language LANG."
+  "Return include paths as gcc uses them for language LANG."
   (let* ((gcc-cmd (cond
                    ((string= lang "c") "gcc")
                    ((string= lang "c++") "c++")
@@ -134,9 +133,9 @@ to give to the program."
   "The GCC setup data.
 This is setup by `semantic-gcc-setup'.
 This is an alist, and should include keys of:
-  'version - The version of gcc
-  '--host  - The host symbol.  (Used in include directories)
-  '--prefix - Where GCC was installed.
+  'version - the version of gcc
+  '--host  - the host symbol (used in include directories)
+  '--prefix - where GCC was installed.
 It should also include other symbols GCC was compiled with.")
 
 ;;;###autoload
@@ -153,32 +152,32 @@ It should also include other symbols GCC was compiled with.")
          (prefix (cdr (assoc '--prefix fields)))
          ;; gcc output supplied paths
          (c-include-path (semantic-gcc-get-include-paths "c"))
-         (c++-include-path (semantic-gcc-get-include-paths "c++")))
+         (c++-include-path (semantic-gcc-get-include-paths "c++"))
+	 (gcc-exe (locate-file "gcc" exec-path exec-suffixes 'executable))
+	 )
     ;; Remember so we don't have to call GCC twice.
     (setq semantic-gcc-setup-data fields)
-    (unless c-include-path
+    (when (and (not c-include-path) gcc-exe)
       ;; Fallback to guesses
-      (let* ( ;; env vars include dirs, see http://gcc.gnu.org/onlinedocs/gcc/Environment-Variables.html
-             (cpath (split-string (getenv "CPATH") path-separator))
-             (c_include_path (split-string (getenv "C_INCLUDE_PATH") path-separator))
-             (cpp_include_path (split-string (getenv "CPP_INCLUDE_PATH") path-separator))
-             ;; gcc include dirs
-             (gcc-exe (locate-file "gcc" exec-path exec-suffixes 'executable))
+      (let* ( ;; gcc include dirs
              (gcc-root (expand-file-name ".." (file-name-directory gcc-exe)))
              (gcc-include (expand-file-name "include" gcc-root))
              (gcc-include-c++ (expand-file-name "c++" gcc-include))
              (gcc-include-c++-ver (expand-file-name ver gcc-include-c++))
              (gcc-include-c++-ver-host (expand-file-name host gcc-include-c++-ver)))
         (setq c-include-path
-              (remove-if-not 'file-accessible-directory-p
-                             (list "/usr/include" gcc-include)))
+              ;; Replace cl-function remove-if-not.
+              (delq nil (mapcar (lambda (d)
+                                  (if (file-accessible-directory-p d) d))
+                                (list "/usr/include" gcc-include))))
         (setq c++-include-path
-              (remove-if-not 'file-accessible-directory-p
-                             (list "/usr/include"
-                                   gcc-include
-                                   gcc-include-c++
-                                   gcc-include-c++-ver
-                                   gcc-include-c++-ver-host)))))
+              (delq nil (mapcar (lambda (d)
+                                  (if (file-accessible-directory-p d) d))
+                                (list "/usr/include"
+                                      gcc-include
+                                      gcc-include-c++
+                                      gcc-include-c++-ver
+                                      gcc-include-c++-ver-host))))))
 
     ;;; Fix-me: I think this part might have been a misunderstanding, but I am not sure.
     ;; If this option is specified, try it both with and without prefix, and with and without host

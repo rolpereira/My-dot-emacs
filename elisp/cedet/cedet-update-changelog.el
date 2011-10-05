@@ -1,9 +1,9 @@
 ;;; cedet-update-changelog --- Utility for updating changelogs in CEDET.
 
-;;; Copyright (C) 2005, 2008, 2009 Eric M. Ludlam
+;;; Copyright (C) 2005, 2008, 2009, 2010 Eric M. Ludlam
 
 ;; Author: Eric M. Ludlam <zappo@gnu.org>
-;; X-RCS: $Id: cedet-update-changelog.el,v 1.6 2009/03/01 04:39:10 zappo Exp $
+;; X-RCS: $Id: cedet-update-changelog.el,v 1.16 2010-08-22 16:38:28 zappo Exp $
 
 ;; This file is not part of GNU Emacs.
 
@@ -35,15 +35,15 @@
 (require 'cedet)
 ;;; Code:
 
-(defvar cuc-my-machine-name (let ((sn (system-name)))
-			      ;; Only the first part of the name...
-			      (if (string-match "\\." sn)
-				  (concat
-				   (substring sn 0 (match-beginning 0))
-				   "\\("
-				   (substring sn (match-beginning 0))
-				   "\\)?")
-				sn))
+(defvar cuc-my-machine-name
+  (let* ((sn (system-name)))
+    (if (string-match "\\." sn)
+	(concat
+	 (substring sn 0 (match-beginning 0))
+	 "\\("
+	 (substring sn (match-beginning 0))
+	 "\\)?")
+      sn))
   "The name of the machine running this code as output by rcs2diff.")
 
 (defvar cuc-dirs
@@ -56,13 +56,18 @@
 		  dirs)
 	    pack
 	    (cdr pack)))
-    dirs)
+    (let* ((base (file-name-directory (car dirs)))
+	   (root (file-name-directory (directory-file-name base)))
+	   )
+      (setq dirs (cons (expand-file-name "tests/" root) dirs)))
+    (nreverse dirs))
   "List of directories we need to change the ChangeLog in.")
 
 (defun cuc-update-changelog (dir)
   "Update the changelog in DIR."
   (interactive "DDir: ")
   (find-file (concat dir "ChangeLog"))
+  (erase-buffer)
   (goto-char (point-min))
   (sit-for 0)
   (message "Calling rcs2log on %s..."
@@ -76,9 +81,6 @@
   "Update all ChangeLogs for CEDET."
   (interactive)
   (let ((d cuc-dirs))
-    (if (not (y-or-n-p
-	      (format "Update ChangeLogs in %s? " (car d))))
-	(error "Ok"))
     (while d
       (cuc-update-changelog (car d))
       (setq d (cdr d)))))
@@ -114,7 +116,7 @@ need to be transformed into the actual values."
     (goto-char (point-min))
     (while (re-search-forward (cuc-make-search-name "emacsman")
 			      nil t)
-      (replace-match "Richard Y. Kim <ryk@ap.com>" t t))
+      (replace-match "Richard Y. Kim <emacs18@gmail.com>" t t))
     ;; Klaus's Name
     (goto-char (point-min))
     (while (re-search-forward (cuc-make-search-name "berndl")
@@ -145,6 +147,30 @@ need to be transformed into the actual values."
     (while (re-search-forward (cuc-make-search-name "scymtym")
 			      nil t)
       (replace-match "Jan Moringen <scymtym@users.sourceforge.net>" t t))
+    ;; David Engster
+    (goto-char (point-min))
+    (while (re-search-forward (cuc-make-search-name "davenar")
+			      nil t)
+      (replace-match "David Engster <dengste@eml.cc>" t t))
+    
+    ;; Alex Ott
+    (goto-char (point-min))
+    (while (re-search-forward (cuc-make-search-name "ottalex")
+			      nil t)
+      (replace-match "Alex Ott <alexott@gmail.com>" t t))
+
+    ;; Joakim Verona
+    (goto-char (point-min))
+    (while (re-search-forward (cuc-make-search-name "joakimv")
+			      nil t)
+      (replace-match "Joakim Verona <joakim@verona.se>" t t))
+    
+    ;; Lluís
+    (goto-char (point-min))
+    (while (re-search-forward (cuc-make-search-name "xscript")
+			      nil t)
+      (replace-match "Lluís <xscript@users.sourceforge.net>" t t))
+    
     ))
 
 (provide 'cedet-update-changelog)

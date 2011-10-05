@@ -1,6 +1,6 @@
 ;;; srecode-getset.el --- 
 
-;; Copyright (C) 2007, 2008, 2009 Eric M. Ludlam
+;; Copyright (C) 2007, 2008, 2009, 2010 Eric M. Ludlam
 
 ;; Author: Eric M. Ludlam <eric@siege-engine.com>
 
@@ -64,8 +64,9 @@ will be derived."
       (error "No templates for inserting get/set"))
 
   ;; Step 1: Try to derive the tag for the class we will use
+  (semantic-fetch-tags)
   (let* ((class (or class-in (srecode-auto-choose-class (point))))
-	 (tagstart (semantic-tag-start class))
+	 (tagstart (when class (semantic-tag-start class)))
 	 (inclass (eq (semantic-current-tag-of-class 'type) class))
 	 (field nil)
 	 )
@@ -306,14 +307,14 @@ Base selection on the field related to POINT."
   (let* ((kids (semantic-find-tags-by-class
 		'variable (semantic-tag-type-members class)))
 	 (sel (completing-read "Use Field: " kids))
-	 )
-
-    (or (semantic-find-tags-by-name sel kids)
-	sel)
+	 (fields (semantic-find-tags-by-name sel kids)))
+    (if fields
+        (car fields)
+      sel)
     ))
 
 (defun srecode-auto-choose-class (point)
-  "Choose a class based on locatin of POINT."
+  "Choose a class based on location of POINT."
   (save-excursion
     (when point
       (goto-char point))

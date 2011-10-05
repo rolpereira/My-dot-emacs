@@ -4,7 +4,7 @@
 
 
 ;;;### (autoloads (eassist-list-methods eassist-switch-h-cpp) "eassist"
-;;;;;;  "eassist.el" (18368 33706))
+;;;;;;  "eassist.el" (19967 52600))
 ;;; Generated autoloads from eassist.el
 
 (defvar eassist-header-switches '(("h" "cpp" "cc" "c") ("hpp" "cpp" "cc") ("cpp" "h" "hpp") ("c" "h") ("C" "H") ("H" "C" "CPP" "CC") ("cc" "h" "hpp")) "\
@@ -28,18 +28,22 @@ This function is recommended to be bound to some convinient hotkey.
 
 ;;;***
 
-;;;### (autoloads nil "ede-gnustep" "ede-gnustep.el" (19070 9164))
+;;;### (autoloads nil "ede-gnustep" "ede-gnustep.el" (19967 52600))
 ;;; Generated autoloads from ede-gnustep.el
 
 (add-to-list 'ede-project-class-files (ede-project-autoload "edegnustep" :name "GNUstep-Make" :file 'ede-gnustep :proj-file "ProjStep.ede" :load-type 'ede-step-load :class-sym 'ede-step-project) t)
 
-(add-to-list 'auto-mode-alist '("ProjStep\\.ede" . emacs-lisp-mode))
+(add-to-list 'ede-project-class-files (ede-project-autoload "gnustep-root" :name "GNUstep-make Top Most" :file 'ede-gnustep :proj-file "RootProjStep.ede" :initializers '(:project-mode scanner) :load-type 'ede-gnustep-load :class-sym 'ede-step-project) t)
+
+(add-to-list 'ede-project-class-files (ede-project-autoload "gnustep" :name "GNUstep-Make in scanner mode" :file 'ede-gnustep :proj-file "ProjStep.ede" :initializers '(:project-mode scanner) :load-type 'ede-gnustep-load :class-sym 'ede-step-project) t)
+
+(add-to-list 'auto-mode-alist '("\\(Root\\)?ProjStep\\.ede" . emacs-lisp-mode))
 
 ;;;***
 
 ;;;### (autoloads (semantic-tag-folding-mode global-semantic-tag-folding-mode
 ;;;;;;  global-semantic-tag-folding-mode) "semantic-tag-folding"
-;;;;;;  "semantic-tag-folding.el" (19070 8986))
+;;;;;;  "semantic-tag-folding.el" (19967 52600))
 ;;; Generated autoloads from semantic-tag-folding.el
 
 (defvar global-semantic-tag-folding-mode nil "\
@@ -70,11 +74,11 @@ minor mode is enabled.
 ;;;***
 
 ;;;### (autoloads (wisent-csharp-default-setup) "wisent-csharp" "wisent-csharp.el"
-;;;;;;  (17880 37474))
+;;;;;;  (19967 52600))
 ;;; Generated autoloads from wisent-csharp.el
 
 (autoload 'wisent-csharp-default-setup "wisent-csharp" "\
-Not documented
+
 
 \(fn)" nil nil)
 
@@ -83,7 +87,7 @@ Not documented
 ;;;***
 
 ;;;### (autoloads (wisent-php-default-setup) "wisent-php" "wisent-php.el"
-;;;;;;  (18810 37948))
+;;;;;;  (19967 52600))
 ;;; Generated autoloads from wisent-php.el
 
 (autoload 'wisent-php-default-setup "wisent-php" "\
@@ -97,8 +101,8 @@ Use the alternate LALR(1) parser.
 ;;;***
 
 ;;;### (autoloads nil nil ("cedet-contrib-load.el" "cedet-contrib.el"
-;;;;;;  "semantic-ectag-scala.el" "wisent-ruby.el") (19070 59158
-;;;;;;  805632))
+;;;;;;  "semantic-ectag-scala.el" "wisent-csharp-wy.el" "wisent-php-wy.el"
+;;;;;;  "wisent-ruby-wy.el" "wisent-ruby.el") (20063 60740 525638))
 
 ;;;***
 

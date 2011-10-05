@@ -2,8 +2,8 @@
 
 ;; Copyright (C) 2001, 2003, 2009 Eric M. Ludlam
 
-;; Author: José Carlos <jcarlos@jcarlos-laptop>
-;; Created: 2009-08-09 16:09:34+0100
+;; Author: Rolando Pereira <rolando@rolando-desktop>
+;; Created: 2011-09-01 21:33:51+0100
 ;; Keywords: syntax
 ;; X-RCS: $Id$
 
@@ -28,9 +28,6 @@
 ;;
 ;; PLEASE DO NOT MANUALLY EDIT THIS FILE!  It is automatically
 ;; generated from the grammar file scheme.by.
-
-;;; History:
-;;
 
 ;;; Code:
 

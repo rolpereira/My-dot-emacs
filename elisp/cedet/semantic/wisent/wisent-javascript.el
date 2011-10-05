@@ -4,7 +4,7 @@
 
 ;; Author: Eric Ludlam <zappo@gnu.org>
 ;; Keywords: syntax
-;; X-RCS: $Id: wisent-javascript.el,v 1.1 2008/09/04 01:58:33 zappo Exp $
+;; X-RCS: $Id: wisent-javascript.el,v 1.3 2010-03-26 22:18:06 xscript Exp $
 
 ;; This file is not part of GNU Emacs.
 
@@ -50,12 +50,12 @@ to this variable NAME."
         (setq elt   (car elts)
               elts  (cdr elts)
               clone (semantic-tag-clone tag (car elt))
-	      value (car (cdr elt))
-              start (if elts  (caddr elt) (semantic-tag-start tag))
-              end   (if xpand (cdddr elt) (semantic-tag-end   tag))
+              value (car (cdr elt))
+              start (if elts  (car (cddr elt)) (semantic-tag-start tag))
+              end   (if xpand (cdr (cddr elt)) (semantic-tag-end   tag))
               xpand (cons clone xpand))
-	;; Set the definition of the cloned tag
-	(semantic-tag-put-attribute clone :default-value value)
+        ;; Set the definition of the cloned tag
+        (semantic-tag-put-attribute clone :default-value value)
         ;; Set the bounds of the cloned tag with those of the name
         ;; element.
         (semantic-tag-set-bounds clone start end))
@@ -82,7 +82,7 @@ This function overrides `get-local-variables'."
 (defun wisent-javascript-setup-parser ()
   "Setup buffer for parse."
   (wisent-javascript-jv-wy--install-parser)
-  (setq 
+  (setq
    ;; Lexical Analysis
    semantic-lex-analyzer 'javascript-lexer-jv
    semantic-lex-number-expression semantic-java-number-regexp
@@ -99,6 +99,10 @@ This function overrides `get-local-variables'."
 (add-hook 'javascript-mode-hook 'wisent-javascript-setup-parser)
 ;;;###autoload
 (add-hook 'ecmascript-mode-hook 'wisent-javascript-setup-parser)
+;;;###autoload
+(add-hook 'js-mode-hook 'wisent-javascript-setup-parser)
+;;;###autoload
+(add-hook 'js2-mode-hook 'wisent-javascript-setup-parser)
 
 (provide 'wisent-javascript-jv)
 

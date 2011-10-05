@@ -1,9 +1,9 @@
 ;;; srecode-template-wy.el --- Generated parser support file
 
-;; Copyright (C) 2005, 2007, 2008, 2009 Eric M. Ludlam
+;; Copyright (C) 2005, 2007, 2008, 2009, 2010 Eric M. Ludlam
 
-;; Author: José Carlos <jcarlos@jcarlos-laptop>
-;; Created: 2009-08-09 16:09:55+0100
+;; Author: Rolando Pereira <rolando@rolando-desktop>
+;; Created: 2011-09-01 21:33:59+0100
 ;; Keywords: syntax
 ;; X-RCS: $Id$
 
@@ -29,9 +29,6 @@
 ;; PLEASE DO NOT MANUALLY EDIT THIS FILE!  It is automatically
 ;; generated from the grammar file srecode-template.wy.
 
-;;; History:
-;;
-
 ;;; Code:
 
 ;;; Prologue
@@ -47,6 +44,8 @@
      ("context" . CONTEXT)
      ("template" . TEMPLATE)
      ("sectiondictionary" . SECTIONDICTIONARY)
+     ("section" . SECTION)
+     ("end" . END)
      ("prompt" . PROMPT)
      ("default" . DEFAULT)
      ("defaultmacro" . DEFAULTMACRO)
@@ -57,6 +56,8 @@
      ("defaultmacro" summary "prompt <symbol> \"Describe Symbol: \" [default[macro] <lispsym>|\"valuetext\"] [read <lispsym>]")
      ("default" summary "prompt <symbol> \"Describe Symbol: \" [default[macro] <lispsym>|\"valuetext\"] [read <lispsym>]")
      ("prompt" summary "prompt <symbol> \"Describe Symbol: \" [default[macro] <lispsym>|\"valuetext\"] [read <lispsym>]")
+     ("end" summary "section ... end")
+     ("section" summary "section <name>\\n <dictionary entries>\\n end")
      ("sectiondictionary" summary "sectiondictionary <name>\\n <dictionary entries>")
      ("template" summary "template <name>\\n <template definition>")
      ("context" summary "context <name>")
@@ -82,6 +83,7 @@
    '(("number" :declared t)
      ("string" :declared t)
      ("symbol" :declared t)
+     ("property" syntax ":\\(\\w\\|\\s_\\)*")
      ("property" :declared t)
      ("newline" :declared t)
      ("punctuation" syntax "\\s.+")
@@ -94,7 +96,7 @@
     (eval-when-compile
       (require 'wisent-comp))
     (wisent-compile-grammar
-     '((SET SHOW MACRO CONTEXT TEMPLATE SECTIONDICTIONARY PROMPT DEFAULT DEFAULTMACRO READ BIND newline TEMPLATE_BLOCK property symbol string number)
+     '((SET SHOW MACRO CONTEXT TEMPLATE SECTIONDICTIONARY SECTION END PROMPT DEFAULT DEFAULTMACRO READ BIND newline TEMPLATE_BLOCK property symbol string number)
        nil
        (template_file
 	((newline)
@@ -150,7 +152,7 @@
 	 (cons 'macro
 	       (read $2))))
        (template
-	((TEMPLATE templatename opt-dynamic-arguments newline opt-string opt-section-dictionaries TEMPLATE_BLOCK newline opt-bind)
+	((TEMPLATE templatename opt-dynamic-arguments newline opt-string section-dictionary-list TEMPLATE_BLOCK newline opt-bind)
 	 (wisent-raw-tag
 	  (semantic-tag-new-function $2 nil $3 :documentation $5 :code $7 :dictionaries $6 :binding $9))))
        (templatename
@@ -171,26 +173,40 @@
 	((string newline)
 	 (read $1))
 	(nil nil))
-       (opt-section-dictionaries
-	(nil nil)
-	((section-dictionary-list)))
        (section-dictionary-list
-	((one-section-dictionary)
-	 (list $1))
-	((section-dictionary-list one-section-dictionary)
+	(nil nil)
+	((section-dictionary-list flat-section-dictionary)
+	 (append $1
+		 (list $2)))
+	((section-dictionary-list section-dictionary)
 	 (append $1
 		 (list $2))))
-       (one-section-dictionary
-	((SECTIONDICTIONARY string newline variable-list)
+       (flat-section-dictionary
+	((SECTIONDICTIONARY string newline flat-dictionary-entry-list)
 	 (cons
 	  (read $2)
 	  $4)))
-       (variable-list
+       (flat-dictionary-entry-list
+	(nil nil)
+	((flat-dictionary-entry-list flat-dictionary-entry)
+	 (append $1 $2)))
+       (flat-dictionary-entry
+	((variable)
+	 (wisent-cook-tag $1)))
+       (section-dictionary
+	((SECTION string newline dictionary-entry-list END newline)
+	 (cons
+	  (read $2)
+	  $4)))
+       (dictionary-entry-list
+	(nil nil)
+	((dictionary-entry-list dictionary-entry)
+	 (append $1 $2)))
+       (dictionary-entry
 	((variable)
 	 (wisent-cook-tag $1))
-	((variable-list variable)
-	 (append $1
-		 (wisent-cook-tag $2))))
+	((section-dictionary)
+	 (list $1)))
        (opt-bind
 	((BIND string newline)
 	 (read $2))
@@ -217,20 +233,17 @@
 ;;
 (require 'semantic-lex)
 
-(define-lex-keyword-type-analyzer srecode-template-wy--<keyword>-keyword-analyzer
-  "keyword analyzer for <keyword> tokens."
-  "\\(\\sw\\|\\s_\\)+")
+(define-lex-regex-type-analyzer srecode-template-wy--<property>-regexp-analyzer
+  "regexp analyzer for <property> tokens."
+  ":\\(\\w\\|\\s_\\)*"
+  nil
+  'property)
 
 (define-lex-regex-type-analyzer srecode-template-wy--<symbol>-regexp-analyzer
   "regexp analyzer for <symbol> tokens."
   "\\(\\sw\\|\\s_\\)+"
   nil
   'symbol)
-
-(define-lex-sexp-type-analyzer srecode-template-wy--<string>-sexp-analyzer
-  "sexp analyzer for <string> tokens."
-  "\\s\""
-  'string)
 
 (define-lex-regex-type-analyzer srecode-template-wy--<number>-regexp-analyzer
   "regexp analyzer for <number> tokens."
@@ -243,6 +256,15 @@
   "\\s.+"
   nil
   'punctuation)
+
+(define-lex-sexp-type-analyzer srecode-template-wy--<string>-sexp-analyzer
+  "sexp analyzer for <string> tokens."
+  "\\s\""
+  'string)
+
+(define-lex-keyword-type-analyzer srecode-template-wy--<keyword>-keyword-analyzer
+  "keyword analyzer for <keyword> tokens."
+  "\\(\\sw\\|\\s_\\)+")
 
 
 ;;; Epilogue

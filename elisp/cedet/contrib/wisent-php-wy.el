@@ -2,8 +2,8 @@
 
 ;; Copyright (C) 2008 Free Software Foundation
 
-;; Author: José Carlos <jcarlos@jcarlos-laptop>
-;; Created: 2009-08-09 16:11:29+0100
+;; Author: Rolando Pereira <rolando@rolando-desktop>
+;; Created: 2011-09-01 21:34:27+0100
 ;; Keywords: syntax
 ;; X-RCS: $Id$
 
@@ -28,9 +28,6 @@
 ;;
 ;; PLEASE DO NOT MANUALLY EDIT THIS FILE!  It is automatically
 ;; generated from the grammar file wisent-php.wy.
-
-;;; History:
-;;
 
 ;;; Code:
 
@@ -615,10 +612,6 @@
 ;;
 (require 'semantic-lex)
 
-(define-lex-keyword-type-analyzer wisent-php-wy--<keyword>-keyword-analyzer
-  "keyword analyzer for <keyword> tokens."
-  "\\(\\sw\\|\\s_\\)+")
-
 (define-lex-block-type-analyzer wisent-php-wy--<block>-block-analyzer
   "block analyzer for <block> tokens."
   "\\s(\\|\\s)"
@@ -635,11 +628,6 @@
   "\\(\\sw\\|\\s_\\)+"
   nil
   'IDENTIFIER)
-
-(define-lex-sexp-type-analyzer wisent-php-wy--<string>-sexp-analyzer
-  "sexp analyzer for <string> tokens."
-  "\\s\""
-  'STRING_LITERAL)
 
 (define-lex-regex-type-analyzer wisent-php-wy--<number>-regexp-analyzer
   "regexp analyzer for <number> tokens."
@@ -701,6 +689,15 @@
     (T_PAAMAYIM_NEKUDOTAYIM . "::")
     (T_DEREF . "->"))
   'punctuation)
+
+(define-lex-sexp-type-analyzer wisent-php-wy--<string>-sexp-analyzer
+  "sexp analyzer for <string> tokens."
+  "\\s\""
+  'STRING_LITERAL)
+
+(define-lex-keyword-type-analyzer wisent-php-wy--<keyword>-keyword-analyzer
+  "keyword analyzer for <keyword> tokens."
+  "\\(\\sw\\|\\s_\\)+")
 
 
 ;;; Epilogue

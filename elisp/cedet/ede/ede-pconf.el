@@ -1,10 +1,10 @@
 ;;; ede-pconf.el --- configure.ac maintenance for EDE
 
-;;  Copyright (C) 1998, 1999, 2000, 2005, 2008, 2009  Eric M. Ludlam
+;;  Copyright (C) 1998, 1999, 2000, 2005, 2008, 2009, 2010  Eric M. Ludlam
 
 ;; Author: Eric M. Ludlam <zappo@gnu.org>
 ;; Keywords: project
-;; RCS: $Id: ede-pconf.el,v 1.15 2009/08/08 21:39:07 zappo Exp $
+;; RCS: $Id: ede-pconf.el,v 1.20 2010-03-16 02:54:40 zappo Exp $
 
 ;; This software is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -41,21 +41,22 @@ don't do it.  A value of nil means to just do it.")
 
 (defmethod ede-proj-configure-test-required-file ((this ede-proj-project) file)
   "For project THIS, test that the file FILE exists, or create it."
-  (when (not (ede-expand-filename (ede-toplevel this) file))
-    (save-excursion
-      (find-file (ede-expand-filename (ede-toplevel this) file t))
-      (cond ((string= file "AUTHORS")
-	     (insert (user-full-name) " <" (user-login-name) ">"))
-	    ((string= file "NEWS")
-	     (insert "NEWS file for " (ede-name this)))
-	    (t (insert "\n")))
-      (save-buffer)
-      (when
-	  (and (eq ede-pconf-create-file-query 'ask)
-	       (not (eq ede-pconf-create-file-query 'never))
-	       (not (y-or-n-p
-		     (format "I had to create the %s file for you.  Ok? " file)))
-	       (error "Quit"))))))
+  (let ((f (ede-expand-filename (ede-toplevel this) file t)))
+    (when (not (file-exists-p f))
+      (save-excursion
+	(find-file f)
+	(cond ((string= file "AUTHORS")
+	       (insert (user-full-name) " <" (user-login-name) ">"))
+	      ((string= file "NEWS")
+	       (insert "NEWS file for " (ede-name this)))
+	      (t (insert "\n")))
+	(save-buffer)
+	(when
+	    (and (eq ede-pconf-create-file-query 'ask)
+		 (not (eq ede-pconf-create-file-query 'never))
+		 (not (y-or-n-p
+		       (format "I had to create the %s file for you.  Ok? " file)))
+		 (error "Quit")))))))
 
 
 (defmethod ede-proj-configure-synchronize ((this ede-proj-project))
@@ -98,30 +99,8 @@ don't do it.  A value of nil means to just do it.")
        (ede-map-targets this 'ede-proj-tweak-autoconf)))
     ;; Now save
     (save-buffer)
-    ;; Verify aclocal
-    (if (not (file-exists-p (ede-expand-filename (ede-toplevel this)
-						 "aclocal.m4" t)))
-	(setq postcmd "aclocal;autoconf;autoheader;")
-      ;; Verify the configure script...
-      (if (not (ede-expand-filename (ede-toplevel this)
-				    "configure"))
-	  (setq postcmd "aclocal;autoconf;autoheader;")
-	(if (not (ede-expand-filename (ede-toplevel this) "config.h.in"))
-	    (setq postcmd "aclocal;autoconf;autoheader;")
-	  (setq postcmd "aclocal;autoconf;"))))
-    ;; Verify Makefile.in, and --add-missing files (cheaply)
-    (setq add-missing (ede-map-any-target-p this
-					    'ede-proj-configure-add-missing))
-    (if (not (ede-expand-filename (ede-toplevel this) "Makefile.in"))
-	(progn
-	  (setq postcmd (concat postcmd "automake"))
-	  (if (or (not (ede-expand-filename (ede-toplevel this) "COPYING"))
-		  add-missing)
-	      (setq postcmd (concat postcmd " --add-missing")))
-	  (setq postcmd (concat postcmd ";")))
-      (if (or (not (ede-expand-filename (ede-toplevel this) "COPYING"))
-	      add-missing)
-	  (setq postcmd (concat postcmd "automake --add-missing;"))))
+    (setq postcmd "autoreconf -i;")
+
     ;; Verify a bunch of files that are required by automake.
     (ede-proj-configure-test-required-file this "AUTHORS")
     (ede-proj-configure-test-required-file this "NEWS")
@@ -131,25 +110,28 @@ don't do it.  A value of nil means to just do it.")
     (mapc 'ede-proj-configure-create-missing targs)
     ;; Verify that we have a make system.
     (if (or (not (ede-expand-filename (ede-toplevel this) "Makefile"))
-	    ;; Now is this one of our old Makefiles?
-	    (save-excursion
-	      (set-buffer (find-file-noselect
-			   (ede-expand-filename (ede-toplevel this)
-						"Makefile" t) t))
-	      (goto-char (point-min))
-	      ;; Here is the unique piece for our makefiles.
-	      (re-search-forward "For use with: make" nil t)))
-	(setq postcmd (concat postcmd "./configure;")))
+            ;; Now is this one of our old Makefiles?
+            (with-current-buffer
+                (find-file-noselect
+                 (ede-expand-filename (ede-toplevel this)
+                                      "Makefile" t) t)
+              (goto-char (point-min))
+              ;; Here is the unique piece for our makefiles.
+              (re-search-forward "For use with: make" nil t)))
+        (setq postcmd (concat postcmd "./configure;")))
     (if (not (string= "" postcmd))
 	(progn
 	  (compile postcmd)
 
 	  (while compilation-in-progress
 	    (accept-process-output)
-	    (sit-for 1))
+	    ;; If sit for indicates that input is waiting, then
+	    ;; read and discard whatever it is that is going on.
+	    (when (not (sit-for 1))
+	      (read-event nil nil .1)
+	      ))
 
-	  (save-excursion
-	    (set-buffer "*compilation*")
+	  (with-current-buffer "*compilation*"
 	    (goto-char (point-max))
 
 	    (when (not (string= mode-line-process ":exit [0]"))
@@ -180,7 +162,9 @@ don't do it.  A value of nil means to just do it.")
   "Tweak the configure file (current buffer) to accomodate THIS."
   ;; Check the compilers belonging to THIS, and call the autoconf
   ;; setup for those compilers.
-  (mapc 'ede-proj-tweak-autoconf (ede-proj-compilers this)))
+  (mapc 'ede-proj-tweak-autoconf (ede-proj-compilers this))
+  (mapc 'ede-proj-tweak-autoconf (ede-proj-linkers this))
+  )
 
 (defmethod ede-proj-flush-autoconf ((this ede-proj-target))
   "Flush the configure file (current buffer) to accomodate THIS.

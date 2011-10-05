@@ -1,4 +1,4 @@
-This is semantic.info, produced by makeinfo version 4.11 from
+This is semantic.info, produced by makeinfo version 4.13 from
 semantic.texi.
 
 This manual documents Semantic, a new intrastructure for parser based
@@ -18,7 +18,7 @@ Ludlam Copyright (C) 2001, 2002, 2003, 2005 David Ponce Copyright (C)
 
 INFO-DIR-SECTION Emacs
 START-INFO-DIR-ENTRY
-* Semantic: (semantic).	Infrastructure for parser based text analysis.
+* Semantic: (semantic). Infrastructure for parser based text analysis.
 END-INFO-DIR-ENTRY
 
    This file documents Semantic.  _Infrastructure for parser based text
@@ -367,8 +367,8 @@ you want to speed up parsing by disabling searches in system headers,
 you might add code like this for C mode.
 
      (setq-mode-local c-mode
-     		 semanticdb-find-default-throttle
-     		 '(project unloaded recursive))
+                      semanticdb-find-default-throttle
+                      '(project unloaded recursive))
                       ;; Remove 'system from the throttle
 
 2.2.2 System Include Paths
@@ -527,8 +527,8 @@ about how semantic works.
 
 * Menu:
 
-* Parser code ::	Code used for the parsers
-* Tag handling ::	Code used for manipulating tags
+* Parser code ::        Code used for the parsers
+* Tag handling ::       Code used for manipulating tags
 * Semanticdb ::         Code used in the semantic database
 * Analyzer ::           Code used in the code analyzer
 * Tools ::              Code used in user tools.
@@ -1307,33 +1307,33 @@ Ref: semantic-load-enable-gaudy-code-helpers11947
 Ref: semantic-load-enable-excessive-code-helpers13162
 Ref: semantic-load-enable-semantic-debugging-helpers13683
 Node: Search Optimization14288
-Node: Parsing Optimization17866
-Ref: semantic-inhibit-functions18466
-Node: Semantic manuals19756
-Node: Semantic Internals20577
-Node: Parser code21294
-Node: Tag handling23048
-Node: Semanticdb24717
-Node: Analyzer26809
-Node: Tools28732
-Node: Tests30409
-Node: Glossary30867
-Ref: BNF31026
-Ref: bovinate31225
-Ref: bovine lambda31314
-Ref: bovine parser31497
-Ref: context31623
-Ref: LALR31632
-Ref: lexer31638
-Ref: LL31852
-Ref: nonterminal31856
-Ref: overloadable32047
-Ref: parser32155
-Ref: tag32208
-Ref: token32553
-Ref: token stream32671
-Ref: wisent parser32750
-Node: GNU Free Documentation License32917
-Node: Index52639
+Node: Parsing Optimization17894
+Ref: semantic-inhibit-functions18494
+Node: Semantic manuals19784
+Node: Semantic Internals20605
+Node: Parser code21335
+Node: Tag handling23089
+Node: Semanticdb24758
+Node: Analyzer26850
+Node: Tools28773
+Node: Tests30450
+Node: Glossary30908
+Ref: BNF31067
+Ref: bovinate31266
+Ref: bovine lambda31355
+Ref: bovine parser31538
+Ref: context31664
+Ref: LALR31673
+Ref: lexer31679
+Ref: LL31893
+Ref: nonterminal31897
+Ref: overloadable32088
+Ref: parser32196
+Ref: tag32249
+Ref: token32594
+Ref: token stream32712
+Ref: wisent parser32791
+Node: GNU Free Documentation License32958
+Node: Index52680
 
 End Tag Table
