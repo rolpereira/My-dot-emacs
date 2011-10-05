@@ -1842,6 +1842,11 @@ somewhere on the variable mode-line-format."
           (rename-buffer new-name)
           (set-visited-file-name new-name)
           (set-buffer-modified-p nil))))))
+
+
+(put 'narrow-to-region 'disabled nil)
+
+
 ;; When highlighting a text with the mouse, make that selection
 ;; avaiable to the C-y even if the mouse highlighted text in another
 ;; window
