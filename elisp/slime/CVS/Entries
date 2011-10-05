@@ -1,7 +1,6 @@
 D/contrib////
 D/doc////
 /.cvsignore/1.6/Sat May 28 22:27:36 2011//
-/ChangeLog/1.2205/Sun Jun 26 15:57:22 2011//
 /HACKING/1.10/Sat May 28 22:27:36 2011//
 /NEWS/1.11/Sat May 28 22:27:36 2011//
 /PROBLEMS/1.8/Sat May 28 22:27:36 2011//
@@ -12,10 +11,7 @@ D/doc////
 /nregex.lisp/1.4/Sat May 28 22:27:36 2011//
 /sbcl-pprint-patch.lisp/1.1/Sat May 28 22:27:36 2011//
 /slime-autoloads.el/1.6/Sat May 28 22:27:36 2011//
-/slime.el/1.1372/Sun Jun 26 15:57:22 2011//
 /start-swank.lisp/1.2/Sat May 28 22:27:36 2011//
-/swank-abcl.lisp/1.85/Sat May 28 22:27:36 2011//
-/swank-allegro.lisp/1.143/Sun Jun 26 15:57:22 2011//
 /swank-backend.lisp/1.206/Sun Jun 26 15:57:22 2011//
 /swank-ccl.lisp/1.22/Sat May 28 22:27:36 2011//
 /swank-clisp.lisp/1.95/Sat May 28 22:27:36 2011//
@@ -27,11 +23,15 @@ D/doc////
 /swank-loader.lisp/1.110/Sat May 28 22:27:36 2011//
 /swank-match.lisp/1.2/Sat May 28 22:27:36 2011//
 /swank-rpc.lisp/1.7/Sat May 28 22:27:36 2011//
-/swank-sbcl.lisp/1.284/Sun Jun 26 15:57:22 2011//
 /swank-scl.lisp/1.37/Sat May 28 22:27:36 2011//
 /swank-source-file-cache.lisp/1.11/Sat May 28 22:27:36 2011//
 /swank-source-path-parser.lisp/1.22/Sat May 28 22:27:36 2011//
 /swank.asd/1.10/Sat May 28 22:27:36 2011//
-/swank.lisp/1.750/Sun Jun 26 15:57:22 2011//
 /test.sh/1.23/Sat May 28 22:27:36 2011//
 /xref.lisp/1.2/Sat May 28 22:27:36 2011//
+/ChangeLog/1.2212/Sat Aug 27 13:40:48 2011//
+/slime.el/1.1374/Sat Aug 27 13:40:48 2011//
+/swank-abcl.lisp/1.86/Sat Aug 27 13:40:48 2011//
+/swank-allegro.lisp/1.144/Sat Aug 27 13:40:48 2011//
+/swank-sbcl.lisp/1.287/Sat Aug 27 13:40:48 2011//
+/swank.lisp/1.752/Sat Aug 27 13:40:48 2011//

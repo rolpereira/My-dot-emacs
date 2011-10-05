@@ -1,4 +1,3 @@
-/ChangeLog/1.487/Sun Jun 26 15:57:22 2011//
 /README/1.3/Sat May 28 22:27:36 2011//
 /bridge.el/1.2/Sat May 28 22:27:36 2011//
 /inferior-slime.el/1.11/Sat May 28 22:27:36 2011//
@@ -6,8 +5,6 @@
 /slime-autodoc.el/1.47/Sat May 28 22:27:36 2011//
 /slime-banner.el/1.6/Sat May 28 22:27:36 2011//
 /slime-c-p-c.el/1.26/Sat May 28 22:27:36 2011//
-/slime-cl-indent-test.txt/1.9/Tue Jun 14 13:59:31 2011//
-/slime-cl-indent.el/1.48/Tue Jun 21 11:49:37 2011//
 /slime-clipboard.el/1.8/Sat May 28 22:27:36 2011//
 /slime-compiler-notes-tree.el/1.7/Sat May 28 22:27:36 2011//
 /slime-editing-commands.el/1.13/Sun Jun 26 15:57:23 2011//
@@ -46,7 +43,6 @@
 /swank-goo.goo/1.4/Sat May 28 22:27:36 2011//
 /swank-hyperdoc.lisp/1.1/Sat May 28 22:27:36 2011//
 /swank-ikarus.ss/1.1/Sat May 28 22:27:36 2011//
-/swank-indentation.lisp/1.4/Sun Jun 26 15:57:23 2011//
 /swank-jolt.k/1.2/Sat May 28 22:27:36 2011//
 /swank-kawa.scm/1.24/Sat May 28 22:27:36 2011//
 /swank-larceny.scm/1.1/Sat May 28 22:27:36 2011//
@@ -62,4 +58,8 @@
 /swank-snapshot.lisp/1.3/Sat May 28 22:27:36 2011//
 /swank-sprof.lisp/1.6/Sun Jun 26 15:57:23 2011//
 /swank.rb/1.2/Sat May 28 22:27:36 2011//
+/ChangeLog/1.489/Sat Aug 27 13:40:48 2011//
+/slime-cl-indent-test.txt/1.10/Sat Aug 27 13:40:48 2011//
+/slime-cl-indent.el/1.49/Sat Aug 27 13:40:48 2011//
+/swank-indentation.lisp/1.5/Sat Aug 27 13:40:48 2011//
 D

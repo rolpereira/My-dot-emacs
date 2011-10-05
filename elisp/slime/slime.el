@@ -2913,7 +2913,9 @@ This is quite an expensive operation so use carefully."
     (save-excursion
       (slime-goto-source-location location)
       (list (or (buffer-file-name) (buffer-name))
-            (line-number-at-pos)
+            (save-restriction
+              (widen)
+              (line-number-at-pos))
             (1+ (current-column))))))
 
 (defun slime-canonicalized-location-to-string (loc)
@@ -4327,6 +4329,14 @@ in Lisp when committed with \\[slime-edit-value-commit]."
   "Unbind the function slot of SYMBOL-NAME."
   (interactive (list (slime-read-symbol-name "fmakunbound: " t)))
   (slime-eval-async `(swank:undefine-function ,symbol-name)
+                    (lambda (result) (message "%s" result))))
+
+(defun slime-unintern-symbol (symbol-name package)
+  "Unintern the symbol given with SYMBOL-NAME PACKAGE."
+  (interactive (list (slime-read-symbol-name "Unintern symbol: " t)
+                     (slime-read-package-name "from package: "
+                                              (slime-current-package))))
+  (slime-eval-async `(swank:unintern-symbol ,symbol-name ,package)
                     (lambda (result) (message "%s" result))))
 
 (defun slime-load-file (filename)
