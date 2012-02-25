@@ -61,27 +61,35 @@
 (defimplementation getpid ()
   (sb-posix:getpid))
 
+;;; UTF8
+
+(defimplementation string-to-utf8 (string)
+  (sb-ext:string-to-octets string :external-format :utf8))
+
+(defimplementation utf8-to-string (octets)
+  (sb-ext:octets-to-string octets :external-format :utf8))
+
 ;;; TCP Server
 
 (defimplementation preferred-communication-style ()
   (cond
     ;; fixme: when SBCL/win32 gains better select() support, remove
     ;; this.
-    ((member :win32 *features*) nil)
     ((member :sb-thread *features*) :spawn)
+    ((member :win32 *features*) nil)
     (t :fd-handler)))
 
 (defun resolve-hostname (name)
   (car (sb-bsd-sockets:host-ent-addresses
         (sb-bsd-sockets:get-host-by-name name))))
 
-(defimplementation create-socket (host port)
+(defimplementation create-socket (host port &key backlog)
   (let ((socket (make-instance 'sb-bsd-sockets:inet-socket
 			       :type :stream
 			       :protocol :tcp)))
     (setf (sb-bsd-sockets:sockopt-reuse-address socket) t)
     (sb-bsd-sockets:socket-bind socket (resolve-hostname host) port)
-    (sb-bsd-sockets:socket-listen socket 5)
+    (sb-bsd-sockets:socket-listen socket (or backlog 5))
     socket))
 
 (defimplementation local-port (socket)
@@ -95,9 +103,11 @@
                                       external-format
                                       buffering timeout)
   (declare (ignore timeout))
-  (make-socket-io-stream (accept socket)
-                         (or external-format :iso-latin-1-unix)
-                         (or buffering :full)))
+  (make-socket-io-stream (accept socket) external-format 
+                         (ecase buffering
+                           ((t :full) :full)
+                           ((nil :none) :none)
+                           ((:line) :line))))
 
 #-win32
 (defimplementation install-sigint-handler (function)
@@ -175,32 +185,31 @@
     (setq *wait-for-input-called* t))
   (let ((*wait-for-input-called* nil))
     (loop
-     (let ((ready (remove-if-not #'input-ready-p streams)))
-       (when ready (return ready)))
-     (when timeout (return nil))
-     (when (check-slime-interrupts) (return :interrupt))
-            (when *wait-for-input-called* (return :interrupt))
-     (sleep 0.2))))
+      (let ((ready (remove-if-not #'input-ready-p streams)))
+        (when ready (return ready)))
+      (when (check-slime-interrupts)
+        (return :interrupt))
+      (when *wait-for-input-called*
+        (return :interrupt))
+      (when timeout
+        (return nil))
+      (sleep 0.1))))
 
 #-win32
 (defun input-ready-p (stream)
-  (let ((c (read-char-no-hang stream nil :eof)))
-    (etypecase c
-      (character (unread-char c stream) t)
-      (null nil)
-      ((member :eof) t))))
+  (or (let ((buffer (sb-impl::fd-stream-ibuf stream)))
+        (when buffer
+          (< (sb-impl::buffer-head buffer)
+             (sb-impl::buffer-tail buffer))))
+      #+#.(swank-backend:with-symbol 'fd-stream-fd-type 'sb-impl)
+      (eq :regular (sb-impl::fd-stream-fd-type stream))
+      (not (sb-impl::sysread-may-block-p stream))))
 
 #+win32
 (progn
   (defun input-ready-p (stream)
-    (or (has-buffered-input-p stream)
-        (handle-listen (sockint::fd->handle 
-                        (sb-impl::fd-stream-fd stream)))))
-
-  (defun has-buffered-input-p (stream)
-    (let ((ibuf (sb-impl::fd-stream-ibuf stream)))
-      (/= (sb-impl::buffer-head ibuf)
-          (sb-impl::buffer-tail ibuf))))
+    (or (not (fd-stream-input-buffer-empty-p stream))
+        (handle-listen (sockint::fd->handle (sb-impl::fd-stream-fd stream)))))
 
   (sb-alien:define-alien-routine ("WSACreateEvent" wsa-create-event)
       sb-win32:handle)
@@ -273,18 +282,25 @@
                   *external-format-to-coding-system*)))
 
 (defun make-socket-io-stream (socket external-format buffering)
-  (sb-bsd-sockets:socket-make-stream socket
-                                     :output t
-                                     :input t
-                                     :element-type 'character
-                                     :buffering buffering
-                                     #+sb-unicode :external-format
-                                     #+sb-unicode external-format
-                                     :serve-events
-                                     (eq :fd-handler
-                                         ;; KLUDGE: SWANK package isn't
-                                         ;; available when backend is loaded.
-                                         (intern "*COMMUNICATION-STYLE*" :swank))))
+  (let ((args `(,@()
+                :output t
+                :input t
+                :element-type ,(if external-format
+                                   'character 
+                                   '(unsigned-byte 8))
+                :buffering ,buffering
+                ,@(cond ((and external-format (sb-int:featurep :sb-unicode))
+                         `(:external-format ,external-format))
+                        (t '()))
+                :serve-events ,(eq :fd-handler
+                                   ;; KLUDGE: SWANK package isn't
+                                   ;; available when backend is loaded.
+                                   (symbol-value
+                                    (intern "*COMMUNICATION-STYLE*" :swank)))
+                  ;; SBCL < 1.0.42.43 doesn't support :SERVE-EVENTS
+                  ;; argument.
+                :allow-other-keys t)))
+  (apply #'sb-bsd-sockets:socket-make-stream socket args)))
 
 (defun accept (socket)
   "Like socket-accept, but retry on EAGAIN."
@@ -1269,18 +1285,23 @@ stack."
                                                    (lambda ()
                                                      (values-list values)))))
             (t (format nil "Cannot return from frame: ~S" frame)))))
-  
+
   (defimplementation restart-frame (index)
-    (let* ((frame (nth-frame index)))
-      (cond ((sb-debug:frame-has-debug-tag-p frame)
-             (let* ((call-list (sb-debug::frame-call-as-list frame))
-                    (fun (fdefinition (car call-list)))
-                    (thunk (lambda () 
-                             ;; Ensure that the thunk gets tail-call-optimized
-                             (declare (optimize (debug 1)))
-                             (apply fun (cdr call-list)))))
-               (sb-debug:unwind-to-frame-and-call frame thunk)))
-            (t (format nil "Cannot restart frame: ~S" frame))))))
+    (let ((frame (nth-frame index)))
+      (when (sb-debug:frame-has-debug-tag-p frame)
+        (multiple-value-bind (fname args) (sb-debug::frame-call frame)
+          (multiple-value-bind (fun arglist)
+              (if (and (sb-int:legal-fun-name-p fname) (fboundp fname))
+                  (values (fdefinition fname) args)
+                  (values (sb-di:debug-fun-fun (sb-di:frame-debug-fun frame))
+                          (sb-debug::frame-args-as-list frame)))
+            (when (functionp fun)
+              (sb-debug:unwind-to-frame-and-call frame
+                                                 (lambda ()
+                                                   ;; Ensure TCO.
+                                                   (declare (optimize (debug 0)))
+                                                   (apply fun arglist)))))))
+      (format nil "Cannot restart frame: ~S" frame))))
 
 ;; FIXME: this implementation doesn't unwind the stack before
 ;; re-invoking the function, but it's better than no implementation at
@@ -1557,6 +1578,26 @@ stack."
              (return (car tail))))
          (when (eq timeout t) (return (values nil t)))
          (condition-timed-wait waitq mutex 0.2)))))
+
+  (let ((alist '())
+        (mutex (sb-thread:make-mutex :name "register-thread")))
+
+    (defimplementation register-thread (name thread)
+      (declare (type symbol name))
+      (sb-thread:with-mutex (mutex)
+        (etypecase thread
+          (null 
+           (setf alist (delete name alist :key #'car)))
+          (sb-thread:thread
+           (let ((probe (assoc name alist)))
+             (cond (probe (setf (cdr probe) thread))
+                   (t (setf alist (acons name thread alist))))))))
+      nil)
+
+    (defimplementation find-registered (name)
+      (sb-thread:with-mutex (mutex) 
+        (cdr (assoc name alist)))))
+
   )
 
 (defimplementation quit-lisp ()
