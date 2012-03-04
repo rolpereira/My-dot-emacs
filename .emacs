@@ -1853,3 +1853,13 @@ somewhere on the variable mode-line-format."
 ;(setq mouse-drag-copy-region t)
 (setq x-select-enable-primary t)
 ;(setq x-select-enable-clipboard nil)
+
+
+;; To use dummy-h-mode
+;; http://www.emacswiki.org/emacs-en/dummy-h-mode.el
+(add-to-list 'auto-mode-alist '("\\.h$" . dummy-h-mode))
+(autoload 'dummy-h-mode "dummy-h-mode" "Dummy H Mode" t)
+
+(add-hook 'dummy-h-mode-hook
+  (lambda ()
+    (setq dummy-h-mode-default-major-mode 'c++-mode)))
