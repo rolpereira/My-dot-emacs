@@ -1,4 +1,4 @@
-; Time-stamp: <2011-09-22 20:56:21 (rolando)>
+; Time-stamp: <2012-04-19 02:57:40 (rolando)>
 
 ;; TODO: Arranjar uma keybind para find-function (podera funcionar melhor que as tags)
 
@@ -49,6 +49,7 @@
 (defvar *emacs-load-start* (current-time))
 
 
+;; FIXME: c-annotation-face has a bad color
 (when window-system
   (load-theme 'wombat))
 
@@ -445,6 +446,8 @@ it moves the cursor to the beginning-of-line"
 
      (define-key w3m-mode-map "f" 'jao-w3m-go-to-linknum)
 
+     ;; Use "M" to open a link in the external browser
+
      ;; Use sessions on w3m (from Emacs Wiki)
 
      (require 'w3m-session)
@@ -478,11 +481,16 @@ it moves the cursor to the beginning-of-line"
 ;;;;
 
 ;; ;Activar o AUCTeX
-(setq load-path (cons (concat +dot-emacs-home+ "elisp/auctex-11.85/") load-path))
-(setq load-path (cons (concat +dot-emacs-home+ "elisp/auctex-11.85/preview/") load-path))
-(require 'tex-site)
+(setq load-path (cons (concat +dot-emacs-home+ "elisp/auctex-11.86/") load-path))
+(setq load-path (cons (concat +dot-emacs-home+ "elisp/auctex-11.86/preview/") load-path))
+(load "auctex.el" nil t t)
 (load "preview-latex.el" nil t t)
 (setq TeX-save-query nil) ;;autosave before compiling
+(setq TeX-PDF-mode t)
+(setq TeX-auto-save t)
+(setq TeX-parse-self t)
+(setq-default TeX-master nil)
+(require 'latex-units)
 ;; ;;;;;
 
 ;; spellcheck in LaTex mode
@@ -722,7 +730,8 @@ it moves the cursor to the beginning-of-line"
 (setq
   ido-ignore-buffers                 ; ignore these guys
   '("\\` " "^\*Mess" "^\*Back" ".*Completion" "^\*Ido" "\*scratch\*" "^\*w3m" "^irc\."
-     "\*slime-events\*")
+     "\*slime-events\*" "\*slime-events\*" "\*gnus trace\*"
+     "\*n?n?imap" "\*slime-compilation\*" "newsrc")
                                         ;  ido-work-directory-list '("~/" "~/Desktop")
   ido-case-fold  t                   ; be case-insensitive
                                         ;  ido-use-filename-at-point nil      ; don't use filename at point (annoying)
@@ -1451,7 +1460,7 @@ point."
 ;; ‘C-x r j i’ to open an ‘ideas’ file:
 ;; http://www.emacswiki.org/emacs-en/EmacsNiftyTricks
 (set-register ?e '(file . "~/.emacs"))
-(set-register ?f '(file . "~/Área de Trabalho/feup/4_ano/1_semestre/escola.org"))
+(set-register ?f '(file . "~/escola/escola.org/escola.org"))
 (set-register ?h '(file . "~/Área de Trabalho/humor.txt"))
 (set-register ?c '(file . "~/Área de Trabalho/conducao/conducao.org"))
 
@@ -1529,15 +1538,16 @@ point."
 
 ;; Yes, you can do this same trick with the cool "It's All Text"
 ;; firefox add-on :-)
-(add-to-list 'auto-mode-alist '("/mutt-\\|itsalltext.*mail\\.google" .  mail-mode))
-(add-hook 'mail-mode-hook 'turn-on-auto-fill)
-(add-hook 'mail-mode-hook
-  (lambda ()
-    (define-key mail-mode-map [(control c) (control c)]
-      (lambda ()
-        (interactive)
-        (save-buffer)
-        (server-edit)))))
+;(add-to-list 'auto-mode-alist '("/mutt-\\|itsalltext.*mail\\.google" .  message-mode))
+(add-hook 'message-mode-hook 'turn-on-auto-fill)
+(add-hook 'message-mode-hook 'flyspell-mode)
+;; (add-hook 'message-mode-hook
+;;   (lambda ()
+;;     (define-key message-mode-map [(control c) (control c)]
+;;       (lambda ()
+;;         (interactive)
+;;         (save-buffer)
+;;         (server-edit)))))
 
 ;; My general lisp configurations
 (add-hook 'lisp-mode-hook 'yas/minor-mode-off)
@@ -1854,6 +1864,60 @@ somewhere on the variable mode-line-format."
 (setq x-select-enable-primary t)
 ;(setq x-select-enable-clipboard nil)
 
+;; TODO: Meter autoload para o lorem-ipsum
+
+;; ;; Eclim emacs
+;; (add-to-list 'load-path (expand-file-name "~/src/git/emacs-eclim/"))
+;; ;; only add the vendor path when you want to use the libraries provided with emacs-eclim
+;; (add-to-list 'load-path (expand-file-name "~/src/git/emacs-eclim/vendor"))
+;; (require 'eclim)
+
+;; (setq eclim-auto-save t)
+;; (setq eclim-executable "~/src/eclim/eclipse/eclim")
+;; (global-eclim-mode)
+
+(load "~/.emacs.d/elisp/nxhtml/autostart.el")
+(add-hook 'nxhtml-mumamo-mode-hook 'mumamo-no-chunk-coloring)
+(setq mumamo-chunk-coloring 'no-chunks-colored)
+(setq mumamo-background-colors nil)
+;; Mumamo is making emacs 23.3 and 24.0 freak out:
+(when (and (equal emacs-major-version 24)
+           (equal emacs-minor-version 0))
+  (eval-after-load "bytecomp"
+    '(add-to-list 'byte-compile-not-obsolete-vars
+                  'font-lock-beginning-of-syntax-function))
+  ;; tramp-compat.el clobbers this variable!
+  (eval-after-load "tramp-compat"
+    '(add-to-list 'byte-compile-not-obsolete-vars
+                  'font-lock-beginning-of-syntax-function)))
+
+;; Rinari configurations
+(add-to-list 'load-path "~/.emacs.d/elisp/rinari/")
+(require 'rinari)
+(require 'rinari-merb)
+
+(setq nxhtml-global-minor-mode t
+  mumamo-chunk-coloring 'submode-colored
+  nxhtml-skip-welcome t
+  indent-region-mode t
+  rng-nxml-auto-validate-flag nil
+  nxml-degraded t)
+(add-to-list 'auto-mode-alist '("\\.html\\.erb$" . eruby-nxhtml-mumamo-mode))
+
+(setenv "RUBYLIB" "/usr/local/lib/site_ruby/1.8")
+(setenv "GEM_HOME" "/usr/lib/ruby/gems/1.8/")
+
+(require 'yari)
+
+(defun ri-bind-key ()
+  (local-set-key [f1] 'yari))
+
+(add-hook 'ruby-mode-hook 'ri-bind-key)
+
+;; Fontifying Code Buffers In Emacs Org Mode
+;; http://irreal.org/blog/?p=671
+(setq org-src-fontify-natively t)
+
 
 ;; To use dummy-h-mode
 ;; http://www.emacswiki.org/emacs-en/dummy-h-mode.el
@@ -1864,6 +1928,26 @@ somewhere on the variable mode-line-format."
   (lambda ()
     (setq dummy-h-mode-default-major-mode 'c++-mode)))
 
+(setq tags-revert-without-query t)
+(setq compilation-ask-about-save nil)
+
+(add-to-list 'package-archives
+             '("marmalade" . "http://marmalade-repo.org/packages/") t)
+
+(require 'rvm)
+(rvm-use-default)
+
+(add-hook 'ruby-mode-hook #'rvm-activate-corresponding-ruby)
+
+;; From: http://irreal.org/blog/?p=753
+(autoload 'dired-jump "dired-x"
+  "Jump to Dired buffer corresponding to current buffer." t)
+
+(autoload 'dired-jump-other-window "dired-x"
+  "Like \\[dired-jump] (dired-jump) but in other window." t)
+
+(define-key global-map "\C-x\C-j" 'dired-jump)
+(define-key global-map "\C-x4\C-j" 'dired-jump-other-window)
 
 ;; BBDB configuration
 (add-to-list 'load-path (concat +dot-emacs-home+ "elisp/bbdb-2.35/lisp"))
