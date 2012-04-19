@@ -88,6 +88,9 @@
                                                   ((t) :full)
                                                   ((nil) :none)
                                                   (:line line))
+                                     :element-type (if external-format
+                                                       'character 
+                                                       '(unsigned-byte 8))
                                      :external-format external-format))
 (defun accept (socket)
   "Like socket-accept, but retry on EAGAIN."
@@ -473,7 +476,8 @@
   (third (elt *backtrace* frame-number)))
 
 (defimplementation frame-locals (frame-number)
-  (loop for (name . value) in (nth-value 2 (frame-decode-env (elt *backtrace* frame-number)))
+  (loop for (name . value) in (nth-value 2 (frame-decode-env 
+                                            (elt *backtrace* frame-number)))
         with i = 0
         collect (list :name name :id (prog1 i (incf i)) :value value)))
 
@@ -732,7 +736,7 @@
         "STOPPED"))
 
   (defimplementation make-lock (&key name)
-    (mp:make-lock :name name))
+    (mp:make-lock :name name :recursive t))
 
   (defimplementation call-with-lock-held (lock function)
     (declare (type function function))

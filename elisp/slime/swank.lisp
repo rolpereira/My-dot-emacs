@@ -134,7 +134,9 @@ ALIST is a list of the form ((VAR . VAL) ...)."
   "A DEFUN for functions that Emacs can call by RPC."
   `(progn
      (defun ,name ,arglist ,@rest)
-     ;; see <http://www.franz.com/support/documentation/6.2/doc/pages/variables/compiler/s_cltl1-compile-file-toplevel-compatibility-p_s.htm>
+     ;; see <http://www.franz.com/support/documentation/6.2/\
+     ;; doc/pages/variables/compiler/\
+     ;; s_cltl1-compile-file-toplevel-compatibility-p_s.htm>
      (eval-when (:compile-toplevel :load-toplevel :execute)
        (export ',name (symbol-package ',name)))))
 
@@ -993,31 +995,37 @@ The processing is done in the extent of the toplevel restart."
    (sleep *auto-flush-interval*)))
 
 ;; FIXME: drop dependency on find-repl-thread
+;; FIXME: and don't add and any more 
 (defun find-worker-thread (connection id)
   (etypecase id
     ((member t)
      (etypecase connection
-       (multithreaded-connection (car (mconn.active-threads connection)))
+       (multithreaded-connection (or (car (mconn.active-threads connection))
+                                     (find-repl-thread connection)))
        (singlethreaded-connection (current-thread))))
     ((member :repl-thread) 
      (find-repl-thread connection))
-    (fixnum 
+    (fixnum
      (find-thread id))))
 
+;; FIXME: the else branch does look like it was written by someone who
+;; doesn't know what he is doeing.
 (defun interrupt-worker-thread (connection id)
-  (let ((thread (or (find-worker-thread connection id)
-                    ;; FIXME: to something better here
-                    (spawn (lambda ()) :name "ephemeral"))))
+  (let ((thread (find-worker-thread connection id)))
     (log-event "interrupt-worker-thread: ~a ~a~%" id thread)
-    (assert thread)
-    (etypecase connection
-      (multithreaded-connection
-       (interrupt-thread thread
-                         (lambda ()
-                           ;; safely interrupt THREAD
-                           (invoke-or-queue-interrupt #'simple-break))))
-      (singlethreaded-connection
-       (simple-break)))))
+    (if thread
+        (etypecase connection
+          (multithreaded-connection
+           (interrupt-thread thread
+                             (lambda ()
+                               ;; safely interrupt THREAD
+                               (invoke-or-queue-interrupt #'simple-break))))
+          (singlethreaded-connection
+           (simple-break)))
+        (let ((*send-counter* 0)) ;; shouldn't be necessary, but it is
+          (send-to-emacs (list :debug-condition (current-thread-id)
+                               (format nil "Thread with id ~a not found" 
+                                       id)))))))
 
 (defun thread-for-evaluation (connection id)
   "Find or create a thread to evaluate the next request."
@@ -1937,7 +1945,8 @@ N.B. this is not an actual package name or nickname."
   (when *auto-abbreviate-dotted-packages*
     (loop with package-name = (package-name package)
           with offset = nil
-          do (let ((last-dot-pos (position #\. package-name :end offset :from-end t)))
+          do (let ((last-dot-pos (position #\. package-name :end offset 
+                                           :from-end t)))
                (unless last-dot-pos
                  (return nil))
                ;; If a dot chunk contains only numbers, that chunk most
@@ -2274,10 +2283,12 @@ Operation was KERNEL::DIVISION, operands (1 0).\"
   (with-simple-restart (continue "Continue from break.")
     (invoke-slime-debugger (coerce-to-condition datum args))))
 
+;; FIXME: (last (compute-restarts)) looks dubious.
 (defslimefun throw-to-toplevel ()
   "Invoke the ABORT-REQUEST restart abort an RPC from Emacs.
 If we are not evaluating an RPC then ABORT instead."
-  (let ((restart (or (and *sldb-quit-restart* (find-restart *sldb-quit-restart*))
+  (let ((restart (or (and *sldb-quit-restart* 
+                          (find-restart *sldb-quit-restart*))
                      (car (last (compute-restarts))))))
     (cond (restart (invoke-restart restart))
           (t (format nil "Restart not active [~s]" *sldb-quit-restart*)))))
@@ -2516,7 +2527,9 @@ Record compiler notes signalled as `compiler-condition's."
     (unless (member (string module) *modules* :test #'string=)
       (require module (if filename
                           (filename-to-pathname filename)
-                          (module-filename module)))))
+                          (module-filename module)))
+      (assert (member (string module) *modules* :test #'string=)
+              () "Required module ~s was not provided" module)))
   *modules*)
 
 (defvar *find-module* 'find-module

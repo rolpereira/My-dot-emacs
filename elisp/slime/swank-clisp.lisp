@@ -330,20 +330,24 @@ Return NIL if the symbol is unbound."
       (fspec-pathname fspec)
     (list (if type (list name type) name)
 	  (cond (file
-		 (multiple-value-bind (truename c) (ignore-errors (truename file))
+		 (multiple-value-bind (truename c) 
+                     (ignore-errors (truename file))
 		   (cond (truename
-			  (make-location (list :file (namestring truename))
-					 (if (consp lines)
-					     (list* :line lines)
-					     (list :function-name (string name)))
-                                         (when (consp type)
-                                           (list :snippet (format nil "~A" type)))))
+			  (make-location 
+                           (list :file (namestring truename))
+                           (if (consp lines)
+                               (list* :line lines)
+                               (list :function-name (string name)))
+                           (when (consp type)
+                             (list :snippet (format nil "~A" type)))))
 			 (t (list :error (princ-to-string c))))))
-		(t (list :error (format nil "No source information available for: ~S"
-					fspec)))))))
+		(t (list :error 
+                         (format nil "No source information available for: ~S"
+                                 fspec)))))))
 
 (defimplementation find-definitions (name)
-  (mapcar #'(lambda (e) (fspec-location name e)) (documentation name 'sys::file)))
+  (mapcar #'(lambda (e) (fspec-location name e)) 
+          (documentation name 'sys::file)))
 
 (defun trim-whitespace (string)
   (string-trim #(#\newline #\space #\tab) string))
@@ -636,8 +640,15 @@ Execute BODY with NAME's function slot set to FUNCTION."
   (dynamic-flet ((sys::c-warn *orig-c-warn*))
     (signal-compiler-warning cstring args :style-warning *orig-c-style-warn*)))
 
-(defun c-error (cstring &rest args)
-  (signal-compiler-warning cstring args :error *orig-c-error*))
+(defun c-error (&rest args)
+  (signal (make-condition 'compiler-condition
+                          :severity :error
+                          :message (apply #'format nil
+                                          (if (= (length args) 3)
+                                              (cdr args)
+                                              args))
+                          :location (compiler-note-location)))
+  (apply *orig-c-error* args))
 
 (defimplementation call-with-compilation-hooks (function)
   (handler-bind ((warning #'handle-notification-condition))
