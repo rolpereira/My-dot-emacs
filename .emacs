@@ -2009,3 +2009,6 @@ somewhere on the variable mode-line-format."
 (add-hook 'gnus-startup-hook 'bbdb-insinuate-gnus)
 (setq bbdb-send-mail-style 'gnus)
 (setq bbdb-complete-name-full-completion t)
+
+(add-to-list 'auto-mode-alist '("Gemfile$" . ruby-mode))
+(add-to-list 'auto-mode-alist '("Rakefile$" . ruby-mode))
