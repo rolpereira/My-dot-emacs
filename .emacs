@@ -454,7 +454,7 @@ it moves the cursor to the beginning-of-line"
 
      (define-key w3m-mode-map "S" 'w3m-session-save)
      (define-key w3m-mode-map "L" 'w3m-session-load)
-     (define-key w3m-mode-map (kbd "C-j") 'w3m-search)
+     (define-key w3m-mode-map (kbd "C-j") 'w3m-search-new-session)
 
      ;; Download youtube video at point
      (defun w3m-yt-view ()
