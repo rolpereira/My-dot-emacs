@@ -1928,16 +1928,29 @@ somewhere on the variable mode-line-format."
   (lambda ()
     (setq dummy-h-mode-default-major-mode 'c++-mode)))
 
+;; (slime-eval '(cl:1+ 1))
+
 (setq tags-revert-without-query t)
 (setq compilation-ask-about-save nil)
 
 (add-to-list 'package-archives
              '("marmalade" . "http://marmalade-repo.org/packages/") t)
 
+(add-to-list 'package-archives
+             '("melpa" . "http://melpa.milkbox.net/packages/") t)
+
 (require 'rvm)
 (rvm-use-default)
 
 (add-hook 'ruby-mode-hook #'rvm-activate-corresponding-ruby)
+
+(require 'haml-mode)
+(add-hook 'haml-mode #'rinari-minor-mode)
+
+(setq auto-mode-alist (append
+                        '(("\\.haml$" . haml-mode))
+                        auto-mode-alist))
+
 
 ;; From: http://irreal.org/blog/?p=753
 (autoload 'dired-jump "dired-x"
