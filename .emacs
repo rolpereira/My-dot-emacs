@@ -2037,3 +2037,15 @@ somewhere on the variable mode-line-format."
     (find-tag (find-tag-default))))
 
 (global-set-key (kbd "M-.") 'find-tag-at-point)
+
+
+;; From: http://nullprogram.com/blog/2009/05/28/
+;; ID: 6a3f3d99-f0da-329a-c01c-bb6b868f3239
+(defmacro measure-time (&rest body)
+  "Measure and return the running time of the code block."
+  (declare (indent defun))
+  (let ((start (make-symbol "start")))
+    `(let ((,start (float-time)))
+       ,@body
+       (- (float-time) ,start))))
+
