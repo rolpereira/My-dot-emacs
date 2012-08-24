@@ -63,3 +63,13 @@
       (set-window-configuration win))))
 
 (gnus-demon-add-handler 'gnus-demon-scan-news 60 60)
+
+;; Configure gnus-desktop-notification
+(require 'gnus-desktop-notify)
+
+(gnus-desktop-notify-mode)
+
+(setq gnus-desktop-notify-groups 'gnus-desktop-notify-explicit)
+
+(setq gnus-desktop-notify-send-program
+  "$(mplayer -really-quiet /usr/share/sounds/gnome/default/alerts/drip.ogg > /dev/null &); notify-send -i /usr/share/icons/gnome/32x32/actions/mail_new.png")
