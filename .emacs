@@ -2015,3 +2015,10 @@ somewhere on the variable mode-line-format."
 
 (autoload 'yaml-mode "yaml-mode" "Yaml mode" t)
 (add-to-list 'auto-mode-alist '("\.yml$" . yaml-mode))
+(setq history-length 1000)
+(setq kill-ring-max 500)
+(setq global-mark-ring-max 100)
+(setq mark-ring-max 100)
+(setq message-log-max 1000)
+(setq regexp-search-ring-max 50)
+(setq search-ring-max 50)
