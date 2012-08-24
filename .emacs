@@ -2025,3 +2025,15 @@ somewhere on the variable mode-line-format."
 (require 'elisp-slime-nav)
 (add-hook 'emacs-lisp-mode-hook '(lambda ()
                                    (elisp-slime-nav-mode t)))
+;; From: http://blog.printf.net/articles/2007/10/15/productivity-a-year-on
+(defun find-tag-at-point ()
+  "*Find tag whose name contains TAGNAME.
+  Identical to `find-tag' but does not prompt for
+  tag when called interactively;  instead, uses
+  tag around or before point."
+  (interactive)
+  (if current-prefix-arg
+    (find-tag-tag "Find tag: ")
+    (find-tag (find-tag-default))))
+
+(global-set-key (kbd "M-.") 'find-tag-at-point)
