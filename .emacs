@@ -2012,3 +2012,6 @@ somewhere on the variable mode-line-format."
 
 (add-to-list 'auto-mode-alist '("Gemfile$" . ruby-mode))
 (add-to-list 'auto-mode-alist '("Rakefile$" . ruby-mode))
+
+(autoload 'yaml-mode "yaml-mode" "Yaml mode" t)
+(add-to-list 'auto-mode-alist '("\.yml$" . yaml-mode))
