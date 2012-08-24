@@ -48,3 +48,18 @@
 ;; Don't show articles below this score
 (setq-default gnus-summary-expunge-below -1000)
 
+;; Configure gnus-demon
+
+;; This version `gnus-demon-scan-news' is exactly like the normal
+;; version, but only updates de groups with level 1 (the ones that
+;; have higher priority. See (info "(gnus) Group Levels")
+(defun gnus-demon-scan-news ()
+  (let ((win (current-window-configuration)))
+    (unwind-protect
+	(save-window-excursion
+	  (when (gnus-alive-p)
+	    (with-current-buffer gnus-group-buffer
+	      (gnus-group-get-new-news 1))))
+      (set-window-configuration win))))
+
+(gnus-demon-add-handler 'gnus-demon-scan-news 60 60)
