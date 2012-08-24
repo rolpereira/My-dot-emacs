@@ -177,3 +177,6 @@ buffer."
 ;(setq erc-encoding-coding-alist (quote (("#lisp" . utf-8)
 ;          ("#nihongo" . iso-2022-jp) ("#truelambda" . iso-latin-1)
 ;          ("#bitlbee" . iso-latin-1))))
+
+;; Show if the user has voice or is OP
+(setq erc-format-nick-function 'erc-format-@nick)
