@@ -2022,3 +2022,6 @@ somewhere on the variable mode-line-format."
 (setq message-log-max 1000)
 (setq regexp-search-ring-max 50)
 (setq search-ring-max 50)
+(require 'elisp-slime-nav)
+(add-hook 'emacs-lisp-mode-hook '(lambda ()
+                                   (elisp-slime-nav-mode t)))
