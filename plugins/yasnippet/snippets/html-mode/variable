@@ -1,0 +1,9 @@
+# -*- mode: snippet -*-
+# name: variable
+# key: var
+# --
+<variable>
+  <variablename>$1</variablename>
+  <value>$2</value>
+</variable>
+$0

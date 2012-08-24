@@ -1,0 +1,6 @@
+# -*- mode: snippet -*-
+# name: new-user
+# key: us
+# type: command
+# --
+$1 = User.create!(:username => "$1", :email => "$1@example.com", :password => "qwerty")
