@@ -1,6 +1,7 @@
 ;;; sb-yahoo.el --- shimbun backend for news.yahoo.co.jp -*- coding: iso-2022-7bit -*-
 
-;; Copyright (C) 2001, 2002, 2003, 2005, 2006, 2007, 2009 Kazuyoshi KOREEDA
+;; Copyright (C) 2001, 2002, 2003, 2005, 2006, 2007, 2009, 2010
+;; Kazuyoshi KOREEDA
 
 ;; Author: Kazuyoshi KOREEDA <Koreeda.Kazuyoshi@jp.panasonic.com>,
 ;;         Katsumi Yamaoka <yamaoka@jpl.org>
@@ -101,16 +102,17 @@
 		    "\"" s0 ">" s0
 		    ;; 6. subject
 		    "\\([^<]+\\)"
-		    s0 "</a>\\(?:" s0 "<[^>]+>\\)*[^<]*)" s0
-		    ;; 7. hour
+		    s0 "</a>\\(?:" s0 "<[^>]+>\\)+" s0
+		    ;; 7. source
+		    "\\([^<]+\\)"
+		    ".+)" s0
+		    ;; 8. hour
 		    "\\([012]?[0-9]\\)"
 		    s0 "時" s0
-		    ;; 8. minute
+		    ;; 9. minute
 		    "\\([0-5]?[0-9]\\)"
-		    s0 "分" "[^<]*\\(?:<a" s1 "[^>]+>" s0 "\\)?"
-		    ;; 9. source
-		    "\\([^<）]+\\)")
-		   1 2 3 4 5 6 9 7 8)))
+		    s0 "分配信")
+		   1 2 3 4 5 6 7 8 9)))
     `(("topnews" "トップ" "topnews" ,@topnews)
       ("news" "ニュース" news ,@default)
       ("politics" "政治" "pol" ,@default)
@@ -182,12 +184,11 @@ may not be presented).")
   (mapcar 'car shimbun-yahoo-groups-table))
 
 (defvar shimbun-yahoo-from-address "nobody@example.com")
-(defvar shimbun-yahoo-content-start ">[\t\n ]*[01]*[0-9]月[0-3]?[0-9]日\
-\[012]?[0-9]時[0-5]?[0-9]分配信[\t\n ]*\\(?:&nbsp\;[\t\n ]*\\)?<a[\t\n ]+\
-href=\"[^\">]+\">[^<]+</a>\\(?:[\t\n ]*</[^>]+>\\)*[\t\n ]*")
+(defvar shimbun-yahoo-content-start
+  "[012]?[0-9]時[0-5]?[0-9]分配信[\t\n\r ]*\\(?:</[^>]+>[\t\n\r ]*\\)*")
 
-(defvar shimbun-yahoo-content-end "[\t\n 　]*\\(?:【関連[^】]+】\
-\\|<!-+[\t\n ]*interest_match_relevant_zone_end[\t\n ]*-+>\\)")
+(defvar shimbun-yahoo-content-end "[\t\n\r ]*\\(<br>[\t\n\r ]*\\)*\
+<!-+[\t\n\r ]*interest_match_relevant_zone_end[\t\n\r ]*-+>")
 
 (defvar shimbun-yahoo-x-face-alist
   '(("default" . "X-Face: \"Qj}=TahP*`:b#4o_o63:I=\"~wbql=kpF1a>Sp62\
@@ -226,7 +227,7 @@ PvPs3>/KG:03n47U?FC[?DNAR4QAQxE3L;m!L10OM$-]kF\n YD\\]-^qzd#'{(o2cu,\
 	 (pages (shimbun-header-index-pages range))
 	 (count 0)
 	 (index (shimbun-index-url shimbun))
-	 next id headers start)
+	 id headers start)
     (catch 'stop
       (while t
 	(if (string-equal group "news")
@@ -256,7 +257,9 @@ class=\"ymuiContainer\"\\)" nil t)
 			      "-" "."))
 			   "%" group ".headlines.yahoo.co.jp>"))
 	  (unless (and (shimbun-search-id shimbun id)
-		       (if next ;; We're in the next page.
+		       (if (and (>= count 1) ;; We're in the next page.
+				;; Stop fetching iff range is not specified.
+				(not pages))
 			   (throw 'stop nil)
 			 t))
 	    (if (save-match-data
@@ -281,135 +284,48 @@ class=\"ymuiContainer\"\\)" nil t)
 		     id "" 0 0
 		     (match-string (nth 0 numbers)))
 		    headers))))
+	(setq count (1+ count))
 	(goto-char (point-min))
-	(if (re-search-forward "<a href=\"\\([^\"]+\\)\">次のページ</a>" nil t)
-	    (shimbun-retrieve-url (prog1
-				      (match-string 1)
-				    (erase-buffer))
-				  t)
-	  (if (and (or (not pages)
-		       (< (setq count (1+ count)) pages))
-		   (re-search-forward "<!-+[\t\n ]*過去記事[\t\n ]*-+>" nil t)
-		   (progn
-		     (setq start (match-end 0))
-		     (re-search-forward "<!-+[\t\n ]*/過去記事[\t\n ]*-+>"
-					nil t))
-		   (progn
-		     (narrow-to-region start (match-beginning 0))
-		     (goto-char start)
-		     (or (re-search-forward "<option[\t\n ]+value=\"\
+	(cond ((and pages (>= count pages))
+	       (throw 'stop nil))
+	      ((string-equal group "news")
+	       (if (>= count 2)
+		   (throw 'stop nil)
+		 (erase-buffer)
+		 (shimbun-retrieve-url
+		  "http://headlines.yahoo.co.jp/hl?c=flash"
+		  t)))
+	      ((re-search-forward "<a href=\"\\([^\"]+\\)\">次のページ</a>"
+				  nil t)
+	       (shimbun-retrieve-url (prog1
+					 (match-string 1)
+				       (erase-buffer))
+				     t))
+	      ((and (re-search-forward "<!-+[\t\n ]*過去記事[\t\n ]*-+>"
+				       nil t)
+		    (progn
+		      (setq start (match-end 0))
+		      (re-search-forward "<!-+[\t\n ]*/過去記事[\t\n ]*-+>"
+					 nil t))
+		    (progn
+		      (narrow-to-region start (match-beginning 0))
+		      (goto-char start)
+		      (or (re-search-forward "<option[\t\n ]+value=\"\
 20[0-9][0-9][01][0-9][0-3][0-9]\"[\t\n ]+selected[\t\n ]*>"
-					    nil t)
-			 (re-search-forward "<option[\t\n ]+value=\"\
+					     nil t)
+			  (re-search-forward "<option[\t\n ]+value=\"\
 20[0-9][0-9][01][0-9][0-3][0-9]\"[\t\n ]*>"
-					    nil t)))
-		   (re-search-forward "<option[\t\n ]+value=\"\
+					     nil t)))
+		    (re-search-forward "<option[\t\n ]+value=\"\
 \\(20[0-9][0-9][01][0-9][0-3][0-9]\\)\"[\t\n ]*>"
-				      nil t))
-	      (shimbun-retrieve-url (prog1
-					(concat index "&d=" (match-string 1))
-				      (erase-buffer))
-				    t)
-	    (throw 'stop nil)))
-	(setq next t)))
+				       nil t))
+	       (shimbun-retrieve-url (prog1
+					 (concat index "&d=" (match-string 1))
+				       (erase-buffer))
+				     t))
+	      (t
+	       (throw 'stop nil)))))
     (shimbun-sort-headers headers)))
-
-(luna-define-method shimbun-make-contents :before ((shimbun shimbun-yahoo)
-						   header)
-;;;<DEBUG>
-;;  (shimbun-yahoo-prepare-article shimbun header))
-;;
-;;(defun shimbun-yahoo-prepare-article (shimbun header)
-;;;</DEBUG>
-  ;; Remove headline.
-  (shimbun-remove-tags "<h[0-9][\t\n ]+class=\"yjXL\">" "</h[0-9]>")
-  (shimbun-remove-tags
-   "<p[\t\n ]+class=\"yjSt\">[^<]*[0-9]+時[0-9]+分配信" "</p>")
-  ;; Remove garbage.
-  (when (re-search-forward "\
-\[\t\n ]*<p[\t\n ]+class=\"yjSt\">[\t\n ]*拡大写真[\t\n ]*</p>[\t\n ]*"
-			   nil t)
-    (delete-region (match-beginning 0) (match-end 0)))
-  (shimbun-with-narrowed-article
-   shimbun
-   ;; Fix the picture tag.
-   (cond ((re-search-forward "[\t\n ]*<center>[\t\n ]*<font[^>]+>\
-\[\t\n ]*拡大写真[\t\n ]*\\(?:<[^>]+>[\t\n ]*\\)+"
-			     nil t)
-	  (delete-region (match-beginning 0) (match-end 0))
-	  (when (and (shimbun-prefer-text-plain-internal shimbun)
-		     (looking-at "[^<>]+"))
-	    (replace-match "(写真: \\&)<br>"))
-	  (goto-char (point-min)))
-	 ((and (shimbun-prefer-text-plain-internal shimbun)
-	       (re-search-forward "<img[\t\n ]+[^>]+>\
-\\(?:[\t\n ]*<[^>]+>\\)*[\t\n ]*<font[\t\n ]+[^>]+>[\t\n 　]*\
-\\([^<>]+\\)[\t\n ]*</font>"
-				  nil t))
-	  (if (string-equal (match-string 1) "写真")
-	      (replace-match "(写真)<br>")
-	    (replace-match "(写真: \\1)<br>"))))
-   (if (shimbun-prefer-text-plain-internal shimbun)
-       (require 'sb-text) ;; `shimbun-fill-column'
-     ;; Open paragraphs.
-     (while (re-search-forward "。<br>[\t ]*\n　" nil t)
-       (replace-match "。<br><br>\n　"))
-     (goto-char (point-min)))
-   ;; Correct the Date header and the position of the footer.
-   (let (year footer)
-     (when (and
-	    (setq year (shimbun-header-date header))
-	    (string-match " \\(20[0-9][0-9]\\) " year)
-	    (progn
-	      (setq year (string-to-number (match-string 1 year)))
-	      (re-search-forward
-	       (eval-when-compile
-		 (let ((s0 "[\t\n ]*")
-		       (s1 "[\t\n ]+"))
-		   (concat
-		    "[\t\n 　]*<div" s1 "align=right>" s0
-		    ;; 1. footer
-		    "\\("
-		    "（[^）]+）" s1 "-" s1
-		    ;; 2. month
-		    "\\([01]?[0-9]\\)"
-		    s0 "月" s0
-		    ;; 3. day
-		    "\\([0-3]?[0-9]\\)"
-		    s0 "日" s0
-		    ;; 4. hour
-		    "\\([012]?[0-9]\\)"
-		    s0 "時" s0
-		    ;; 5. minute
-		    "\\([0-5]?[0-9]\\)"
-		    s0 "分" s0 "更新"
-		    "\\)"
-		    s0 "</div>\\(?:" s0 "<br>\\)*")))
-	       nil t)))
-       (shimbun-header-set-date
-	header
-	(shimbun-make-date-string
-	 year
-	 (string-to-number (match-string 2))
-	 (string-to-number (match-string 3))
-	 (format "%02d:%02d"
-		 (string-to-number (match-string 4))
-		 (string-to-number (match-string 5)))))
-       (setq footer (match-string 1))
-       (delete-region (match-beginning 0) (match-end 0))
-       (if (shimbun-prefer-text-plain-internal shimbun)
-	   (insert "<br><br>"
-		   (make-string (max (- (symbol-value 'shimbun-fill-column)
-					(string-width footer))
-				     0)
-				? )
-		   footer "<br>")
-	 (insert "<br><br><div align=right>" footer "</div>")
-	 ;; Break long Japanese lines.
-	 (goto-char (point-min))
-	 (while (re-search-forward "<p[^>]*>\\|</p>\\|[、。）」]+" nil t)
-	   (unless (eolp)
-	     (insert "\n"))))))))
 
 (provide 'sb-yahoo)
 

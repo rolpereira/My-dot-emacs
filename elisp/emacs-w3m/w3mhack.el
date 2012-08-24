@@ -1,6 +1,6 @@
 ;;; w3mhack.el --- a hack to setup the environment for building w3m
 
-;; Copyright (C) 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009
+;; Copyright (C) 2001-2010, 2012
 ;; TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Author: Katsumi Yamaoka <yamaoka@jpl.org>
@@ -76,8 +76,7 @@ but do not execute them.")
 (let ((test (lambda (shell)
 	      (let ((buffer (generate-new-buffer " *temp*"))
 		    (msg "Hello World"))
-		(save-excursion
-		  (set-buffer buffer)
+		(with-current-buffer buffer
 		  (condition-case nil
 		      (call-process shell nil t nil "-c"
 				    (concat "MESSAGE=\"" msg "\"&&"
@@ -343,6 +342,9 @@ Error: You have to install APEL before building emacs-w3m, see manuals.
     (unless (featurep 'mule)
       (push "w3m-weather.el" ignores)
       (push "w3m-symbol.el" ignores))
+    (when (or (featurep 'xemacs)
+	      (< emacs-major-version 23))
+      (push "bookmark-w3m.el" ignores))
     ;; List shimbun modules which cannot be byte-compiled with this system.
     (let (list)
       ;; To byte-compile w3m-util.el and a version specific module first.
@@ -699,12 +701,25 @@ to remove some obsolete variables in the first argument VARLIST."
 	      (function directory-file-name)
 	      (nreverse paths) ":")))))
 
+;; FIXME: How to do it for Windows?
+(defun w3mhack-expand-file-name (name destdir)
+  "Convert filename NAME to the one relative to DESTDIR."
+  (if (and name destdir
+	   (eq (aref name 0) ?/)) ;; Not "NONE"?
+      (expand-file-name (substring name 1) destdir)
+    name))
+
 (defun w3mhack-what-where ()
   "Show what files should be installed and where should they go."
-  (let ((lisp-dir (pop command-line-args-left))
-	(icon-dir (pop command-line-args-left))
-	(package-dir (pop command-line-args-left))
-	(info-dir (pop command-line-args-left)))
+  (let* ((destdir (getenv "DESTDIR"))
+	 (lisp-dir (w3mhack-expand-file-name (pop command-line-args-left)
+					     destdir))
+	 (icon-dir (w3mhack-expand-file-name (pop command-line-args-left)
+					     destdir))
+	 (package-dir (w3mhack-expand-file-name (pop command-line-args-left)
+						destdir))
+	 (info-dir (w3mhack-expand-file-name (pop command-line-args-left)
+					     destdir)))
     (message "
 lispdir=%s
 ICONDIR=%s
@@ -882,23 +897,29 @@ NOTE: This function must be called from the top directory."
 
 (defun w3mhack-update-files-autoloads (files)
   "Run `update-file-autoloads' with FILES, silently in XEmacs."
-  (if (featurep 'xemacs)
-      (let ((si:message (symbol-function 'message)))
-	(defun message (fmt &rest args)
-	  "Ignore useless messages while generating autoloads."
-	  (cond ((and (string-equal "Generating autoloads for %s..." fmt)
-		      (file-exists-p (file-name-nondirectory (car args))))
-		 (funcall si:message
-			  fmt (file-name-nondirectory (car args))))
-		((string-equal "No autoloads found in %s" fmt))
-		((string-equal "Generating autoloads for %s...done" fmt))
-		(t (apply si:message fmt args))))
-	(unwind-protect
-	    (dolist (file files)
-	      (update-file-autoloads file))
-	  (fset 'message si:message)))
-    (dolist (file files)
-      (update-file-autoloads file))))
+  (cond ((featurep 'xemacs)
+	 (let ((si:message (symbol-function 'message)))
+	   (defun message (fmt &rest args)
+	     "Ignore useless messages while generating autoloads."
+	     (cond ((and (string-equal "Generating autoloads for %s..." fmt)
+			 (file-exists-p (file-name-nondirectory (car args))))
+		    (funcall si:message
+			     fmt (file-name-nondirectory (car args))))
+		   ((string-equal "No autoloads found in %s" fmt))
+		   ((string-equal "Generating autoloads for %s...done" fmt))
+		   (t (apply si:message fmt args))))
+	   (unwind-protect
+	       (dolist (file files)
+		 (update-file-autoloads file))
+	     (fset 'message si:message))))
+	((boundp 'generated-autoload-load-name)
+	 (dolist (file files)
+	   (let ((generated-autoload-load-name
+		  (file-name-sans-extension (file-name-nondirectory file))))
+	     (update-file-autoloads file))))
+	(t
+	 (dolist (file files)
+	   (update-file-autoloads file)))))
 
 (defun w3mhack-generate-load-file ()
   "Generate a file including all autoload stubs."
@@ -930,8 +951,7 @@ NOTE: This function must be called from the top directory."
 	(message " `%s' is up to date" w3mhack-load-file)
       (when (fboundp 'autoload-ensure-default-file)
 	(autoload-ensure-default-file generated-autoload-file))
-      (save-excursion
-	(set-buffer (find-file-noselect generated-autoload-file))
+      (with-current-buffer (find-file-noselect generated-autoload-file)
 	(if (fboundp 'autoload-ensure-default-file)
 	    (let ((case-fold-search t))
 	      (goto-char (point-min))

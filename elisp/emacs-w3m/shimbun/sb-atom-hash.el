@@ -1,6 +1,6 @@
 ;;; sb-atom-hash.el --- shimbun backend for atom content -*- coding: iso-2022-7bit -*-
 
-;; Copyright (C) 2006, 2007, 2008, 2009 Tsuyoshi CHO <tsuyoshi_cho@ybb.ne.jp>
+;; Copyright (C) 2006-2009, 2011 Tsuyoshi CHO <tsuyoshi_cho@ybb.ne.jp>
 
 ;; Author: Tsuyoshi CHO <tsuyoshi_cho@ybb.ne.jp>
 ;; Keywords: shimbun
@@ -62,7 +62,7 @@
       (insert buf-str)
       ;; parse xml : check url and desc
       (setq xml (condition-case err
-		    (xml-parse-region (point-min) (point-max))
+		    (shimbun-xml-parse-buffer)
 		  (error
 		   (message "Error while parsing %s: %s"
 			    (content-hash-contents-url content-hash shimbun)
@@ -130,9 +130,11 @@
 			  (setq content (shimbun-rss-node-text
 					 atom-ns contentsym entry))
 			;; non-escaped, but  "<>& to &xxx;
-			(setq content (shimbun-decode-entities-string
-				       (shimbun-rss-node-text
-					    atom-ns contentsym entry))))))))
+			(let ((text (shimbun-rss-node-text
+				     atom-ns contentsym entry)))
+			  (when text
+			    (setq content (shimbun-decode-entities-string
+					   text)))))))))
 		(when (and id content)
 		  (content-hash-set-item content-hash id content))))))))))
 
@@ -208,9 +210,9 @@
 	      (symbol-name tag)
 	      (if attributes
 		  (concat " "
-			  (mapconcat '(lambda (attr)
-					(concat (symbol-name (car attr))
-						"=\"" (cdr attr) "\""))
+			  (mapconcat (lambda (attr)
+				       (concat (symbol-name (car attr))
+					       "=\"" (cdr attr) "\""))
 				     attributes " "))
 		"")
 	      (if children

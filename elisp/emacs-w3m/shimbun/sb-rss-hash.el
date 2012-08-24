@@ -1,6 +1,6 @@
 ;;; sb-rss-hash.el --- shimbun backend for rss description -*- coding: iso-2022-7bit -*-
 
-;; Copyright (C) 2006, 2009 Tsuyoshi CHO <tsuyoshi_cho@ybb.ne.jp>
+;; Copyright (C) 2006, 2009, 2011 Tsuyoshi CHO <tsuyoshi_cho@ybb.ne.jp>
 
 ;; Author: Tsuyoshi CHO <tsuyoshi_cho@ybb.ne.jp>
 ;; Keywords: shimbun
@@ -62,7 +62,7 @@
       (insert buf-str)
       ;; parse xml : check url and desc
       (setq xml (condition-case err
-		    (xml-parse-region (point-min) (point-max))
+		    (shimbun-xml-parse-buffer)
 		  (error
 		   (message "Error while parsing %s: %s"
 			    (content-hash-contents-url content-hash shimbun)
@@ -143,6 +143,16 @@
 				     &optional outbuf)
   (content-hash-shimbun-article (luna-slot-value shimbun 'content)
 				shimbun header outbuf))
+
+(luna-define-method shimbun-rss-build-message-id ((shimbun
+						   shimbun-rss-hash)
+						  url &optional date)
+  (let* ((group (shimbun-current-group-internal shimbun)))
+    (when (string-match "#" url)
+      (setq url (substring url 0 (match-beginning 0))))
+    (when (stringp date)
+      (setq url (concat url date)))
+    (concat "<" (md5 (concat url)) "." group "@rss-hash>")))
 
 (provide 'sb-rss-hash)
 
