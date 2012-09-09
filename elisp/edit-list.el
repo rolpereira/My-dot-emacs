@@ -1,10 +1,10 @@
 ;;; edit-list.el --- edit a single list
 
-;; Copyright (C) 2008  Michael Olson
+;; Copyright (C) 2008, 2012  Michael Olson
 
 ;; Author: Michael Olson <mwolson@gnu.org>
 ;; Date: Mon 31-Mar-2008
-;; Version: 0.3
+;; Version: 0.4
 ;; URL: http://mwolson.org/static/dist/elisp/edit-list.el
 
 ;; This file is not part of GNU Emacs.
@@ -32,6 +32,10 @@
 ;; when done.  Or just kill the buffer if you change your mind.
 
 ;;; History:
+
+;; 0.4 (done by Rolando <rolando_pereira@sapo.pt>):
+;;
+;; - Add the autoload comment to `edit-list'.
 
 ;; 0.3:
 ;;
@@ -104,6 +108,7 @@ Edit List mode allows the editing of a single list in a buffer."
                           t
                           (and sym (symbol-name sym))))))
 
+;;;###autoload
 (defun edit-list (list-name)
   "Edit a list called LIST-NAME interactively."
   (interactive (list (edit-list-read-list-name "Edit list: ")))
@@ -142,4 +147,4 @@ This finishes the work begun by `edit-list'."
 
 (provide 'edit-list)
 
-;; edit-list.el ends here
+;;; edit-list.el ends here
