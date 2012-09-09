@@ -404,7 +404,13 @@
   (let (tagname flag)
     (setq tagname (gtags-current-token))
     (if (not tagname)
-        nil
+        (save-excursion
+          (forward-char -1)
+          (setq tagname (gtags-current-token))
+          (if (not tagname)
+            nil
+            (gtags-push-context)
+            (gtags-goto-tag tagname "C")))
       (gtags-push-context)
       (gtags-goto-tag tagname "C"))))
 
