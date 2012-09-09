@@ -1,4 +1,4 @@
-;;; -*- Mode: lisp; indent-tabs-mode: nil; outline-regexp: ";;;;;*" -*-
+;;; -*- indent-tabs-mode: nil; outline-regexp: ";;;;;*" -*-
 ;;;
 ;;; slime-backend.lisp --- SLIME backend interface.
 ;;;
@@ -239,19 +239,21 @@ EXCEPT is a list of symbol names which should be ignored."
 
 (defmacro with-struct ((conc-name &rest names) obj &body body)
   "Like with-slots but works only for structs."
-  (flet ((reader (slot) (intern (concatenate 'string
-					     (symbol-name conc-name)
-					     (symbol-name slot))
-				(symbol-package conc-name))))
+  (check-type conc-name symbol)
+  (flet ((reader (slot)
+           (intern (concatenate 'string
+                                (symbol-name conc-name)
+                                (symbol-name slot))
+                   (symbol-package conc-name))))
     (let ((tmp (gensym "OO-")))
-    ` (let ((,tmp ,obj))
-        (symbol-macrolet
-            ,(loop for name in names collect 
-                   (typecase name
-                     (symbol `(,name (,(reader name) ,tmp)))
-                     (cons `(,(first name) (,(reader (second name)) ,tmp)))
-                     (t (error "Malformed syntax in WITH-STRUCT: ~A" name))))
-          ,@body)))))
+      ` (let ((,tmp ,obj))
+          (symbol-macrolet
+              ,(loop for name in names collect 
+                     (typecase name
+                       (symbol `(,name (,(reader name) ,tmp)))
+                       (cons `(,(first name) (,(reader (second name)) ,tmp)))
+                       (t (error "Malformed syntax in WITH-STRUCT: ~A" name))))
+            ,@body)))))
 
 (defmacro when-let ((var value) &body body)
   `(let ((,var ,value))
@@ -1422,12 +1424,6 @@ but that thread may hold it more than once."
    (declare (ignore lock)
             (type function function))
    (funcall function))
-
-;; Same here: don't use this outside of swank-gray.lisp.
-(definterface call-with-io-timeout (function &key seconds)
-  "Calls function with the specified IO timeout."
-  (declare (ignore seconds))
-  (funcall function))
 
 
 ;;;; Weak datastructures

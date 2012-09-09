@@ -1,3 +1,189 @@
+2012-09-04  Stas Boukarev  <stassats@gmail.com>
+
+	* swank-loader.lisp (lisp-version-string): Add "s" to Allegro with
+	SMP support.
+	Patch by Dave Cooper.
+
+2012-08-18  Stas Boukarev  <stassats@gmail.com>
+
+	* swank-abcl.lisp (find-definitions): Call ext:resolve before
+	finding definitions, for the symbol may be not autoloaded yet.
+
+2012-08-04  Stas Boukarev  <stassats@gmail.com>
+
+	* swank-sbcl.lisp (call-with-debugging-environment): Use
+	sb-debug::resolve-stack-top-hint instead of just
+	sb-debug:*stack-top-hint*, because now it can contain things other
+	than just frames.
+	* clean up: (signal (make-condition ...)) => (signal ...)
+
+2012-07-13  Helmut Eller  <heller@common-lisp.net>
+
+	* slime.el: Don't compile functions that are now in other files.
+
+2012-06-19  Helmut Eller  <heller@common-lisp.net>
+
+	* swank-ecl.lisp (wait-for-input): Provide implementation
+	that doesn't need serve-event.
+
+2012-06-12  Stas Boukarev  <stassats@gmail.com>
+
+	* slime.el (slime-changelog-date): Use
+	(expand-file-name "ChangeLog" slime-path) instead of
+	(concat slime-path "ChangeLog"), slime-path may not have a
+	trailing /.
+	Reported by Paul Sexton (lp#1011935).
+
+2012-05-25  Stas Boukarev  <stassats@gmail.com>
+
+	* slime.el (slime-oneliner): Use minibuffer width instead of the
+	width of the current frame, minibuffer can be in a separate frame
+	with a different width.
+	Patch by Greg Pfeil (lp#1004252).
+
+2012-05-21  Helmut Eller  <heller@common-lisp.net>
+
+	Reduce dependecy on pre-defined faces.
+
+	* slime.el (slime-apropos-symbol, slime-apropos-label): New faces.
+	(slime-print-apropos): Use them.
+
+	Reported by: Daimrod <daimrod@gmail.com>
+
+2012-05-12  Helmut Eller  <heller@common-lisp.net>
+
+	* swank-sbcl.lisp (stream-force-output): Undo last few changes.
+
+2012-05-11  Helmut Eller  <heller@common-lisp.net>
+
+	* swank-sbcl.lisp (stream-force-output): Use with-world-lock
+	i.e. with-recursive-lock instead of with-mutex.
+	* slime.el (sbcl-world-lock): New test.
+
+2012-05-11  Helmut Eller  <heller@common-lisp.net>
+
+	* swank-sbcl.lisp (stream-force-output): Don't use
+	with-deadline. Grab the world-lock instead.
+	(condition-timed-wait): Use the :timeout argument for real.
+
+2012-05-11  Helmut Eller  <heller@common-lisp.net>
+
+	* swank-backend.lisp (call-with-io-timeout): Not used. Deleted.
+	* swank-sbcl.lisp (call-with-io-timeout): Deleted.
+
+2012-05-07  Helmut Eller  <heller@common-lisp.net>
+
+	Ignore linebreaks for the macroexpand test.
+	SBCL should now also pass it.
+
+	* slime.el (slime-test-macroexpansion=): New function.
+	([test] macroexpand): Use it.
+
+2012-05-06  Helmut Eller  <heller@common-lisp.net>
+
+	* swank-sbcl.lisp (condition-timed-wait): Undo previous change.
+	The :timeout arg doesn't seem ready for production use.
+
+2012-05-06  Helmut Eller  <heller@common-lisp.net>
+
+	* swank-sbcl.lisp (condition-timed-wait): Use the :timeout
+	argument of sb-thread:condition-wait if supported.
+
+
+2012-05-06  Helmut Eller  <heller@common-lisp.net>
+
+	* swank-sbcl.lisp (with-definition-source): Forgot to commit this
+	one.
+
+	* swank-allegro.lisp (string-to-utf8): Set the :null-terminate
+	argument of excl:string-to-octets to nil.
+
+2012-05-06  Helmut Eller  <heller@common-lisp.net>
+
+	* swank-backend.lisp (with-struct): Undo damage.
+	* swank-sbcl.lisp (with-definition-source): New macro.
+
+2012-05-06  Helmut Eller  <heller@common-lisp.net>
+
+	* swank.lisp, swank-rpc.lisp: iso-8859-1 is not same as
+	latin-1-unix.
+
+2012-05-06  Cyrus Harmon <ch-slime@bobobeach.com>
+	    Helmut Eller  <heller@common-lisp.net>
+
+	* slime.el (slime-pprint-eval-region): New command. No keybinding
+	though.
+
+2012-05-04  Nikodemus Siivola  <nikodemus@random-state.net>
+
+	* swank-sbcl.lisp: Remove the SB-C::MERGE-TAIL-CALLS proclamation.
+	It does nothing, and never did, actually.
+
+2012-05-03  Stas Boukarev  <stassats@gmail.com>
+
+	* slime.el (slime-goto-source-location): Allow for
+	:buffer-and-file locations, prefer buffer if the buffer exists.
+
+	* swank-sbcl.lisp (definition-source-for-emacs): Send
+	:buffer-and-file when both are available.
+	(quit-lisp): Use sb-ext:exit when it's present.
+
+2012-05-03  Stas Boukarev  <stassats@gmail.com>
+
+	* swank.lisp (find-definitions-find-symbol): Put back accidentally
+	removed with-buffer-syntax.
+
+2012-05-02  Stas Boukarev  <stassats@gmail.com>
+
+	* swank.lisp (*find-definitions-right-trim*)
+	(*find-definitions-left-trim*): New variables. ",:." and "#:"
+	default values.
+	(find-definitions-for-emacs): Trim names with using the above
+	variables when a symbol is not found.
+
+2012-05-01  Stas Boukarev  <stassats@gmail.com>
+
+	* slime.el (slime-xrefs-for-notes): Format location in a proper
+	way.
+	Reported by Max Mikhanosha.
+
+2012-04-27  Nikodemus Siivola  <nikodemus@random-state.net>
+
+	* swank-sbcl.lisp (lisp-source-location): How hard can it be to
+	get this right? (3-legged IF, FFS!)
+
+2012-04-24  Douglas Crosher <dcrosher@common-lisp.net>
+
+	* swank-scl.lisp (create-socket): correct variable name typo.
+
+	* swank.lisp, swank-rpc.lisp (file options): use #\; to separate the
+	file options.
+
+2012-04-23  Christophe Rhodes  <csr21@cantab.net>
+
+	* slime.el (slime-operator-before-point-function): new variable.
+	(slime-operator-before-point): use it.
+	(slime-lisp-operator-before-point): default implementation for
+	slime-operator-before-point-function (unchanged from before).
+
+2012-04-20  Nikodemus Siivola  <nikodemus@random-state.net>
+
+	* swank-sbcl.lisp (stream-force-output :around): Workaroud for
+	deadlocks between auto-flush-thread buffer write lock and world
+	lock.
+	(slime-output-stream): Dummy forward definition for the benefit of
+	the defmethod.
+
+2012-04-20  Nikodemus Siivola  <nikodemus@random-state.net>
+
+	* swank-sbcl.lisp (swank-value): New function, makes it easy to
+	refer to variables in SWANK -- which doesn't exist when the
+	backend is loaded.
+	(lisp-source-location): One of the strings being interned was
+	downcased. Fix using SWANK-VALUE.
+	(make-socket-io-stream): Use SWANK-VALUE instead of INTERN &
+	SYMBOL-VALUE.
+
 2012-04-11  Helmut Eller  <heller@common-lisp.net>
 
 	* slime.el ([test] utf-8-source): Use the encoded byte sequence of

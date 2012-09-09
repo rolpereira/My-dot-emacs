@@ -35,7 +35,8 @@
      t))
 
 (defimplementation string-to-utf8 (s)
-  (excl:string-to-octets s :external-format utf8-ef))
+  (excl:string-to-octets s :external-format utf8-ef 
+                         :null-terminate nil))
 
 (defimplementation utf8-to-string (u)
   (excl:octets-to-string u :external-format utf8-ef))
@@ -340,7 +341,7 @@
   `(satisfies redefinition-p))
 
 (defun signal-compiler-condition (&rest args)
-  (signal (apply #'make-condition 'compiler-condition args)))
+  (apply #'signal 'compiler-condition args))
 
 (defun handle-compiler-warning (condition)
   (declare (optimize (debug 3) (speed 0) (space 0)))

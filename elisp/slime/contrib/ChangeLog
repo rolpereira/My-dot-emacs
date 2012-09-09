@@ -1,3 +1,31 @@
+2012-08-13  Stas Boukarev  <stassats@gmail.com>
+
+	* swank-arglists.lisp (extra-keywords/slots): Check for
+	slot-definition-initfunction being present before calling
+	slot-definition-initform.
+
+2012-08-04  Stas Boukarev  <stassats@gmail.com>
+
+	* swank-arglists.lisp (test-print-arglist): bind
+	*print-right-margin* to 1000 instead of NIL, because the default
+	value on ABCL is less than the length of the tested arglist.
+
+2012-05-23  Christophe Rhodes  <csr21@cantab.net>
+
+	* swank-media.lisp: add provide.
+
+2012-05-04  Stas Boukarev  <stassats@gmail.com>
+
+	* swank-fancy-inspector.lisp (emacs-inspect symbol): On SBCL,
+	show information about type specifiers.
+
+2012-04-20  John Smith <ohwoeowho@googlemail.com>
+
+	Prettier arglists.
+
+	* swank-mit-scheme.scm (swank:operator-arglist): Remove trailing
+	newlines.
+
 2012-04-13  Nikodemus Siivola  <nikodemus@random-state.net>
 
 	* slime-cl-indent.el (lisp-indent-259): If we are expecting a

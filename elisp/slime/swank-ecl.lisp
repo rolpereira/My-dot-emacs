@@ -40,11 +40,12 @@
   (import-from :gray *gray-stream-symbols* :swank-backend)
 
   (import-swank-mop-symbols :clos
-    '(:eql-specializer
+    `(:eql-specializer
       :eql-specializer-object
       :generic-function-declarations
       :specializer-direct-methods
-      :compute-applicable-methods-using-classes)))
+      ,@(unless (fboundp 'clos:compute-applicable-methods-using-classes)
+         '(:compute-applicable-methods-using-classes)))))
 
 
 ;;;; TCP Server
@@ -202,6 +203,17 @@
 
 ) ; #+serve-event (progn ...
 
+#-serve-event
+(defimplementation wait-for-input (streams &optional timeout)
+  (assert (member timeout '(nil t)))
+  (loop
+   (cond ((check-slime-interrupts) (return :interrupt))
+         (timeout (return (remove-if-not #'listen streams)))
+         (t
+          (let ((ready (remove-if-not #'listen streams)))
+            (if ready (return ready))
+            (sleep 0.1))))))
+
 
 ;;;; Compilation
 
@@ -209,7 +221,7 @@
 (defvar *buffer-start-position*)
 
 (defun signal-compiler-condition (&rest args)
-  (signal (apply #'make-condition 'compiler-condition args)))
+  (apply #'signal 'compiler-condition args))
 
 #-ecl-bytecmp
 (defun handle-compiler-message (condition)

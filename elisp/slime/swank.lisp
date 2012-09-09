@@ -1,9 +1,7 @@
-;;; -*- outline-regexp:";;;;;*" indent-tabs-mode:nil coding:latin-1-unix -*-
+;;;; swank.lisp --- Server for SLIME commands.
 ;;;
 ;;; This code has been placed in the Public Domain.  All warranties
 ;;; are disclaimed.
-;;;
-;;;; swank.lisp
 ;;;
 ;;; This file defines the "Swank" TCP server for Emacs to talk to. The
 ;;; code in this file is purely portable Common Lisp. We do require a
@@ -65,7 +63,9 @@
            #:quit-lisp
            #:eval-for-emacs
            #:eval-in-emacs
-           #:y-or-n-p-in-emacs))
+           #:y-or-n-p-in-emacs
+           #:*find-definitions-right-trim*
+           #:*find-definitions-left-trim*))
 
 (in-package :swank)
 
@@ -291,8 +291,8 @@ Backend code should treat the connection structure as opaque.")
   (:report (lambda (c s) (princ (swank-error.condition c) s)))
   (:documentation "Condition which carries a backtrace."))
 
-(defun make-swank-error (condition &optional (backtrace (safe-backtrace)))
-  (make-condition 'swank-error :condition condition :backtrace backtrace))
+(defun signal-swank-error (condition &optional (backtrace (safe-backtrace)))
+  (error 'swank-error :condition condition :backtrace backtrace))
 
 (defvar *debug-on-swank-protocol-error* nil
   "When non-nil invoke the system debugger on errors that were
@@ -879,7 +879,7 @@ if the file doesn't exist; otherwise the first line of the file."
   "Read an S-expression from STREAM using the SLIME protocol."
   (log-event "decode-message~%")
   (without-slime-interrupts
-    (handler-bind ((error (lambda (c) (error (make-swank-error c)))))
+    (handler-bind ((error #'signal-swank-error))
       (handler-case (read-message stream *swank-io-package*)
         (swank-reader-error (c) 
           `(:reader-error ,(swank-reader-error.packet c)
@@ -889,7 +889,7 @@ if the file doesn't exist; otherwise the first line of the file."
   "Write an S-expression to STREAM using the SLIME protocol."
   (log-event "encode-message~%")
   (without-slime-interrupts
-    (handler-bind ((error (lambda (c) (error (make-swank-error c)))))
+    (handler-bind ((error #'signal-swank-error))
       (write-message message *swank-io-package* stream))))
 
 
@@ -2918,12 +2918,30 @@ Include the nicknames if NICKNAMES is true."
      (inspector-nth-part part))
     ((:sldb frame var)
      (frame-var-value frame var))))
-  
+
+(defvar *find-definitions-right-trim* ",:.")
+(defvar *find-definitions-left-trim* "#:")
+
+(defun find-definitions-find-symbol (name)
+  (flet ((do-find (name)
+           (multiple-value-bind (symbol found)
+               (with-buffer-syntax ()
+                 (parse-symbol name))
+             (when found
+               (return-from find-definitions-find-symbol
+                 (values symbol found))))))
+    (do-find name)
+    (do-find (string-right-trim *find-definitions-right-trim* name))
+    (do-find (string-left-trim *find-definitions-left-trim* name))
+    (do-find (string-left-trim *find-definitions-left-trim*
+                               (string-right-trim
+                                *find-definitions-right-trim* name)))))
+
 (defslimefun find-definitions-for-emacs (name)
   "Return a list ((DSPEC LOCATION) ...) of definitions for NAME.
 DSPEC is a string and LOCATION a source location. NAME is a string."
-  (multiple-value-bind (symbol found) (with-buffer-syntax () 
-                                        (parse-symbol name))
+  (multiple-value-bind (symbol found)
+      (find-definitions-find-symbol name)
     (when found
       (mapcar #'xref>elisp (find-definitions symbol)))))
 
@@ -3667,5 +3685,11 @@ Collisions are caused because package information is ignored."
 
 (defun init ()
   (run-hook *after-init-hook*))
+
+;; Local Variables:
+;; coding: latin-1-unix
+;; indent-tabs-mode: nil
+;; outline-regexp: ";;;;;*"
+;; End:
 
 ;;; swank.lisp ends here
