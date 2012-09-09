@@ -138,4 +138,6 @@ symbol under point in the current buffer."
       (cancel-timer light-symbol-timer)
       (setq light-symbol-timer nil))))
 
+(provide 'light-symbol)
+
 ;;; light-symbol.el ends here 
