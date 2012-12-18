@@ -1,11 +1,10 @@
-.emacs.elc
-.gnus~
+*.elc
+*~
 auto-save-list
 autosaves
 backups
 history
 image-dired
-.emacs~
 savehist
 saveplace
 tramp
@@ -14,3 +13,8 @@ ac-comphist.dat
 w3m-session
 abbrev_defs
 elpa-bak
+ede-projects.el
+bbdb
+elpa
+nohup.out
+eproject.lst
