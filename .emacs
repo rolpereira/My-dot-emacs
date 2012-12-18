@@ -2127,6 +2127,25 @@ somewhere on the variable mode-line-format."
 (defmacro sort-safe (list predicate)
   "Sort LIST without modifying it using PREDICATE"
   `(sort (copy-sequence ,list) ,predicate))
+
+;; From: http://stackoverflow.com/questions/2199678/how-to-call-latexmk-in-emacs-and-jump-to-next-error
+(add-hook 'LaTeX-mode-hook (lambda ()
+  (pushnew
+    '("Latexmk" "latexmk -pdf %s" TeX-run-TeX nil t
+      :help "Run Latexmk on file")
+    TeX-command-list
+    :test #'equal)))
+
+;; It might also be wise to add something like
+
+;; '("%(-PDF)"
+;;   (lambda ()
+;;     (if (and (not TeX-Omega-mode)
+;;              (or TeX-PDF-mode TeX-DVI-via-PDFTeX))
+;;         "-pdf" "")))
+
+;; to TeX-expand-list and use "latexmk %(-PDF) %s" so that it will work in both pdf and dvi mode. Personally, I find it easier to use customize especially when you are experimenting.
+
 (defun pp-current-buffer (thing)
   (pp thing
     (get-buffer (current-buffer))))
