@@ -1474,7 +1474,7 @@ point."
 ;; ‘C-x r j i’ to open an ‘ideas’ file:
 ;; http://www.emacswiki.org/emacs-en/EmacsNiftyTricks
 (set-register ?e '(file . "~/.emacs"))
-(set-register ?f '(file . "~/escola/escola.org/escola.org"))
+(set-register ?f '(file . "~/escola/escola.org"))
 (set-register ?h '(file . "~/Área de Trabalho/humor.txt"))
 (set-register ?c '(file . "~/Área de Trabalho/conducao/conducao.org"))
 
