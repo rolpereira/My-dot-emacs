@@ -2071,3 +2071,72 @@ somewhere on the variable mode-line-format."
        ,@body
        (- (float-time) ,start))))
 
+;; From: http://paste.lisp.org/display/23526
+(defun alistp (list)
+  (if (listp list)
+      (cond ((= 0 (length list))
+	     t)
+	    ((consp (car list))
+	     (alistp (cdr list)))
+	    (t nil))
+      nil))
+
+(defun make-hash-from-alist (data &rest keyword-args)
+  (assert (alistp data) t "DATA is not a valid alist")
+  (let ((return-value (if keyword-args
+                        (apply #'make-hash-table keyword-args)
+                        (make-hash-table))))
+    (loop for (key . value) in data
+      do (puthash key value return-value))
+    return-value))
+
+(defalias '{} 'make-hash-from-alist)
+
+;; From: https://bitbucket.org/tarballs_are_good/qtility/src/423519bbe130/sequence.lisp
+(defun subdivide (sequence chunk-size)
+  "Split SEQUENCE into subsequences of size CHUNK-SIZE."
+  (check-type sequence sequence)
+  (check-type chunk-size (integer 1))
+  
+  (etypecase sequence
+    ;; Since lists have O(N) access time, we iterate through manually,
+    ;; collecting each chunk as we pass through it. Using SUBSEQ would
+    ;; be O(N^2).
+    (list (labels ((rec (sequence acc)
+                     (let ((rest (nthcdr chunk-size sequence)))
+                       (if (consp rest)
+                           (rec rest (cons (subseq sequence 0 chunk-size) acc))
+                           (nreverse (cons sequence acc))))))
+            (and sequence (rec sequence nil))))
+    
+    ;; For other sequences like strings or arrays, we can simply chunk
+    ;; by repeated SUBSEQs.
+    (sequence (loop with len = (length sequence)
+                    for i below len by chunk-size
+                    collect (subseq sequence i (min len (+ chunk-size i)))))))
+
+
+(defun take (n sequence)
+  "Take the first N elements from SEQUENCE."
+  (subseq sequence 0 n))
+
+(defun drop (n sequence)
+  "Drop the first N elements from SEQUENCE."
+  ;; This used to be NTHCDR for lists.
+  (subseq sequence n))
+(defmacro sort-safe (list predicate)
+  "Sort LIST without modifying it using PREDICATE"
+  `(sort (copy-sequence ,list) ,predicate))
+(defun pp-current-buffer (thing)
+  (pp thing
+    (get-buffer (current-buffer))))
+(defun what-weekday (date)
+  (interactive "sDate: ")
+  (with-temp-buffer
+    (insert (concat "<" date ">"))
+    (org-mode)
+    (backward-char 2)
+    (org-ctrl-c-ctrl-c)
+    (end-of-line)
+    (backward-char 2)
+    (message "%s" (word-at-point))))
