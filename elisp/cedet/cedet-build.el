@@ -1,9 +1,8 @@
 ;;; cedet-build.el --- Build CEDET within Emacs.
 
-;; Copyright (C) 2008, 2009 Eric M. Ludlam
+;; Copyright (C) 2008, 2009, 2012 Eric M. Ludlam
 
 ;; Author: Eric M. Ludlam <eric@siege-engine.com>
-;; X-RCS: $Id: cedet-build.el,v 1.12 2009-12-28 14:16:12 zappo Exp $
 
 ;; This program is free software; you can redistribute it and/or
 ;; modify it under the terms of the GNU General Public License as
@@ -29,44 +28,14 @@
 ;;
 ;;; USAGE:
 ;;
-;; Step 1:  Compile CEDET in a fresh Emacs:
-;;
 ;;     emacs -Q -l cedet-build.el -f cedet-build
 ;;     
 ;;       or, if -Q isn't supported
 ;;
 ;;     emacs -q --no-site-file -l cedet-build.el -f cedet-build
-;;
-;;       or, if you have minimal make available, this is in the Makefile
-;;
-;;     make ebuild
-;;
-;;   or
-;;
-;;     Eval this buffer and then start compilation:
-;;
-;;     M-x eval-buffer
-;;     M-x cedet-build-in-default-emacs
-;;
-;;   or
-;;
-;;     if this is an incremental build, you can do:
-;;
-;;     M-x eval-buffer
-;;     M-x cedet-build-in-this-emacs
-;;
-;;     If EIEIO needs recompile, it will switch to compiling in
-;;     a subprocess with `cedet-build-in-default-emacs'.
-;;
-;; Step 2: Check Output.
-;;
-;;   If Compilation of grammars exceeds Emacs' stack size, exit Emacs,
-;;   and re-run the compilation steps above.  Once most of CEDET is
-;;   compiled, this problem goes away.
 
 
 ;;; Code:
-
 (defvar cedet-build-location
   (let ((dir (file-name-directory
 	      (or load-file-name (buffer-file-name)))))
@@ -100,7 +69,28 @@ This only works if EIEIO does not need to be compiled."
     (switch-to-buffer "*CEDET BYTECOMPILE*" t)
     (goto-char (point-max))
     (insert (apply 'format fmt args))
+    (delete-other-windows)
     (sit-for 0)))
+
+(defun cedet-build-autoloads-for-dir (basedir &rest dirs)
+  "Create loaddefs.el for basedir, including all DIRS in the loaddefs."
+  (save-excursion
+    (let* ((default-directory (expand-file-name basedir))
+	   (genfile (expand-file-name "loaddefs.el"))
+	   (load-path (cons default-directory load-path)))
+      ;; Delete it if it is there.  There is a bug in updating
+      ;; an existing file.
+      (when (file-exists-p genfile) (delete-file genfile))
+      (apply 'call-process
+	     (expand-file-name invocation-name invocation-directory)
+	     nil nil nil
+	     "-Q" "-batch"
+	     "-L" default-directory
+	     "--eval" (concat "(setq generated-autoload-file \""
+			      genfile
+			      "\")")
+	     "-f" "batch-update-autoloads" dirs)
+      )))
 
 (defun cedet-build (&optional override-check)
   "Build CEDET via EDE.
@@ -120,10 +110,7 @@ OVERRIDE-CHECK to override cedet short-cicuit."
 
   ;; Get EIEIO built first.
   (save-excursion
-    (load-file "common/inversion.el")
-    (load-file "common/cedet-compat.el")
-    (load-file "eieio/eieio-comp.el")
-    (let ((src "eieio/eieio.el") (dst "eieio/eieio.elc"))
+    (let ((src "lisp/eieio/eieio.el") (dst "eieio/eieio.elc"))
       (if (file-newer-than-file-p src dst)
 	  (progn
 	    (when (featurep 'eieio)
@@ -133,98 +120,119 @@ OVERRIDE-CHECK to override cedet short-cicuit."
 	(cedet-build-msg "not needed\n")))
     )
 
-  (load-file "common/cedet-autogen.el")
+  ;; Get eieio loaddefs
+  (cedet-build-msg "Step 2: Creating autoloads ...\n")
+  (cedet-build-msg "Step 2.1: EIEIO Autoloads...")
+  (cedet-build-autoloads-for-dir "lisp/eieio/" ".")
+  (cedet-build-msg "done.\n")
+
+  ;; Get core CEDET autoloads built...
+  (cedet-build-msg "Step 2.2: CEDET Autoloads...")
+  (cedet-build-autoloads-for-dir "lisp/cedet/" ".")
+  (cedet-build-msg "done.\n")
 
   ;; Get EDE autoloads built...
-  (cedet-build-msg "Step 2: EDE Autloads...")
-  (save-excursion
-    (let ((default-directory (expand-file-name "ede")))
-      (cedet-update-autoloads "ede-loaddefs.el" ".")))
+  (cedet-build-msg "Step 2.3: EDE Autoloads...")
+  (cedet-build-autoloads-for-dir "lisp/cedet/ede/" ".")
   (cedet-build-msg "done.\n")
 
   ;; Get Semantic autoloads built...
-  (cedet-build-msg "Step 3: Semantic Autloads...")
-  (save-excursion
-    (let ((default-directory (expand-file-name "semantic")))
-      (cedet-update-autoloads "semantic-loaddefs.el" "." "bovine" "wisent")))
+  (cedet-build-msg "Step 2.4: Semantic Autoloads...")
+  (cedet-build-autoloads-for-dir "lisp/cedet/semantic/" "." "./bovine" "./wisent" "./analyze" "./decorate" "./ectags" "./symref")
   (cedet-build-msg "done.\n")
 
   ;; Get SRecode autoloads built...
-  (cedet-build-msg "Step 4: SRecode Autloads...")
-  (save-excursion
-    (let ((default-directory (expand-file-name "srecode")))
-      (cedet-update-autoloads "srecode-loaddefs.el" ".")))
+  (cedet-build-msg "Step 2.5: SRecode Autoloads...")
+  (cedet-build-autoloads-for-dir "lisp/cedet/srecode/" ".")
+  (cedet-build-msg "done.\n")
+
+  ;; Get Cogre autoloads built...
+  (cedet-build-msg "Step 2.6: COGRE Autoloads...")
+  (cedet-build-autoloads-for-dir "lisp/cedet/cogre/" ".")
+  (cedet-build-msg "done.\n")
+
+  ;; Speedbar
+  (cedet-build-msg "Step 2.7: Speedbar Autoloads...")
+  (cedet-build-autoloads-for-dir "lisp/speedbar/" ".")
   (cedet-build-msg "done.\n")
 
   ;; Fire up CEDET and EDE
-  (cedet-build-msg "Step 5: Load common/cedet.el ...")
-  (save-excursion
-    (load-file (expand-file-name "common/cedet.el" cedet-build-location)))
+  (cedet-build-msg "Step 3: initialize CEDET from external repository ...")
+  
+  (setq cedet-minimum-setup t)
+  (load-file (expand-file-name "cedet-devel-load.el" cedet-build-location))
+  ;; Set srecode-map-load-path to nil, otherwise the setter function
+  ;; for it will break the build.
+  (setq srecode-map-load-path nil)
 
-  (cedet-build-msg "done\nStep 6: Turning on EDE ...")
+  (cedet-build-msg "done\nStep 4: Turning on EDE and Semantic ...")
   (save-excursion
+    ;; Enable EDE and Semantic
     (global-ede-mode 1)
-    (require 'semantic-ede-grammar)
-    (require 'wisent))
+    (semantic-mode 1)
+    ;;Disable most new buffer setup functions to speed things up.
+    (setq semantic-new-buffer-setup-functions nil)
+    ;; Disable using cached files for parse results.
+    (setq semanticdb-new-database-class 'semanticdb-project-database)    
+    ;; Require grammar compilation.
+    (require 'semantic/ede-grammar)
+    (require 'semantic/wisent))
   (cedet-build-msg "done.\n\n")
 
   ;; Load in the Makefile
   (let ((buf (get-buffer-create "CEDET MAKE"))
 	(pkgs nil)
-	(subdirs nil)
+	(subdirs '("lisp"))
 	)
-    (cedet-build-msg "Step 7: Scan Makefile for targets...")
-    (save-excursion
-      (set-buffer buf)
-      (insert-file-contents "Makefile" nil)
-      (goto-char (point-min))
-      (re-search-forward "CEDET_ELISP_PACKAGES\\s-*=\\s-*\\\\\n")
-      (while (looking-at "\\(\\w+\\)\\s-*\\\\?\n")
-	(setq subdirs (cons (buffer-substring-no-properties
-			     (match-beginning 1) (match-end 1))
-			    subdirs))
-	(end-of-line)
-	(forward-char 1))
-      (setq subdirs (nreverse subdirs))
-      )
+    (cedet-build-msg "Step 5: Build Targets in: ")
     (cedet-build-msg "%S\n\n" subdirs)
 
-    (cedet-build-msg "Build Emacs Lisp Targets:\n-------------------\n")
+    (cedet-build-msg "Build Emacs Lisp Targets:\n-------------------------\n")
     (dolist (d subdirs)
       ;; For each directory, get the project, and then targets
       ;; and run a build on them.
-      (cedet-build-msg "Building project %s\n" d)
+      (cedet-build-msg "Building directory %s\n" d)
 
-      (let ((Tproj (ede-current-project (file-name-as-directory
-					 (expand-file-name
-					  d cedet-build-location))))
-	    )
-	(dolist (proj (cons Tproj (oref Tproj subproj)))
-	  (cedet-build-msg "  Project: %s\n" (object-name-string proj))
-	  (dolist (targ (oref proj targets))
-	    (when (and (or (ede-proj-target-elisp-p targ)
-			   (ede-proj-target-elisp-autoloads-p targ)
-			   (semantic-ede-proj-target-grammar-p targ))
-		       (condition-case nil
-			   (oref targ :partofall)
-			 (error nil)))
+      (let* ((ede-project-directories t)
+	     (Tproj (ede-load-project-file (file-name-as-directory
+					    (expand-file-name
+					     d cedet-build-location))))
+	     )
+	(cedet-build-project Tproj))
+      (cedet-build-msg "\n\nDone.\n")
+      )))
 
-	      (let ((ns (object-name-string targ)))
-		(cedet-build-msg "   Target %s...%s" ns
-				 (make-string (- 20 (length ns)) ? )))
+(defun cedet-build-project (Tproj)
+  "Build the project TPROJ.  Recurse into sub projects."
+  (cedet-build-msg "  Project: %s\n" (object-name-string Tproj))
+  (dolist (targ (oref Tproj targets))
+    (when (and (or (ede-proj-target-elisp-p targ)
+		   ;;(ede-proj-target-elisp-autoloads-p targ)
+		   (semantic-ede-proj-target-grammar-p targ))
+	       (condition-case nil
+		   (oref targ :partofall)
+		 (error nil)))
+      
+      (let ((ns (object-name-string targ)))
+	(cedet-build-msg "   Target %s...%s" ns
+			 (make-string (- 20 (length ns)) ? )))
+      
+      ;; If it is an elisp target, then do that work here.
+      (let ((ans (save-excursion
+		   (project-compile-target targ))))
+	(switch-to-buffer "*CEDET BYTECOMPILE*")
+	(delete-other-windows)
+	(redisplay)
+	(if (and (consp ans)
+		 (numberp (car ans)))
+	    (cedet-build-msg "%d compiled, %d up to date.\n"
+			     (car ans) (cdr ans))
+	  (cedet-build-msg "done.\n"))
+	)) )
 
-	      ;; If it is an autoload or elisp target, then
-	      ;; do that work here.
-	      (let ((ans (save-excursion
-			   (project-compile-target targ))))
-		(if (and (consp ans)
-			 (numberp (car ans)))
-		    (cedet-build-msg "%d compiled, %d up to date.\n"
-				     (car ans) (cdr ans))
-		  (cedet-build-msg "done.\n"))
-		))
-	    ))))
-    (cedet-build-msg "\n\nDone.\n")))
+  ;; Recurse, and build all the sub projects.
+  (dolist (proj (oref Tproj subproj))
+    (cedet-build-project proj)))
 
 
 (provide 'cedet-build)

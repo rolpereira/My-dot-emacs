@@ -3,7 +3,6 @@
 ;; Copyright (C) 2010 Eric M. Ludlam
 ;;
 ;; Author: Eric M. Ludlam <eric@siege-engine.com>
-;; X-RCS: $Id: cit-externaldb.el,v 1.3 2010-07-25 13:50:15 zappo Exp $
 ;;
 ;; This program is free software; you can redistribute it and/or
 ;; modify it under the terms of the GNU General Public License as
@@ -49,7 +48,7 @@
       cedet-gnu-global-version-check ;; 2 version check
       cedet-gnu-global-create/update-database ;; 3 create a db
       ede-locate-global ;; 4 ede locate tool name
-      semanticdb-global ;; 5 database src file
+      semantic/db-global ;; 5 database src file
       semanticdb-enable-gnu-global-in-buffer ;; 6 enable db in a buffer
       semanticdb-table-global ;; 7 the database type
       ( "GTAGS" "GPATH" "GSYMS" "GRTAGS" ) ;; 8 files created
@@ -106,7 +105,7 @@
 				    semanticdbenablefcn
 				    semanticdbclass
 				    cleanupfiles)
-  "Test GNU Global tooling integration if it is available."
+  "Test external database tooling integration if it is available."
   (let ((bufftokill (find-file (cit-file "Project.ede"))))    
 
     ;; 1) Create
@@ -114,8 +113,8 @@
     ;; database.
     (funcall createfcn default-directory)
     
-    ;; 2) force ede's find file to use gnu global
-    (require 'ede-locate)
+    ;; 2) force ede's find file to use external tool
+    (require 'ede/locate)
     (let* ((ede-locate-setup-options (list edelocatesym))
 	   (base default-directory)
 	   (fname nil))
@@ -141,7 +140,7 @@
     ;; After removing the old locate system, restore the old one.
     (ede-enable-locate-on-project)
 
-    ;; 3) Look up tags with a GNU Global database
+    ;; 3) Look up tags with a external database
     (if semanticdbenablefcn
 	(save-excursion
 	  (let ((killme (find-file (cit-file "src/main.cpp"))))
@@ -159,6 +158,11 @@
 		       symrefsym
 		       (semanticdb-find-result-length res)))
 
+	      (dolist (tag (semanticdb-strip-find-results res 'name))
+		(if (not (semantic--tag-get-property tag :filename))
+		    (error "Tag %s does not point to a specific file."
+			   (semantic-tag-name tag))))
+
 	      (kill-buffer killme))))
       ;; else, message
       (message "Skipping %s database test : Nothing to test." symrefsym))
@@ -171,7 +175,7 @@
     ;; Do the tests again.
     (cit-symref-quick-find-test)
     
-    ;; Delete the GTAGS and other files.
+    ;; Delete the files created by external tool.
     (dolist (F cleanupfiles)
       (when (file-exists-p F)
 	(delete-file F)))

@@ -1,0 +1,31 @@
+Este é o ficheiro .../info/dir, que contém o
+nó mais superior da hierarquia Info, chamado (dir) TOPO.
+A primeira vez que invocar o Info começa a olhar para este nó.
+
+File: dir,	Node: Top	 Este é o nó superior da árvore INFO
+  Este (o nó do Directório) dá-nos um menu dos principais tópicos.
+  Digitar "q" sai, "?" lista todos os comandos Info, "d" regressa a este ponto,
+  "h" dá-nos um manual para principiantes,
+  "mEmacs<Enter>" visita o manual do Emacs, etc.
+
+  No Emacs, pode clicar com o 2 botão do rato num item de menu ou referência cruzada
+  para selecionar.
+
+* Menu:
+
+Emacs
+* CEDET: (cedet).               Collection of Emacs Development Environment 
+                                  Tools
+* Semantic: (semantic).         Infrastructure for parser based text analysis.
+* Semantic Application Writer's guide: (semantic-appdev).
+* Semantic Grammar Framework: (grammar-fw).
+* Semantic Language Writer's guide: (semantic-langdev).
+* Semantic User's guide: (semantic-user).
+* Semantic Wisent parser development: (wisent).
+* Semantic bovine parser development: (bovine).
+* cogre: (cogre).               Graphs & UML for Emacs
+* srecode: (srecode).           Template code generator
+
+Emacs misc features
+* EDE: (ede).                   The Emacs Development Environment.
+* EIEIO: (eieio).               An objects system for Emacs Lisp.
