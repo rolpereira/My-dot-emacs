@@ -149,6 +149,9 @@ it moves the cursor to the beginning-of-line"
 
 (add-to-list 'load-path (concat +dot-emacs-home+ "elisp"))
 (add-to-list 'load-path (concat +dot-emacs-home+ "elpa"))
+(add-to-list 'load-path (concat +dot-emacs-home+ "elisp/use-package"))
+
+(require 'use-package)
 
 ;; Activate packages installed using package.el
 (load "package")
