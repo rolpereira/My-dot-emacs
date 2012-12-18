@@ -1977,16 +1977,18 @@ somewhere on the variable mode-line-format."
 (define-key global-map "\C-x4\C-j" 'dired-jump-other-window)
 
 ;; BBDB configuration
-(add-to-list 'load-path (concat +dot-emacs-home+ "elisp/bbdb-2.35/lisp"))
+;; (add-to-list 'load-path (concat +dot-emacs-home+ "elisp/bbdb-2.35/lisp"))
+;; (add-to-list 'load-path (concat +dot-emacs-home+ "elisp/bbdb/lisp"))
 
 ;; From: http://emacs-fu.blogspot.pt/2009/08/managing-e-mail-addresses-with-bbdb.html
 (setq bbdb-file "~/.emacs.d/bbdb")           ;; keep ~/ clean; set before loading
-(require 'bbdb) 
+(require 'bbdb-autoloads)
+(require 'bbdb)
 (require 'message)
 (bbdb-initialize 'gnus 'message)
 (setq 
     bbdb-offer-save 1                        ;; 1 means save-without-asking
-
+    bbdb-mail-allow-redundancy t
     
     bbdb-use-pop-up nil                      ;; allow popups for addresses
     bbdb-electric-p t                        ;; be disposable with SPC
@@ -2023,6 +2025,9 @@ somewhere on the variable mode-line-format."
 (add-hook 'gnus-startup-hook 'bbdb-insinuate-gnus)
 (setq bbdb-send-mail-style 'gnus)
 (setq bbdb-complete-name-full-completion t)
+
+(setq bbdb-completion-display-record nil)
+
 
 (add-to-list 'auto-mode-alist '("Gemfile$" . ruby-mode))
 (add-to-list 'auto-mode-alist '("Rakefile$" . ruby-mode))
