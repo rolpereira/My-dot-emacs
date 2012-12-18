@@ -153,6 +153,9 @@ it moves the cursor to the beginning-of-line"
 
 (require 'use-package)
 
+(use-package usage-memo
+  :init (umemo-initialize))
+
 ;; Activate packages installed using package.el
 (load "package")
 (package-initialize)
