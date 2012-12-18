@@ -823,7 +823,7 @@ it moves the cursor to the beginning-of-line"
 
 ;; Load bookmarks
 ;; http://www.emacsblog.org/2007/03/22/bookmark-mania/
-(load "bm-1.34.el")
+(require 'bm)
 (setq bm-restore-repository-on-load t)
 ;; make bookmarks persistent as default
 (setq-default bm-buffer-persistence t)
