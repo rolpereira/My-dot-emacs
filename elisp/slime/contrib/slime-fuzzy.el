@@ -456,6 +456,7 @@ buffer."
   (interactive)
   (with-current-buffer (slime-get-fuzzy-buffer)
     (let ((point (next-single-char-property-change (point) 'completion nil slime-fuzzy-last)))
+      (pop-to-buffer (current-buffer))
       (set-window-point (get-buffer-window (current-buffer)) point)
       (goto-char point))
     (slime-fuzzy-highlight-current-completion)))
