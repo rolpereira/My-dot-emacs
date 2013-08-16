@@ -1763,10 +1763,6 @@ somewhere on the variable mode-line-format."
       (kill-ring-save begin (point))))
   (yank))
 
-(defun download-youtube-video (url)
-  (eshell-eval-command
-    (eshell-command
-      (concat "~/Área\\ de\\ Trabalho/youtube-dl.py -t " url))))
 
 ;; To make ediff operate on selected-frame add next:
 ;; This is what you probably want if you are using a tiling window
