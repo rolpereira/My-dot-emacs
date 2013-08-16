@@ -151,14 +151,16 @@ it moves the cursor to the beginning-of-line"
 (add-to-list 'load-path (concat +dot-emacs-home+ "elpa"))
 (add-to-list 'load-path (concat +dot-emacs-home+ "elisp/use-package"))
 
-(require 'use-package)
-
-(use-package usage-memo
-  :init (umemo-initialize))
 
 ;; Activate packages installed using package.el
 (load "package")
 (package-initialize)
+
+(require 'use-package)
+
+(use-package usage-memo
+	     :init (umemo-initialize))
+
 
 ;; Check to see if the pydb emacs package is installed
 (when (file-directory-p "/user/share/emacs/site-lisp/pydb")
@@ -195,8 +197,9 @@ it moves the cursor to the beginning-of-line"
 ;;;
 
 ;; SVN browser
-(autoload 'svn-status "psvn" "SVN browser" t)
-;;
+(use-package psvn
+  :commands svn-status)
+
 
 ;; Some modes require this
 (setq user-mail-address "finalyugi@sapo.pt"
@@ -406,98 +409,115 @@ it moves the cursor to the beginning-of-line"
 ;;;
 
 ;; W3m configurations
-(add-to-list 'load-path (concat +dot-emacs-home+ "elisp/emacs-w3m"))
-(autoload 'w3m "w3m" "" t)
-(eval-after-load "w3m"
-  '(when (not (running-windows-p)) ; Can't use W3m in Windows
-     ;; (cond ((= emacs-major-version 23)
-     ;;         (add-to-list 'load-path (concat +dot-emacs-home+ "elisp/emacs-w3m"))
-     ;;         ;;    (require 'w3m-load)
-     ;;         ))
 
-     (require 'w3m)
-     (setq browse-url-browser-function (lambda (url ignore)
-                                         (w3m-browse-url url t)))
-     (autoload 'w3m-browse-url "w3m" "Ask a WWW browser to show a URL." t)
-     (setq w3m-use-cookies t)
 
-     ;; Mudar keybinding
-     (define-key w3m-mode-map "q" 'w3m-previous-buffer)
-     (define-key w3m-mode-map "w" 'w3m-next-buffer)
-     (define-key w3m-mode-map "x" 'w3m-delete-buffer)
+(use-package w3m
+  :load-path "elisp/emacs-w3m"
+  :commands (w3m w3m-browse-url)
+  :if (not (running-windows-p))
+  :config (progn
+            (setq browse-url-browser-function (lambda (url ignore)
+                                                (w3m-browse-url url t)))
 
-     ;; Gravar sessions
-     ;; (cond ((= emacs-major-version 22)
-     (require 'w3m-session)
-     (setq w3m-session-file "~/.emacs.d/w3m-session")
-     (setq w3m-session-save-always t)
-     (setq w3m-session-load-always t)
-     (setq w3m-session-autosave-period 30)
-     (setq w3m-session-duplicate-tabs 'always)
+            (setq w3m-use-cookies t)
 
-     ; Load last sessions
-     (setq w3m-session-load-last-sessions t)
+            ;; Mudar keybinding
+            (define-key w3m-mode-map "q" 'w3m-previous-buffer)
+            (define-key w3m-mode-map "w" 'w3m-next-buffer)
+            (define-key w3m-mode-map "x" 'w3m-delete-buffer)
 
-     ;; Utitilizar numeros para saltar para links
-     ;; http://emacs.wordpress.com/2008/04/12/numbered-links-in-emacs-w3m/
-     (require 'w3m-lnum)
-     (defun jao-w3m-go-to-linknum ()
-       "Turn on link numbers and ask for one to go to."
-       (interactive)
-       (let ((active w3m-link-numbering-mode))
-         (when (not active) (w3m-link-numbering-mode))
-         (unwind-protect
-           (w3m-move-numbered-anchor (read-number "Anchor number: "))
-           (when (not active) (w3m-link-numbering-mode)))))
+            ;; Gravar sessions
+            ;; (cond ((= emacs-major-version 22)
+            (use-package w3m-session
+              :init (progn
+                      (setq w3m-session-file "~/.emacs.d/w3m-session")
+                      (setq w3m-session-save-always t)
+                      (setq w3m-session-load-always t)
+                      (setq w3m-session-autosave-period 30)
+                      (setq w3m-session-duplicate-tabs 'always)
+                      ;; Load last sessions
+                      (setq w3m-session-load-last-sessions t)))
 
-     (define-key w3m-mode-map "f" 'jao-w3m-go-to-linknum)
+            ;; Utitilizar numeros para saltar para links
+            ;; http://emacs.wordpress.com/2008/04/12/numbered-links-in-emacs-w3m/
+            (use-package w3m-lnum)
 
-     ;; Use "M" to open a link in the external browser
+            (defun jao-w3m-go-to-linknum ()
+              "Turn on link numbers and ask for one to go to."
+              (interactive)
+              (let ((active w3m-link-numbering-mode))
+                (when (not active) (w3m-link-numbering-mode))
+                (unwind-protect
+                  (w3m-move-numbered-anchor (read-number "Anchor number: "))
+                  (when (not active) (w3m-link-numbering-mode)))))
 
-     ;; Use sessions on w3m (from Emacs Wiki)
+            (define-key w3m-mode-map "f" 'jao-w3m-go-to-linknum)
 
-     (require 'w3m-session)
+            ;; Use "M" to open a link in the external browser
 
-     (define-key w3m-mode-map "S" 'w3m-session-save)
-     (define-key w3m-mode-map "L" 'w3m-session-load)
-     (define-key w3m-mode-map (kbd "C-j") 'w3m-search-new-session)
+            ;; Use sessions on w3m (from Emacs Wiki)
 
-     ;; Download youtube video at point
-     (defun w3m-yt-view ()
-       "View a YouTube link with mplayer."
-       (interactive)
-       (let ((url (or (w3m-anchor) (w3m-image))))
-         (cond ((string-match "youtube" url)
-                 (string-match "[^v]*v.\\([^&]*\\)" url)
-                 (let* ((vid (match-string 1 url))
-                         (info (with-temp-buffer
-                                 (w3m-retrieve
-                                   (format "http://www.youtube.com/get_video_info?video_id=%s"
-                                     vid))
-                                 (buffer-string))))
-                   (string-match "&token=\\([^%]*\\)" info)
-                   (let ((vurl (format "http://www.youtube.com/get_video?video_id=%s&t=%s=&fmt=18"
-                                 vid
-                                 (match-string 1 info))))
-                     (start-process "mplayer" nil "mplayer" "-quiet" "-cache" " 8192"
-                       (nth 5 (w3m-attributes vurl))))))
-           (t
-             (message "Not yt URL.")))))
-     ))
-;;;;
+
+            (define-key w3m-mode-map "S" 'w3m-session-save)
+            (define-key w3m-mode-map "L" 'w3m-session-load)
+            (define-key w3m-mode-map (kbd "C-j") 'w3m-search-new-session)
+
+            ;; Download youtube video at point
+            (defun w3m-yt-view ()
+              "View a YouTube link with mplayer."
+              (interactive)
+              (let ((url (or (w3m-anchor) (w3m-image))))
+                (cond ((string-match "youtube" url)
+                        (string-match "[^v]*v.\\([^&]*\\)" url)
+                        (let* ((vid (match-string 1 url))
+                                (info (with-temp-buffer
+                                        (w3m-retrieve
+                                          (format "http://www.youtube.com/get_video_info?video_id=%s"
+                                            vid))
+                                        (buffer-string))))
+                          (string-match "&token=\\([^%]*\\)" info)
+                          (let ((vurl (format "http://www.youtube.com/get_video?video_id=%s&t=%s=&fmt=18"
+                                        vid
+                                        (match-string 1 info))))
+                            (start-process "mplayer" nil "mplayer" "-quiet" "-cache" " 8192"
+                              (nth 5 (w3m-attributes vurl))))))
+                  (t
+                    (message "Not yt URL.")))))
+            ))
 
 ;; ;Activar o AUCTeX
-(setq load-path (cons (concat +dot-emacs-home+ "elisp/auctex-11.86/") load-path))
-(setq load-path (cons (concat +dot-emacs-home+ "elisp/auctex-11.86/preview/") load-path))
-(load "auctex.el" nil t t)
-(load "preview-latex.el" nil t t)
-(setq TeX-save-query nil) ;;autosave before compiling
-(setq TeX-PDF-mode t)
-(setq TeX-auto-save t)
-(setq TeX-parse-self t)
-(setq-default TeX-master nil)
-(require 'latex-units)
-;; ;;;;;
+(use-package latex
+  :load-path "elpa/auctex-11.86/"
+  :init (progn
+          (setq TeX-save-query nil) ;;autosave before compiling
+          (setq TeX-PDF-mode t)
+          (setq TeX-auto-save t)
+          (setq TeX-parse-self t)
+          (setq-default TeX-master nil)
+          (use-package latex-units)
+          (use-package reftex
+            :config (setq reftex-plug-into-AUCTeX t)
+            :commands reftex-mode)
+          (use-package preview
+            :config (add-to-list 'preview-document-pt-list 8)))
+  :config (progn
+            (defun change-outline-keys ()
+              (local-set-key (kbd "<M-up>") 'outline-move-subtree-up)
+              (local-set-key (kbd "<M-down>") 'outline-move-subtree-down)
+              ;; (local-set-key (kbd "C-d") 'outline-toggle-children)
+              )
+
+            (add-hook 'LaTeX-mode-hook 'change-outline-keys)
+            (add-hook 'LaTeX-mode-hook 'outline-minor-mode)
+            (add-hook 'LaTeX-mode-hook 'latex-math-mode)
+
+            (add-hook 'LaTeX-mode-hook 'flyspell-mode)
+            (setq outline-minor-mode-prefix "\C-c\C-o")
+            (add-hook 'LaTeX-mode-hook 'reftex-mode)
+            (add-hook 'LaTeX-mode-hook 'orgtbl-mode)
+            (setq LaTeX-math-abbrev-prefix "'")))
+
+;;;;;
 
 ;; spellcheck in LaTex mode
 (add-hook 'latex-mode-hook 'flyspell-mode)
@@ -533,12 +553,11 @@ it moves the cursor to the beginning-of-line"
 (add-hook 'today-visible-calendar-hook 'calendar-mark-today)
 ;;;;;
 
-                                        ; Mostrar imagens do site icanhascheezburger.com
-(autoload 'cheezburger "cheezburger" "" t)
-;;;;;
 
-                                        ; Fazer highline das palavras TODO e FIXME, entre outras
-(autoload 'highlight-fixmes-mode "highlight-fixmes-mode" "" t)
+;; Fazer highline das palavras TODO e FIXME, entre outras
+(use-package highlight-fixmes-mode
+  :commands highlight-fixmes-mode)
+
 ;; FIXME: Add this to programming hooks
                                         ;(highlight-fixmes-mode t)
 ;;;
@@ -670,7 +689,8 @@ it moves the cursor to the beginning-of-line"
 
 ;; take any buffer and turn it into an html file,
 ;; including syntax hightlighting
-(require 'htmlize)
+(use-package htmlize
+  :commands (htmlize-buffer))
 
 ;; ===========================
 
@@ -749,8 +769,8 @@ it moves the cursor to the beginning-of-line"
 
 
                                         ; Saltar para onde se estava quando abrir um ficheiro
-(require 'saveplace)
-(setq-default save-place t)
+(use-package saveplace
+  :init (setq-default save-place t))
 ;;;;;
 
                                         ; Cursor do rato nao cobre o texto
@@ -758,10 +778,14 @@ it moves the cursor to the beginning-of-line"
 ;;;;;
 
                                         ; Yasnippet
-(add-to-list 'load-path (concat +dot-emacs-home+ "plugins/yasnippet-0.6.1c"))
-(require 'yasnippet)
-(yas/initialize)
-(yas/load-directory (concat +dot-emacs-home+ "plugins/yasnippet-0.6.1c/snippets"))
+;; (add-to-list 'load-path (concat +dot-emacs-home+ "plugins/yasnippet"))
+(use-package yasnippet
+  :disabled t
+  :init (progn
+          (setq yas-snippet-dirs (list
+                         (concat +dot-emacs-home+ "plugins/yasnippet/snippets")
+                         (concat +dot-emacs-home+ "plugins/yasnippet/extras/imported/")))
+          (yas-global-mode 1)))
 ;;;;;
 
 ;; Remove splash screen
@@ -823,35 +847,36 @@ it moves the cursor to the beginning-of-line"
 
 ;; Load bookmarks
 ;; http://www.emacsblog.org/2007/03/22/bookmark-mania/
-(require 'bm)
-(setq bm-restore-repository-on-load t)
-;; make bookmarks persistent as default
-(setq-default bm-buffer-persistence t)
+(use-package bm
+  :init (progn
+          (setq bm-restore-repository-on-load t)
+          ;; make bookmarks persistent as default
+          (setq-default bm-buffer-persistence t)
 
-;; Loading the repository from file when on start up.
-(add-hook' after-init-hook 'bm-repository-load)
+          ;; Loading the repository from file when on start up.
+          (add-hook' after-init-hook 'bm-repository-load)
 
-;; Restoring bookmarks when on file find.
-(add-hook 'find-file-hooks 'bm-buffer-restore)
+          ;; Restoring bookmarks when on file find.
+          (add-hook 'find-file-hooks 'bm-buffer-restore)
 
-;; Saving bookmark data on killing a buffer
-(add-hook 'kill-buffer-hook 'bm-buffer-save)
+          ;; Saving bookmark data on killing a buffer
+          (add-hook 'kill-buffer-hook 'bm-buffer-save)
 
+          ;; Saving the repository to file when on exit.
+          ;; kill-buffer-hook is not called when emacs is killed, so we
+          ;; must save all bookmarks first.
+          (add-hook 'kill-emacs-hook '(lambda nil
+                                        (bm-buffer-save-all)
+                                        (bm-repository-save)))
+          (global-set-key (kbd "<C-f4>") 'bm-toggle)
+          (global-set-key (kbd "<f4>")   'bm-next)
+          (global-set-key (kbd "<S-f4>") 'bm-previous)
+          ))
 
-(message "Stop 9 %ds" (destructuring-bind (hi lo ms) (current-time)
                         (- (+ hi lo) (+ (first *emacs-load-start*) (second *emacs-load-start*)))))
 
 
 
-;; Saving the repository to file when on exit.
-;; kill-buffer-hook is not called when emacs is killed, so we
-;; must save all bookmarks first.
-(add-hook 'kill-emacs-hook '(lambda nil
-                              (bm-buffer-save-all)
-                              (bm-repository-save)))
-(global-set-key (kbd "<C-f4>") 'bm-toggle)
-(global-set-key (kbd "<f4>")   'bm-next)
-(global-set-key (kbd "<S-f4>") 'bm-previous)
 ;;;;;;;;;;;;;
 
 ;; Need to find some keybindings for the laptop
@@ -880,7 +905,8 @@ it moves the cursor to the beginning-of-line"
 
 ;; A little game to help learn the keybindings
 ;; http://mewde.blogspot.com/2007_05_01_archive.html
-(autoload 'keywiz "keywiz" "" t)
+(use-package keywiz
+  :commands keywiz)
 ;;
 
 ;; ;; Scheme Mode
@@ -965,8 +991,10 @@ it moves the cursor to the beginning-of-line"
 ;;
 
 ;; Typing of the Dead... erm... Emacs...
-(autoload 'typing-of-emacs "typing" "The Typing Of Emacs, a game." t)
-(autoload 'sudoku "sudoku" "Sudoku" t)
+(use-package typing
+  :commands typing-of-emacs)
+(use-package sudoku
+  :commands sudoku)
 ;;
 
 ;; Open Guis without hanging emacs
@@ -985,7 +1013,9 @@ it moves the cursor to the beginning-of-line"
 ;;
 
 ;; ;; Cor hexadecimal no HTML
-(add-hook 'html-mode-hook 'rainbow-mode)
+(use-package rainbow-mode
+  :commands rainbow-mode
+  :init (add-hook 'html-mode-hook 'rainbow-mode))
 ;;;;;
 
 
@@ -1014,28 +1044,29 @@ it moves the cursor to the beginning-of-line"
 
 ;; Transform accents into html code
 ;; http://www.emacswiki.org/emacs/html-accent.el
-(autoload 'html-accent "html-accent" "Accent HTML" t)
-(autoload 'accent-html "html-accent" "HTML codes to accent" t)
+(use-package html-accent
+  :commands (html-accent ; Accent HTML
+              accent-html ; HTML codes to accent
+              ))
 ;;
 
 ;; Stuff that shows the whitespace on a buffer
-(autoload 'toggle-show-hard-spaces-show-ws "show-wspace" "" t)
-(autoload 'show-ws-toggle-show-hard-spaces "show-wspace" "" t)
-(autoload 'toggle-show-trailing-whitespace-show-ws "show-wspace" "" t)
-(autoload 'show-ws-toggle-show-trailing-whitespace "show-wspace" "" t)
+(use-package show-wspace
+  :commands (toggle-show-hard-spaces-show-ws
+              show-ws-toggle-show-hard-spaces
+              toggle-show-trailing-whitespace-show-ws
+              show-ws-toggle-show-trailing-whitespace))
 
 ;; Browse Kill Ring
 ;; http://www.emacswiki.org/emacs/BrowseKillRing
-(require 'browse-kill-ring)
+(use-package browse-kill-ring
+  :commands browse-kill-ring)
 
 ;; Show free space on device
 ;; http://www.emacswiki.org/emacs/DfMode
-(if (not (running-windows-p))
-  (progn
-    (autoload 'df-mode "df-mode" nil t)
-    (df-mode 1)))
-
-
+(use-package df-mode
+  :if (not (running-windows-p))
+  :init (df-mode 1))
 
 ;;; This was installed by package-install.el.
 ;;; This provides support for the package system and
@@ -1053,46 +1084,47 @@ it moves the cursor to the beginning-of-line"
   (add-hook 'haskell-mode-hook 'turn-on-haskell-doc-mode)
   (add-hook 'haskell-mode-hooj 'turn-on-haskell-indent))
 
-(org-remember-insinuate)
+(use-package org-remember
+  :init (progn
+          (org-remember-insinuate)
 
-;; http://metajack.im/2008/12/30/gtd-capture-with-emacs-orgmode/
-(defadvice org-capture-finalize (after delete-remember-frame activate)
-  "Advise remember-finalize to close the frame if it is the remember frame"
-  (if (equal "*Capture*" (frame-parameter nil 'name))
-    (delete-frame)))
+          ;; http://metajack.im/2008/12/30/gtd-capture-with-emacs-orgmode/
+          (defadvice org-capture-finalize (after delete-remember-frame activate)
+            "Advise remember-finalize to close the frame if it is the remember frame"
+            (if (equal "*Capture*" (frame-parameter nil 'name))
+              (delete-frame)))
 
-(defadvice org-capture-destroy (after delete-remember-frame activate)
-  "Advise remember-destroy to close the frame if it is the remember frame"
-  (if (equal "*Capture*" (frame-parameter nil 'name))
-    (delete-frame)))
+          (defadvice org-capture-destroy (after delete-remember-frame activate)
+            "Advise remember-destroy to close the frame if it is the remember frame"
+            (if (equal "*Capture*" (frame-parameter nil 'name))
+              (delete-frame)))
 
-;; make the frame contain a single window. by default org-remember
-;; splits the window.
-(add-hook 'org-capture-mode-hook 'delete-other-windows)  
-(add-hook 'org-capture-mode-hook (lambda ()
-                                   (goto-char (point-max))))
+          ;; make the frame contain a single window. by default org-remember
+          ;; splits the window.
+          (add-hook 'org-capture-mode-hook 'delete-other-windows)  
+          (add-hook 'org-capture-mode-hook (lambda ()
+                                             (goto-char (point-max))))
 
-(defun make-capture-frame ()
-  "Create a new frame and run org-remember"
-  (interactive)
-  (make-frame '((name . "*Capture*")
-                 (width . 80)
-                 (height . 10)
-                 (vertical-scroll-bars . nil)
-                 (menu-bar-lines . nil)
-                 (tool-bar-lines . nil)))
-  (select-frame-by-name "*Capture*")
-  (org-capture nil "t"))
+          (defun make-capture-frame ()
+            "Create a new frame and run org-remember"
+            (interactive)
+            (make-frame '((name . "*Capture*")
+                           (width . 80)
+                           (height . 10)
+                           (vertical-scroll-bars . nil)
+                           (menu-bar-lines . nil)
+                           (tool-bar-lines . nil)))
+            (select-frame-by-name "*Capture*")
+            (org-capture nil "t"))
 
 
-(setq org-capture-templates
-  '(("c" "Clipboard" entry
-      (file+headline "~/remember.org" "Interesting")
-      "* %T %^{Description}\n %x")
-     ("t" "ToDo" entry
-       (file+headline "~/remember.org" "Todo")
-       "* TODO %T %^{Summary}")))
-
+          (setq org-capture-templates
+            '(("c" "Clipboard" entry
+                (file+headline "~/remember.org" "Interesting")
+                "* %T %^{Description}\n %x")
+               ("t" "ToDo" entry
+                 (file+headline "~/remember.org" "Todo")
+                 "* TODO %T %^{Summary}")))))
 
 
 
@@ -1133,18 +1165,16 @@ If the character is not a ';' simply do a newline-and-indent"
 
 ;; Experimentar o Hippie-Expand
 ;; http://stackoverflow.com/questions/151639/yasnippet-and-pabbrev-working-together-in-emacs
-(require 'hippie-exp)
-
-(setq hippie-expand-try-functions-list
-  '(try-expand-dabbrev
-     try-expand-dabbrev-all-buffers
-     try-expand-dabbrev-from-kill
-     try-complete-file-name-partially
-     try-complete-file-name
-     try-complete-lisp-symbol-partially
-     try-complete-lisp-symbol))
-
-(global-set-key "\M- " 'hippie-expand)
+(use-package hippie-exp
+  :bind ("M-SPC" . hippie-expand)
+  :init (setq hippie-expand-try-functions-list
+          '(try-expand-dabbrev
+             try-expand-dabbrev-all-buffers
+             try-expand-dabbrev-from-kill
+             try-complete-file-name-partially
+             try-complete-file-name
+             try-complete-lisp-symbol-partially
+             try-complete-lisp-symbol)))
 
 
 
@@ -1484,10 +1514,12 @@ point."
   "[^a-zA-ZÁÂÉÓàáâéêíóãúçÇôÔõÕ]")
 
 ;; Define movement keys for man mode
-(require 'man)
-(define-key Man-mode-map "j" 'next-line)
-(define-key Man-mode-map "k" 'previous-line)
-(define-key Man-mode-map "K" 'Man-kill)
+(use-package man
+  :commands man
+  :config (progn
+            (define-key Man-mode-map "j" 'next-line)
+            (define-key Man-mode-map "k" 'previous-line)
+            (define-key Man-mode-map "K" 'Man-kill)))
 
 ;; Only show files matching the regexp on a Dired buffer
 (defun dired-show-files-match-regexp (regexp)
@@ -1541,60 +1573,63 @@ point."
 
 
 ;; Slime stuff
-(add-to-list 'load-path (concat +dot-emacs-home+ "elisp/slime/"))
-(autoload 'slime "slime" "" t)
-(autoload 'slime-connect "slime" "" t)
-(eval-after-load "slime"
-  '(progn
-     (setq inferior-lisp-program "sbcl")
-     (require 'slime)
-     (add-hook 'slime-repl-mode-hook 'lisp-switch-keys)
-     (slime-setup '(slime-fancy slime-sbcl-exts slime-sprof
-                     ;; slime-highlight-edits slime-hyperdoc slime-mdot-fu
-                     ))
-     (slime-autodoc-mode)
-     (setq slime-autodoc-use-multiline-p t
-       	   slime-complete-symbol*-fancy t
-           slime-complete-symbol-function 'slime-fuzzy-complete-symbol
-           slime-when-complete-filename-expand t)
-           ;slime-truncate-lines nil)
-     (setq common-lisp-hyperspec-root "/usr/share/doc/hyperspec/")
-     (setq common-lisp-hyperspec-symbol-table
-       (concat common-lisp-hyperspec-root "Data/Map_Sym.txt"))
+(use-package slime
+  ;; :load-path "elisp/slime/"
+  :commands (slime slime-connect)
+  :config (progn
+            (require 'slime-autoloads)
+            (setq inferior-lisp-program "sbcl")
+            (add-hook 'slime-repl-mode-hook 'lisp-switch-keys)
 
-     ;; From: http://www.emacswiki.org/emacs-en/SlimeMode
-     ;; Improve usability of slime-apropos: slime-apropos-minor-mode
-     (defvar slime-apropos-anchor-regexp "^[^ ]")
-     (defun slime-apropos-next-anchor ()
-       (interactive)
-       (let ((pt (point)))
-         (forward-line 1)
-         (if (re-search-forward slime-apropos-anchor-regexp nil t)
-           (goto-char (match-beginning 0))
-           (goto-char pt)
-           (error "anchor not found"))))
+            (slime-setup '(slime-fancy
+                            ;; slime-sbcl-exts
+                            ;; slime-sprof
+                            ;; slime-highlight-edits slime-hyperdoc slime-mdot-fu
+                            ))
+            ;; (slime-autodoc-mode)
+            (setq slime-autodoc-use-multiline-p t
+              slime-complete-symbol*-fancy t
+              slime-complete-symbol-function 'slime-fuzzy-complete-symbol
+              slime-when-complete-filename-expand t)
+                                        ;slime-truncate-lines nil)
+            (setq common-lisp-hyperspec-root "/usr/share/doc/hyperspec/")
+            (setq common-lisp-hyperspec-symbol-table
+              (concat common-lisp-hyperspec-root "Data/Map_Sym.txt"))
 
-     (defun slime-apropos-prev-anchor ()
-       (interactive)
-       (let ((p (point)))
-         (if (re-search-backward slime-apropos-anchor-regexp nil t)
-           (goto-char (match-beginning 0))
-           (goto-char p)
-           (error "anchor not found"))))
+            ;; From: http://www.emacswiki.org/emacs-en/SlimeMode
+            ;; Improve usability of slime-apropos: slime-apropos-minor-mode
+            (defvar slime-apropos-anchor-regexp "^[^ ]")
+            (defun slime-apropos-next-anchor ()
+              (interactive)
+              (let ((pt (point)))
+                (forward-line 1)
+                (if (re-search-forward slime-apropos-anchor-regexp nil t)
+                  (goto-char (match-beginning 0))
+                  (goto-char pt)
+                  (error "anchor not found"))))
 
-     (defvar slime-apropos-minor-mode-map (make-sparse-keymap))
-     (define-key slime-apropos-minor-mode-map "\C-m" 'slime-describe-symbol)
-     (define-key slime-apropos-minor-mode-map "l" 'slime-describe-symbol)
-     (define-key slime-apropos-minor-mode-map "j" 'slime-apropos-next-anchor)
-     (define-key slime-apropos-minor-mode-map "k" 'slime-apropos-prev-anchor)
-     (define-minor-mode slime-apropos-minor-mode "")
+            (defun slime-apropos-prev-anchor ()
+              (interactive)
+              (let ((p (point)))
+                (if (re-search-backward slime-apropos-anchor-regexp nil t)
+                  (goto-char (match-beginning 0))
+                  (goto-char p)
+                  (error "anchor not found"))))
 
-     (defadvice slime-show-apropos (after slime-apropos-minor-mode activate)
-       ""
-       (when (get-buffer "*slime-apropos*")
-         (with-current-buffer "*slime-apropos*" (slime-apropos-minor-mode 1))))
+            (defvar slime-apropos-minor-mode-map (make-sparse-keymap))
+            (define-key slime-apropos-minor-mode-map "\C-m" 'slime-describe-symbol)
+            (define-key slime-apropos-minor-mode-map "l" 'slime-describe-symbol)
+            (define-key slime-apropos-minor-mode-map "j" 'slime-apropos-next-anchor)
+            (define-key slime-apropos-minor-mode-map "k" 'slime-apropos-prev-anchor)
+            (define-minor-mode slime-apropos-minor-mode "")
 
-     (setq slime-net-coding-system 'utf-8-unix)))
+            (defadvice slime-show-apropos (after slime-apropos-minor-mode activate)
+              ""
+              (when (get-buffer "*slime-apropos*")
+                (with-current-buffer "*slime-apropos*" (slime-apropos-minor-mode 1))))
+
+            (setq slime-net-coding-system 'utf-8-unix)))
+
 
 ;; Save history of minibuffer between emacs sessions
 (savehist-mode 1)
@@ -1609,8 +1644,10 @@ point."
 (put 'dired-find-alternate-file 'disabled nil)
 
 ;; Smex - Search M-x
-(require 'smex)
-(smex-initialize)
+(use-package smex
+  :commands (smex)
+  :config (smex-initialize))
+
 
 (defun total-number-lines ()
   "Total number of lines on a buffer.
@@ -1637,56 +1674,69 @@ somewhere on the variable mode-line-format."
 (setq line-number-display-limit 100000000)
 
 ;; Zap-up-to-char (like Vi "dt" command)
-(require 'misc)
-(global-set-key (kbd "M-z") 'zap-up-to-char)
-(global-set-key (kbd "M-Z") 'zap-to-char)
+(use-package misc
+  :bind (("M-z" . zap-up-to-char)
+          ("M-Z" . zap-to-char)))
 
-(require 'uniquify)
-(setq uniquify-buffer-name-style 'forward)
+(use-package uniquify
+  :init (setq uniquify-buffer-name-style 'forward))
 
 ;; Some custom commands for eshell
-(defun eshell/ff (file)
-  (find-file file))
+(use-package eshell
+  :commands eshell
+  :init (progn
+          (defun rolando-change-to-eshell-or-to-prev-buffer ()
+            (interactive)
+            (if (string= (buffer-name) "*eshell*") ; Doesn't work with multiple eshells
+              (switch-to-buffer (other-buffer))
+              (eshell)))
 
-;; From http://www.emacswiki.org/emacs/EshellFunctions
-(defun eshell/emacs (&rest args)
-  "Open a file in emacs. Some habits die hard."
-  (if (null args)
-    ;; If I just ran "emacs", I probably expect to be launching Emacs,
-    ;; which is rather silly since I'm already in Emacs.  So just
-    ;; pretend to do what I ask.
-    (bury-buffer)
-    ;; We have to expand the file names or else naming a directory in
-    ;; an argument causes later arguments to be looked for in that
-    ;; directory, not the starting directory
-    (mapc #'find-file (mapcar #'expand-file-name
-                        (eshell-flatten-list (reverse args))))))
+          (global-set-key (kbd "<f9>") 'rolando-change-to-eshell-or-to-prev-buffer))
 
-(defun rolando-change-to-eshell-or-to-prev-buffer ()
-  (interactive)
-  (if (string= (buffer-name) "*eshell*") ; Doesn't work with multiple eshells
-    (switch-to-buffer (other-buffer))
-    (eshell)))
+  :config (progn
+            (defun eshell/ff (file)
+              (find-file file))
 
-(global-set-key (kbd "<f9>") 'rolando-change-to-eshell-or-to-prev-buffer)
+            ;; From http://www.emacswiki.org/emacs/EshellFunctions
+            (defun eshell/emacs (&rest args)
+              "Open a file in emacs. Some habits die hard."
+              (if (null args)
+                ;; If I just ran "emacs", I probably expect to be launching Emacs,
+                ;; which is rather silly since I'm already in Emacs.  So just
+                ;; pretend to do what I ask.
+                (bury-buffer)
+                ;; We have to expand the file names or else naming a directory in
+                ;; an argument causes later arguments to be looked for in that
+                ;; directory, not the starting directory
+                (mapc #'find-file (mapcar #'expand-file-name
+                                    (eshell-flatten-list (reverse args))))))
+
+            (defun download-youtube-video (url)
+              (eshell-eval-command
+                (eshell-command
+                  (concat "~/Área\\ de\\ Trabalho/youtube-dl.py -t " url))))
+
+
+            ;; To use in eshell:
+            ;; for i in http://www.quickmeme.com/meme/352khg/ http://www.quickmeme.com/meme/1yhw/ http://www.quickmeme.com/meme/xsg/ http://www.quickmeme.com/meme/Ev/  http://www.quickmeme.com/meme/16ir/ http://www.quickmeme.com/meme/vmm/  http://www.quickmeme.com/meme/uo/ http://www.quickmeme.com/meme/1q9z/ http://www.quickmeme.com/meme/1qij/ http://www.quickmeme.com/meme/35whc3/  http://www.quickmeme.com/meme/35u0ou/ { download-quickmeme $i }
+            (defun download-quickmeme (url)
+              (let ((id (nth 3 (split-string url "/" t))))
+                (eshell-command (concat "wget http://i.qkme.me/" id ".jpg"))))))
+
+
 
 ;; Para o swi-prolog
-(autoload 'run-prolog "prolog" "Start a Prolog sub-process." t)
-(autoload 'prolog-mode "prolog" "Major mode for editing Prolog programs." t)
-(autoload 'mercury-mode "prolog" "Major mode for editing Mercury programs." t)
-(setq prolog-system 'swi)
-(setq auto-mode-alist (append
-                        '(("\\.pl$" . prolog-mode)
-                           ("\\.m$" . mercury-mode))
-                        auto-mode-alist))
-
-(add-hook 'prolog-hook
-  '(progn
-     (defun prolog-quick-help ()
-       "Show help for predicate on point"
-       (interactive)
-       (funcall prolog-help-function-i (prolog-atom-under-point)))
-  	(define-key prolog-mode-map (kbd "C-c ?") 'prolog-quick-help)))
+(use-package prolog
+  :commands (run-prolog mercury-mode)
+  ;; :mode ("\\.pl$" . prolog-mode)
+  :init (setq prolog-system 'swi)
+  :config (add-hook 'prolog-hook
+            '(progn
+               (defun prolog-quick-help ()
+                 "Show help for predicate on point"
+                 (interactive)
+                 (funcall prolog-help-function-i (prolog-atom-under-point)))
+               (define-key prolog-mode-map (kbd "C-c ?") 'prolog-quick-help))))
 
 
 ;; This is sweet!  right-click, get a list of functions in the source
@@ -1872,9 +1922,15 @@ somewhere on the variable mode-line-format."
                   'font-lock-beginning-of-syntax-function)))
 
 ;; Rinari configurations
-(add-to-list 'load-path "~/.emacs.d/elisp/rinari/")
-(require 'rinari)
-(require 'rinari-merb)
+
+(use-package rinari
+  :disabled t
+  :load-path "elisp/rinari/"
+  :init (progn
+          (use-package rinari-merb)
+          ;; From: https://groups.google.com/group/emacs-on-rails/browse_thread/thread/40bd839c0fbdc781
+          (add-to-list 'rinari-major-modes 'vc-dir-mode-hook)))
+
 
 (setq nxhtml-global-minor-mode t
   mumamo-chunk-coloring 'submode-colored
@@ -1887,12 +1943,13 @@ somewhere on the variable mode-line-format."
 (setenv "RUBYLIB" "/usr/local/lib/site_ruby/1.8")
 (setenv "GEM_HOME" "/usr/lib/ruby/gems/1.8/")
 
-(require 'yari)
+(use-package yari
+  :init (progn
+          (defun ri-bind-key ()
+            (local-set-key [f1] 'yari))
 
-(defun ri-bind-key ()
-  (local-set-key [f1] 'yari))
+          (add-hook 'ruby-mode-hook 'ri-bind-key)))
 
-(add-hook 'ruby-mode-hook 'ri-bind-key)
 
 ;; Fontifying Code Buffers In Emacs Org Mode
 ;; http://irreal.org/blog/?p=671
@@ -1901,12 +1958,11 @@ somewhere on the variable mode-line-format."
 
 ;; To use dummy-h-mode
 ;; http://www.emacswiki.org/emacs-en/dummy-h-mode.el
-(add-to-list 'auto-mode-alist '("\\.h$" . dummy-h-mode))
-(autoload 'dummy-h-mode "dummy-h-mode" "Dummy H Mode" t)
-
-(add-hook 'dummy-h-mode-hook
-  (lambda ()
-    (setq dummy-h-mode-default-major-mode 'c++-mode)))
+(use-package dummy-h-mode
+  :mode ("\\.h$" . dummy-h-mode)
+  :config (add-hook 'dummy-h-mode-hook
+            (lambda ()
+              (setq dummy-h-mode-default-major-mode 'c++-mode))))
 
 ;; (slime-eval '(cl:1+ 1))
 
@@ -1919,28 +1975,23 @@ somewhere on the variable mode-line-format."
 (add-to-list 'package-archives
              '("melpa" . "http://melpa.milkbox.net/packages/") t)
 
-(require 'rvm)
-(rvm-use-default)
 
-(add-hook 'ruby-mode-hook #'rvm-activate-corresponding-ruby)
+(use-package rvm
+  :init (progn
+          (rvm-use-default)
+          (add-hook 'ruby-mode-hook #'rvm-activate-corresponding-ruby)))          
 
-(require 'haml-mode)
-(add-hook 'haml-mode #'rinari-minor-mode)
 
-(setq auto-mode-alist (append
-                        '(("\\.haml$" . haml-mode))
-                        auto-mode-alist))
+(use-package haml-mode
+  :mode ("\\.haml$" . haml-mode)
+  :config (add-hook 'haml-mode #'rinari-minor-mode))
 
 
 ;; From: http://irreal.org/blog/?p=753
-(autoload 'dired-jump "dired-x"
-  "Jump to Dired buffer corresponding to current buffer." t)
-
-(autoload 'dired-jump-other-window "dired-x"
-  "Like \\[dired-jump] (dired-jump) but in other window." t)
-
-(define-key global-map "\C-x\C-j" 'dired-jump)
-(define-key global-map "\C-x4\C-j" 'dired-jump-other-window)
+(use-package dired-x
+  :bind (("C-x C-j" . dired-jump) ; Jump to Dired buffer corresponding to current buffer
+          ("C-x 4 C-j" . dired-jump-other-window))) ; Like dired-jump but in other window
+          
 
 ;; BBDB configuration
 ;; (add-to-list 'load-path (concat +dot-emacs-home+ "elisp/bbdb-2.35/lisp"))
@@ -1948,58 +1999,64 @@ somewhere on the variable mode-line-format."
 
 ;; From: http://emacs-fu.blogspot.pt/2009/08/managing-e-mail-addresses-with-bbdb.html
 (setq bbdb-file "~/.emacs.d/bbdb")           ;; keep ~/ clean; set before loading
-(require 'bbdb-autoloads)
-(require 'bbdb)
-(require 'message)
-(bbdb-initialize 'gnus 'message)
-(setq 
-    bbdb-offer-save 1                        ;; 1 means save-without-asking
-    bbdb-mail-allow-redundancy t
+(use-package bbdb
+  :init (progn
+          (require 'bbdb)
+          (require 'message)
+          (bbdb-initialize 'gnus 'message)
+          (setq 
+            bbdb-offer-save 1 ;; 1 means save-without-asking
+            bbdb-mail-allow-redundancy t
     
-    bbdb-use-pop-up nil                      ;; allow popups for addresses
-    bbdb-electric-p t                        ;; be disposable with SPC
-    bbdb-popup-target-lines  1               ;; very small
+            bbdb-use-pop-up nil ;; allow popups for addresses
+            bbdb-electric-p t   ;; be disposable with SPC
+            bbdb-popup-target-lines  1 ;; very small
     
-    bbdb-dwim-net-address-allow-redundancy t ;; always use full name
-    bbdb-quiet-about-name-mismatches 2       ;; show name-mismatches 2 secs
+            bbdb-dwim-net-address-allow-redundancy t ;; always use full name
+            bbdb-quiet-about-name-mismatches 2 ;; show name-mismatches 2 secs
 
-    bbdb-always-add-address t                ;; add new addresses to existing...
-                                             ;; ...contacts automatically
-    bbdb-canonicalize-redundant-nets-p t     ;; x@foo.bar.cx => x@bar.cx
+            bbdb-always-add-address t ;; add new addresses to existing...
+            ;; ...contacts automatically
+            bbdb-canonicalize-redundant-nets-p t ;; x@foo.bar.cx => x@bar.cx
 
-    bbdb-completion-type nil                 ;; complete on anything
+            bbdb-completion-type nil ;; complete on anything
 
-    bbdb-complete-name-allow-cycling t       ;; cycle through matches
-                                             ;; this only works partially
+            bbdb-complete-name-allow-cycling t ;; cycle through matches
+            ;; this only works partially
 
-    bbbd-message-caching-enabled t           ;; be fast
-    bbdb-use-alternate-names t               ;; use AKA
+            bbbd-message-caching-enabled t ;; be fast
+            bbdb-use-alternate-names t     ;; use AKA
 
 
-    bbdb-elided-display t                    ;; single-line addresses
+            bbdb-elided-display t ;; single-line addresses
 
-    ;; auto-create addresses from mail
-    bbdb/mail-auto-create-p 'bbdb-ignore-some-messages-hook   
-    bbdb-ignore-some-messages-alist ;; don't ask about fake addresses
-    ;; NOTE: there can be only one entry per header (such as To, From)
-    ;; http://flex.ee.uec.ac.jp/texi/bbdb/bbdb_11.html
+            ;; auto-create addresses from mail
+            bbdb/mail-auto-create-p 'bbdb-ignore-some-messages-hook   
+            bbdb-ignore-some-messages-alist ;; don't ask about fake addresses
+            ;; NOTE: there can be only one entry per header (such as To, From)
+            ;; http://flex.ee.uec.ac.jp/texi/bbdb/bbdb_11.html
 
-    '(( "From" . "no.?reply\\|DAEMON\\|daemon\\|facebookmail\\|twitter")))
+            '(( "From" . "no.?reply\\|DAEMON\\|daemon\\|facebookmail\\|twitter")))
 
-;; From: http://www.mostlymaths.net/2010/12/emacs-30-day-challenge-glimpse-of-bbdb.html
-(bbdb-insinuate-message)
-(add-hook 'gnus-startup-hook 'bbdb-insinuate-gnus)
-(setq bbdb-send-mail-style 'gnus)
-(setq bbdb-complete-name-full-completion t)
+          ;; From: http://www.mostlymaths.net/2010/12/emacs-30-day-challenge-glimpse-of-bbdb.html
+          (bbdb-insinuate-message)
+          (add-hook 'gnus-startup-hook 'bbdb-insinuate-gnus)
+          (setq bbdb-send-mail-style 'gnus)
+          (setq bbdb-complete-name-full-completion t)
 
-(setq bbdb-completion-display-record nil)
+          (setq bbdb-completion-display-record nil)))
 
 
 (add-to-list 'auto-mode-alist '("Gemfile$" . ruby-mode))
 (add-to-list 'auto-mode-alist '("Rakefile$" . ruby-mode))
 
-(autoload 'yaml-mode "yaml-mode" "Yaml mode" t)
-(add-to-list 'auto-mode-alist '("\.yml$" . yaml-mode))
+(use-package yaml-mode
+  :mode ("\.yml$" . yaml-mode))
+
+(use-package pivotal-tracker
+  :load-path "elisp/my-version-pivotal-tracker/"
+  :commands pivotal
+  :config (load (concat +dot-emacs-home+ "elisp/my-version-pivotal-tracker/key.el")))
 (setq history-length 1000)
 (setq kill-ring-max 500)
 (setq global-mark-ring-max 100)
@@ -2007,9 +2064,9 @@ somewhere on the variable mode-line-format."
 (setq message-log-max 1000)
 (setq regexp-search-ring-max 50)
 (setq search-ring-max 50)
-(require 'elisp-slime-nav)
-(add-hook 'emacs-lisp-mode-hook '(lambda ()
-                                   (elisp-slime-nav-mode t)))
+(use-package elisp-slime-nav
+  :init (add-hook 'emacs-lisp-mode-hook '(lambda ()
+                                   (elisp-slime-nav-mode t))))
 ;; From: http://blog.printf.net/articles/2007/10/15/productivity-a-year-on
 (defun find-tag-at-point ()
   "*Find tag whose name contains TAGNAME.
