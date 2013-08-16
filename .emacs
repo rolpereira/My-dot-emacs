@@ -59,7 +59,7 @@
 (defun where-am-i ()
   "If it returns t, then I am on the laptop, otherwise I am on the desktop."
   (let ((LAPTOP-HOSTNAME "rolando-laptop")
-          (DESKTOP-HOSTNAME "rolando-desktop"))
+          (DESKTOP-HOSTNAME "rolando-K8NF4G-VSTA"))
     (cond ((string= system-name LAPTOP-HOSTNAME)
             'laptop)
       ((string= system-name DESKTOP-HOSTNAME)
