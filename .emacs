@@ -1893,8 +1893,6 @@ somewhere on the variable mode-line-format."
 (setq x-select-enable-primary t)
 ;(setq x-select-enable-clipboard nil)
 
-;; TODO: Meter autoload para o lorem-ipsum
-
 ;; ;; Eclim emacs
 ;; (add-to-list 'load-path (expand-file-name "~/src/git/emacs-eclim/"))
 ;; ;; only add the vendor path when you want to use the libraries provided with emacs-eclim
