@@ -361,6 +361,12 @@ it moves the cursor to the beginning-of-line"
     '(("\\<\\(require-maybe\\|add-hook\\|setq\\)"
         1 font-lock-keyword-face prepend)))
 
+  (font-lock-add-keywords nil
+    '(("\\<use-package" . font-lock-keyword-face)))
+  ;; (font-lock-add-keywords nil
+  ;;   '(("\\<use-package \\([[:word:]]*\\)" 1
+  ;;       font-lock-constant-face)))
+
   (show-paren-mode 1)
   (setq show-paren-style 'expression)
   (eldoc-mode 1))
