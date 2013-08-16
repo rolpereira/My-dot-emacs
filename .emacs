@@ -168,9 +168,7 @@ it moves the cursor to the beginning-of-line"
 
 (setq c-default-style "bsd")
 
-
-
-(message "Stop 1 %ds" (destructuring-bind (hi lo ms) (current-time)
+(message "Stop 1 %ds" (destructuring-bind (hi lo ms &rest ignore) (current-time)
                            (- (+ hi lo) (+ (first *emacs-load-start*) (second *emacs-load-start*)))))
 
 
@@ -277,7 +275,7 @@ it moves the cursor to the beginning-of-line"
   (linum-mode)
   )
 
-(message "Stop 2 %ds" (destructuring-bind (hi lo ms) (current-time)
+(message "Stop 2 %ds" (destructuring-bind (hi lo ms &rest ignore) (current-time)
                            (- (+ hi lo) (+ (first *emacs-load-start*) (second *emacs-load-start*)))))
 
 
@@ -373,7 +371,7 @@ it moves the cursor to the beginning-of-line"
 
 
 
-(message "Stop 3 %ds" (destructuring-bind (hi lo ms) (current-time)
+(message "Stop 3 %ds" (destructuring-bind (hi lo ms &rest ignore) (current-time)
                            (- (+ hi lo) (+ (first *emacs-load-start*) (second *emacs-load-start*)))))
 
 
@@ -527,7 +525,7 @@ it moves the cursor to the beginning-of-line"
 
 
 
-(message "Stop 4 %ds" (destructuring-bind (hi lo ms) (current-time)
+(message "Stop 4 %ds" (destructuring-bind (hi lo ms &rest ignore) (current-time)
                         (- (+ hi lo) (+ (first *emacs-load-start*) (second *emacs-load-start*)))))
 
 
@@ -626,7 +624,7 @@ it moves the cursor to the beginning-of-line"
 
 
 
-(message "Stop 5 %ds" (destructuring-bind (hi lo ms) (current-time)
+(message "Stop 5 %ds" (destructuring-bind (hi lo ms &rest ignore) (current-time)
                         (- (+ hi lo) (+ (first *emacs-load-start*) (second *emacs-load-start*)))))
 
 
@@ -726,7 +724,7 @@ it moves the cursor to the beginning-of-line"
 
 
 
-(message "Stop 6 %ds" (destructuring-bind (hi lo ms) (current-time)
+(message "Stop 6 %ds" (destructuring-bind (hi lo ms &rest ignore) (current-time)
                         (- (+ hi lo) (+ (first *emacs-load-start*) (second *emacs-load-start*)))))
 
 
@@ -830,7 +828,7 @@ it moves the cursor to the beginning-of-line"
 ;;;;;;;;
 
 
-(message "Stop 7 %ds" (destructuring-bind (hi lo ms) (current-time)
+(message "Stop 7 %ds" (destructuring-bind (hi lo ms &rest ignore) (current-time)
                         (- (+ hi lo) (+ (first *emacs-load-start*) (second *emacs-load-start*)))))
 
 
@@ -841,7 +839,7 @@ it moves the cursor to the beginning-of-line"
 ;;
 
 
-(message "Stop 8 %ds" (destructuring-bind (hi lo ms) (current-time)
+(message "Stop 8 %ds" (destructuring-bind (hi lo ms &rest ignore) (current-time)
                         (- (+ hi lo) (+ (first *emacs-load-start*) (second *emacs-load-start*)))))
 
 
@@ -873,6 +871,7 @@ it moves the cursor to the beginning-of-line"
           (global-set-key (kbd "<S-f4>") 'bm-previous)
           ))
 
+(message "Stop 9 %ds" (destructuring-bind (hi lo ms &rest ignore) (current-time)
                         (- (+ hi lo) (+ (first *emacs-load-start*) (second *emacs-load-start*)))))
 
 
@@ -963,7 +962,7 @@ it moves the cursor to the beginning-of-line"
         (select-window (next-window))
         (fit-window-to-buffer (selected-window) 10 4)))))
 
-(message "Stop 10 %ds" (destructuring-bind (hi lo ms) (current-time)
+(message "Stop 10 %ds" (destructuring-bind (hi lo ms &rest ignore) (current-time)
                            (- (+ hi lo) (+ (first *emacs-load-start*) (second *emacs-load-start*)))))
 
 ;; Automatically close the compilation buffer after a successful compilation
@@ -1021,7 +1020,7 @@ it moves the cursor to the beginning-of-line"
 
 
 
-(message "Stop 11 %ds" (destructuring-bind (hi lo ms) (current-time)
+(message "Stop 11 %ds" (destructuring-bind (hi lo ms &rest ignore) (current-time)
                          (- (+ hi lo) (+ (first *emacs-load-start*) (second *emacs-load-start*)))))
 
 
@@ -1130,7 +1129,7 @@ it moves the cursor to the beginning-of-line"
 
 
 
-(message "Stop 12 %ds" (destructuring-bind (hi lo ms) (current-time)
+(message "Stop 12 %ds" (destructuring-bind (hi lo ms &rest ignore) (current-time)
                          (- (+ hi lo) (+ (first *emacs-load-start*) (second *emacs-load-start*)))))
 
 
@@ -1222,7 +1221,7 @@ point."
                              (interactive)
                              (insert "9"))))
 
-(message "Stop 13 %ds" (destructuring-bind (hi lo ms) (current-time)
+(message "Stop 13 %ds" (destructuring-bind (hi lo ms &rest ignore) (current-time)
                          (- (+ hi lo) (+ (first *emacs-load-start*) (second *emacs-load-start*)))))
 
 
@@ -1296,7 +1295,7 @@ point."
 ;; Dired file size should be human readable
 (setq dired-listing-switches "-alh")
 
-(message "Stop 14 %ds" (destructuring-bind (hi lo ms) (current-time)
+(message "Stop 14 %ds" (destructuring-bind (hi lo ms &rest ignore) (current-time)
                          (- (+ hi lo) (+ (first *emacs-load-start*) (second *emacs-load-start*)))))
 
 
