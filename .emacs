@@ -1,4 +1,9 @@
 ; Time-stamp: <2012-04-19 02:57:40 (rolando)>
+;;(set-scroll-bar-mode 'right)
+(tool-bar-mode 0)
+(scroll-bar-mode 0)
+(menu-bar-mode 0)
+
 
 ;; TODO: Arranjar uma keybind para find-function (podera funcionar melhor que as tags)
 
@@ -1314,10 +1319,6 @@ point."
 (add-hook 'after-save-hook 'autocompile)
 
 
-                                        ;(set-scroll-bar-mode 'right)
-(tool-bar-mode 0)
-(scroll-bar-mode 0)
-(menu-bar-mode 0)
 
 
 (message "My .emacs loaded in %ds" (destructuring-bind (hi lo ms) (current-time)
