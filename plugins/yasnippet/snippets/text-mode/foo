@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: foo
+# key: fo
+# --
+lorem ipsum $1

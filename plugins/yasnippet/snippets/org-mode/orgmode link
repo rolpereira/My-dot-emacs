@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: orgmode link
+# key: li
+# --
+[[./${1:$(s-join "" (split-string text " "))}][$1]] $0
