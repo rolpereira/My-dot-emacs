@@ -183,7 +183,7 @@ it moves the cursor to the beginning-of-line"
   (global-unset-key "\C-z"))            ; iconify-or-deiconify-frame (C-x C-z)
 
 (setq-default ispell-program-name "aspell") ; Use aspell instead of ispell
-(setq ispell-dictionary "portugues")             ; Set ispell dictionary
+(setq ispell-dictionary "pt_PT")             ; Set ispell dictionary
 
 (setq frame-title-format "%b - emacs")
 ; Tabs expand to 4 spaces
