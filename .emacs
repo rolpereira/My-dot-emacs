@@ -1149,7 +1149,7 @@ it moves the cursor to the beginning-of-line"
 ;; ;; Precisa de uns ajustes para poder usar o tab dentro de snippets
 ;; ;(global-set-key [(tab)] 'rolando-indent-and-dabbrev)
 
-(setq yas/trigger-key (kbd "SPC"))
+;; (setq yas/trigger-key (kbd "SPC"))
 
 (defun rolando-change-comma-to-semicolon ()
   "If the character before pressing enter is a ',' change it into a ';' instead
@@ -1566,7 +1566,7 @@ point."
 ;;         (server-edit)))))
 
 ;; My general lisp configurations
-(add-hook 'lisp-mode-hook 'yas/minor-mode-off)
+;; (add-hook 'lisp-mode-hook 'yas/minor-mode-off)
  ; Doesn't seem to function if it's inside `lisp-hook-function'
 (add-hook 'lisp-mode-hook 'lisp-switch-keys)
 
