@@ -210,8 +210,6 @@ it moves the cursor to the beginning-of-line"
 ;;;
 
 ; Activar Org-Mode
-(setq load-path (cons (concat +dot-emacs-home+ "elisp/org-mode/lisp") load-path))
-(setq load-path (cons (concat +dot-emacs-home+ "elisp/org-mode/contrib/lisp") load-path))
 ;;;;;
 
 ; Mostra so a * mais a direita no org-mode
@@ -1980,6 +1978,8 @@ somewhere on the variable mode-line-format."
 (add-to-list 'package-archives
              '("melpa" . "http://melpa.milkbox.net/packages/") t)
 
+(add-to-list 'package-archives
+  '("orgmode" . "http://orgmode.org/elpa/"))
 
 (use-package rvm
   :init (progn
