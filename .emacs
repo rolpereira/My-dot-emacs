@@ -2063,9 +2063,23 @@ somewhere on the variable mode-line-format."
 (setq message-log-max 1000)
 (setq regexp-search-ring-max 50)
 (setq search-ring-max 50)
+
+(add-hook 'ruby-mode-hook (lambda ()
+                            (flyspell-prog-mode)
+                            (ispell-change-dictionary "en")
+                            (auto-fill-mode 1)
+                            (setq comment-auto-fill-only-comments t)))
+
+
+(setq ruby-insert-encoding-magic-comment nil)
+
+
 (use-package elisp-slime-nav
   :init (add-hook 'emacs-lisp-mode-hook '(lambda ()
                                    (elisp-slime-nav-mode t))))
+
+(add-to-list 'load-path (concat +dot-emacs-home+ "elisp/emacs-flymake"))
+
 ;; From: http://blog.printf.net/articles/2007/10/15/productivity-a-year-on
 (defun find-tag-at-point ()
   "*Find tag whose name contains TAGNAME.
