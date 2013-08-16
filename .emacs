@@ -1784,8 +1784,8 @@ somewhere on the variable mode-line-format."
 ;; From: http://www.emacswiki.org/cgi-bin/wiki?goto-last-change.el
 ;; Seen on #emacs
 ;; Works like '. on vim
-(require 'goto-last-change)
-(global-set-key (kbd "C-x C-g") 'goto-last-change)
+(use-package goto-last-change
+  :bind ("C-x C-g" . goto-last-change))
 
 (global-set-key (kbd "C-x C-b") 'ibuffer)
 
