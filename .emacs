@@ -2093,8 +2093,18 @@ somewhere on the variable mode-line-format."
 
 (global-set-key (kbd "M-.") 'find-tag-at-point)
 
+(use-package c-eldoc
+  :commands c-turn-on-eldoc-mode)
+;; (require 'c-eldoc)
+;; (setq c-eldoc-includes "`xml2-config --cflags --libs` -I./ -I../ ")
+;; (add-hook 'c-mode-hook 'c-turn-on-eldoc-mode)
 
-(require 'edit-list)
+;; (add-hook 'c-mode-hook '(lambda () (gtags-mode 1)))
+
+
+(use-package edit-list
+  :commands edit-list)
+
 
 
 ;; From: http://nullprogram.com/blog/2009/05/28/
