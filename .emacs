@@ -524,8 +524,7 @@ it moves the cursor to the beginning-of-line"
 ;;;;;
 
 ;; spellcheck in LaTex mode
-(add-hook 'latex-mode-hook 'flyspell-mode)
-(add-hook 'tex-mode-hook 'flyspell-mode)
+(add-hook 'TeX-mode-hook 'flyspell-mode)
 (add-hook 'bibtex-mode-hook 'flyspell-mode)
 ;;;;;
 
