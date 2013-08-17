@@ -2387,6 +2387,9 @@ somewhere on the variable mode-line-format."
                               (eldoc-mode)
                               (auto-complete-mode)))
 
+(when window-system
+  (global-unset-key (kbd "C-x C-z")))
+
 ;;; Perl stuff
 ;; (add-to-list 'load-path "~/.emacs.d/pde")
 ;; (load "pde-load")
