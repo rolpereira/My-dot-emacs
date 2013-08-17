@@ -2363,6 +2363,71 @@ somewhere on the variable mode-line-format."
 
 (use-package anonfun
   :commands (fn fnn))
+
+
+
+;;; From: http://common-lisp.net/project/bese/docs/arnesi/html/api/macro_005FIT.BESE.ARNESI_003A_003AWHICHEVER.html
+(defmacro whichever (&rest possibilities)
+  "Evaluates one (and only one) of its args, which one is chosen at random"
+  `(ecase (random ,(length possibilities))
+     ,@(loop for poss in possibilities
+             for x from 0
+             collect (list x poss))))
+
+;;; From: http://common-lisp.net/project/bese/docs/arnesi/html/api/macro_005FIT.BESE.ARNESI_003A_003AXOR.html
+(defmacro xor (&rest datums)
+  "Evaluates the args one at a time. If more than one arg returns true
+  evaluation stops and NIL is returned. If exactly one arg returns
+  true that value is retuned."
+  (let ((state (gensym "XOR-state-"))
+        (block-name (gensym "XOR-block-"))
+        (arg-temp (gensym "XOR-arg-temp-")))
+    `(let ((,state nil)
+           (,arg-temp nil))
+       (block ,block-name
+         ,@(loop
+              for arg in datums
+              collect `(setf ,arg-temp ,arg)
+              collect `(if ,arg-temp
+                           ;; arg is T, this can change the state
+                           (if ,state
+                               ;; a second T value, return NIL
+                               (return-from ,block-name nil)
+                               ;; a first T, swap the state
+                               (setf ,state ,arg-temp))))
+         (return-from ,block-name ,state)))))
+
+;;; Idea based on: https://github.com/vseloved/rutils/blob/master/core/string.lispx
+(defmacro* dolines ((line file &optional result) &rest body)
+  `(with-temp-buffer
+     (insert-file-contents ,file)
+     (dolist (,line (split-string
+                      (buffer-substring-no-properties (point-min) (point-max))
+                      "\n" nil)
+               ,result)
+       ,@body)))
+
+
+(defun s-maplines (func string)
+  "Apply FUNC to each line in STRING and return a list of lines
+
+FUNC is a function that receives a string (without the final
+\"\n\") representing a line of in STRING"
+  (mapcar func (s-lines string)))
+
+(defun s-drop-lines (s n)
+  (let ((string (apply #'concat (subseq (s-lines s) n))))
+    (unless (string= string "")
+      string)))
+
+
+(defun s-take-lines (s n)
+  (let ((string (apply #'concat (subseq (s-lines s) 0 n))))
+    (unless (string= string "")
+      string)))
+(defun random-elt (list)
+  (elt list (random (length list))))
+
 (use-package flash-eval
   :load-path "elisp/flash-eval"
   :init (progn
