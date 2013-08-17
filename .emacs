@@ -2377,4 +2377,8 @@ somewhere on the variable mode-line-format."
   :init (global-set-key (kbd "<f4>") 'helm-imenu))
 
 
+
+;;; Perl stuff
+;; (add-to-list 'load-path "~/.emacs.d/pde")
+;; (load "pde-load")
 (use-package map-regexp)
