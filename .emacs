@@ -66,7 +66,8 @@
 ;; Enable SRecode (Template management) minor-mode.
 ;; (global-srecode-minor-mode 1)
 
-
+(defun yas/minor-mode-off ()
+  (yas-minor-mode -1))
 
 
 (defvar *emacs-load-start* (current-time))
@@ -2135,6 +2136,29 @@ somewhere on the variable mode-line-format."
        ,@body
        (- (float-time) ,start))))
 
+;; Check out % g in dired to mark every file containing regexp
+
+;; Start a query-replace-regexp from inside re-builder
+;; http://emacs-journey.blogspot.pt/2012/06/re-builder-query-replace-this.html
+(defun reb-query-replace-this-regxp (replace)
+  "Uses the regexp built with re-builder to query the target buffer.
+This function must be run from within the re-builder buffer, not the target
+buffer.
+
+Argument REPLACE String used to replace the matched strings in the buffer.
+ Subexpression references can be used (\1, \2, etc)."
+  (interactive "sReplace with: ")
+  (if (eq major-mode 'reb-mode)
+      (let ((reg (reb-read-regexp)))
+        (select-window reb-target-window)
+        (save-excursion
+          (goto-char (point-min))
+          (query-replace-regexp reg replace)))
+    (message "Not in a re-builder buffer!")))
+
+(require 're-builder)
+(define-key reb-mode-map "\C-c\M-%" 'reb-query-replace-this-regxp)
+
 ;; From: http://paste.lisp.org/display/23526
 (defun alistp (list)
   (if (listp list)
@@ -2144,6 +2168,39 @@ somewhere on the variable mode-line-format."
 	     (alistp (cdr list)))
 	    (t nil))
       nil))
+
+;; (defmacro {} (&rest hash-contents)
+;;   `(loop with hash-table = (make-hash-table :test #'equal)
+;;      with content = (quote ,hash-contents)
+;;      for key-index = 0 then (+ key-index 3)
+;;      for sign-index = 1 then (+ sign-index 3)
+;;      for value-index = 2 then (+ value-index 3)
+;;      while (< value-index (length content)) 
+;;      for key = (nth key-index content)
+;;      for sign = (nth sign-index content)
+;;      for value = (nth value-index content)
+;;      if (eq sign '=>)
+;;      do (puthash key value hash-table)
+;;      else do (error "Symbol in position %s wasn't =>" sign)
+;;      finally return hash-table))
+
+;; (defmacro {} (&rest hash-contents)
+;;   `(let ((content (quote ,hash-contents))
+;;           (hash-temp (make-hash-table :test #'equal)))
+;;      (let ((key-index 0)
+;;             (sign-index 1)
+;;             (value-index 2))
+;;        (while (< value-index (length content))
+;;          (let ((key (nth key-index content))
+;;                 (sign (nth sign-index content))
+;;                 (value (nth value-index content)))
+;;            (if (eq sign '=>)
+;;              (puthash key value hash-temp)
+;;              (error "Symbol in position %s of HASH-CONTENTS wasn't =>" sign-index))
+;;            (setq key-index (+ key-index 3)
+;;              sign-index (+ sign-index 3)
+;;              value-index (+ value-index 3)))))
+;;      hash-temp))
 
 (defun make-hash-from-alist (data &rest keyword-args)
   (assert (alistp data) t "DATA is not a valid alist")
@@ -2194,6 +2251,16 @@ somewhere on the variable mode-line-format."
 
 (use-package expand-region
   :bind ("C-=" . er/expand-region))
+
+;; From: http://irreal.org/blog/?p=297
+(defun eval-and-replace (value)
+  "Evaluate the sexp at point and replace it with its value"
+  (interactive (list (eval-last-sexp nil)))
+  (kill-sexp -1)
+  (insert (format "%S" value)))
+
+
+
 
 ;; From: https://bitbucket.org/tarballs_are_good/qtility/src/423519bbe130/sequence.lisp
 (defun subdivide (sequence chunk-size)
@@ -2282,6 +2349,24 @@ somewhere on the variable mode-line-format."
     (backward-char 2)
     (message "%s" (word-at-point))))
 
+;; (defun matlab-send-line-to-shell ()
+;;   (interactive)
+;;   (save-excursion
+;;     (let (region-begin region-end)
+;;       (beginning-of-line)
+;;       (setq region-begin (point))
+;;       (end-of-line)
+;;       (setq region-end (point))
+;;       (matlab-shell-run-region region-begin region-end))))
+
+;; (add-hook 'matlab-mode-hook (lambda ()
+;;                               (local-set-key (kbd "C-c C-l") 'matlab-send-line-to-shell)
+;;                               (local-set-key (kbd "M-;") 'comment-dwim)))
+
+(defun w3m-open-in-firefox ()
+  (interactive)
+  (browse-url-firefox (w3m-print-current-url)))
+
 (use-package list-utils)
 (use-package dash)
 (use-package s)
@@ -2292,6 +2377,33 @@ somewhere on the variable mode-line-format."
 
 (use-package projectile)
 (use-package helm-projectile)
+
+;; From http://bc.tech.coop/blog/070515.html
+(defun lispdoc ()
+  "Searches lispdoc.com for SYMBOL, which is by default the symbol currently under the curser"
+  (interactive)
+  (let* ((word-at-point (word-at-point))
+         (symbol-at-point (symbol-at-point))
+         (default (symbol-name symbol-at-point))
+         (inp (read-from-minibuffer
+               (if (or word-at-point symbol-at-point)
+                   (concat "Symbol (default " default "): ")
+                 "Symbol (no default): "))))
+    (if (and (string= inp "") (not word-at-point) (not
+                                                   symbol-at-point))
+        (message "you didn't enter a symbol!")
+      (let ((search-type (read-from-minibuffer
+                          "full-text (f) or basic (b) search (default b)? ")))
+        (browse-url (concat "http://lispdoc.com?q="
+                            (if (string= inp "")
+                                default
+                              inp)
+                            "&search="
+                            (if (string-equal search-type "f")
+                                "full+text+search"
+                              "basic+search")))))))
+
+(define-key lisp-mode-map (kbd "C-c l") 'lispdoc)
 
 (use-package shadchen)
 (use-package dotassoc)
@@ -2335,10 +2447,16 @@ somewhere on the variable mode-line-format."
 
 (defun cedet-called-interactively-p (arg)
   (called-interactively-p arg))
+
+(defalias 'ppcb 'pp-current-buffer)
+
 (use-package furl
   :commands (furl-retrieve furl-retrieve-synchronously))
 (use-package create-directory-tree
   :load-path "~/src/git/create-directory-tree")
+
+(defmacro concatf (place &rest sequences)
+  `(setf ,place (concat ,place ,sequences)))
 
 ;; (use-package plantuml-mode
 ;;   :init (setq plantuml-jar-path "~/.emacs.d/non-lisp/plantuml.jar")
@@ -2502,4 +2620,13 @@ FUNC is a function that receives a string (without the final
 ;;; Perl stuff
 ;; (add-to-list 'load-path "~/.emacs.d/pde")
 ;; (load "pde-load")
+
 (use-package map-regexp)
+
+(defun round-decimal (number decimal-places)
+  (/ (float (round (* number (expt 10 decimal-places))))
+    (expt 10 decimal-places)))
+
+
+
+
