@@ -2377,6 +2377,15 @@ somewhere on the variable mode-line-format."
   :init (global-set-key (kbd "<f4>") 'helm-imenu))
 
 
+(add-hook 'python-mode-hook 'jedi:setup)
+(setq jedi:setup-keys t)                      ; optional
+(setq jedi:complete-on-dot t)                 ; optional
+(setq jedi:tooltip-method nil)
+(setq jedi:get-in-function-call-delay 10)
+
+(add-hook 'python-mode-hook (lambda ()
+                              (eldoc-mode)
+                              (auto-complete-mode)))
 
 ;;; Perl stuff
 ;; (add-to-list 'load-path "~/.emacs.d/pde")
