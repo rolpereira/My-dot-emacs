@@ -2174,6 +2174,9 @@ somewhere on the variable mode-line-format."
     (kill-sexp)
     (insert pp-sexp)))
 
+(use-package expand-region
+  :bind ("C-=" . er/expand-region))
+
 ;; From: https://bitbucket.org/tarballs_are_good/qtility/src/423519bbe130/sequence.lisp
 (defun subdivide (sequence chunk-size)
   "Split SEQUENCE into subsequences of size CHUNK-SIZE."
@@ -2206,6 +2209,21 @@ somewhere on the variable mode-line-format."
   "Drop the first N elements from SEQUENCE."
   ;; This used to be NTHCDR for lists.
   (subseq sequence n))
+
+(use-package async
+  :load-path "~/.emacs.d/elisp/emacs-async/")
+
+;; Configuration Octave:
+(use-package octave-mod
+  :mode ("\.m$" . octave-mode)
+  :config (progn
+            (use-package ac-octave)
+            (defun ac-octave-mode-setup ()
+              (setq ac-sources '(ac-source-octave)))
+            (add-hook 'octave-mode-hook
+              '(lambda ()
+                 (ac-octave-mode-setup)
+                 (auto-complete-mode)))))            
 (defmacro sort-safe (list predicate)
   "Sort LIST without modifying it using PREDICATE"
   `(sort (copy-sequence ,list) ,predicate))
@@ -2231,6 +2249,10 @@ somewhere on the variable mode-line-format."
 (defun pp-current-buffer (thing)
   (pp thing
     (get-buffer (current-buffer))))
+
+(use-package lorem-ipsum
+  :commands (lorem-ipsum-insert-paragraphs))
+
 (defun what-weekday (date)
   (interactive "sDate: ")
   (with-temp-buffer
@@ -2241,3 +2263,118 @@ somewhere on the variable mode-line-format."
     (end-of-line)
     (backward-char 2)
     (message "%s" (word-at-point))))
+
+(use-package list-utils)
+(use-package dash)
+(use-package s)
+(use-package string-utils)
+(use-package vector-utils)
+(use-package trie)
+(use-package heap)
+
+(use-package projectile)
+(use-package helm-projectile)
+
+(use-package shadchen)
+(use-package dotassoc)
+
+(use-package paredit
+  :config (progn
+            (use-package paredit-menu)
+            (defun lisp-switch-keys ()
+              (local-set-key (kbd "8") (lambda ()
+                                         (interactive)
+                                         (paredit-open-round)))
+              (local-set-key (kbd "(") (lambda ()
+                                         (interactive)
+                                         (insert "8")))
+              (local-set-key (kbd "9") (lambda ()
+                                         (interactive)
+                                         (paredit-close-round)))
+              (local-set-key (kbd ")") (lambda ()
+                                         (interactive)
+                                         (insert "9")))
+              ;; O paredit não apaga este char: «, e como nunca quiz
+              ;; escrever este char e como quando acontece é porque
+              ;; queria escrever o char ', é melhor mudar
+              (local-set-key (kbd "«") (lambda ()
+                                         (interactive)
+                                         (insert "'"))))
+            (add-hook 'emacs-lisp-mode-hook 'paredit-mode)
+            (add-hook 'lisp-mode-hook 'paredit-mode)
+            (add-hook 'ielm-mode-hook 'paredit-mode)))
+(use-package org-special-blocks)
+
+(use-package multiple-cursors
+  :bind (("C-S-c C-S-c" . mc/edit-lines)
+          ("C->" . mc/mark-next-like-this)
+          ("C-<" . mc/mark-previous-like-this)
+          ("C-c C-<" . mc/mark-all-like-this))
+  :config (setq mc/cmds-to-run-for-all '(org-self-insert-command)))
+
+(use-package sr-speedbar
+  :commands sr-speedbar-toggle)
+
+(use-package furl
+  :commands (furl-retrieve furl-retrieve-synchronously))
+(use-package create-directory-tree
+  :load-path "~/src/git/create-directory-tree")
+
+;; (use-package plantuml-mode
+;;   :init (setq plantuml-jar-path "~/.emacs.d/non-lisp/plantuml.jar")
+;;   :config (add-hook 'plantuml-mode-hook (lambda ()
+;;                                           (local-set-key (kbd "TAB") #'plantuml-complete-symbol))))
+
+(use-package org-inlinetask
+  :config (setq org-inlinetask-default-state "TODO"))
+
+(use-package ob-R)
+(use-package ob-lisp)
+
+
+(use-package rx)
+(use-package ht)
+(use-package macro-utils
+  :commands (once-only))
+
+(use-package esxml)
+(use-package macro-utils)
+(use-package memoize
+  :commands defmemoize)
+
+(use-package anonfun
+  :commands (fn fnn))
+(use-package flash-eval
+  :load-path "elisp/flash-eval"
+  :init (progn
+          (add-hook 'lisp-interaction-mode-hook (lambda ()
+                                                  (local-set-key (kbd "C-c C-c") #'flash-eval-eval-defun-flash)))
+
+          (add-hook 'emacs-lisp-mode-hook (lambda ()
+                                            (local-set-key (kbd "C-c C-c") #'flash-eval-eval-defun-flash)))))
+(use-package lispxmp)
+
+;;; Isto vem do magit
+(use-package rebase-mode)
+
+(use-package ris
+  :commands ris)
+
+(use-package magithub)
+
+;;; From: http://twitter.com/jaotwits/statuses/322402635414118401
+(use-package memory-usage
+  :commands (memory-usage memory-usage-find-large-variables))
+
+(use-package emr)
+
+;; (use-package letcheck
+;;   :init (add-hook 'emacs-lisp-mode-hook (lambda () (letcheck-mode))))
+
+
+(use-package helm
+  :commands helm-imenu
+  :init (global-set-key (kbd "<f4>") 'helm-imenu))
+
+
+(use-package map-regexp)
