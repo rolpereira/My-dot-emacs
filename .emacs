@@ -2354,6 +2354,11 @@ somewhere on the variable mode-line-format."
                                             (local-set-key (kbd "C-c C-c") #'flash-eval-eval-defun-flash)))))
 (use-package lispxmp)
 
+;;; From: http://stackoverflow.com/questions/9314340/emacs-command-to-diff-a-buffer-and-its-file
+;;; I can only remember diff-buffer-with-file, so change the name of
+;;; the ediff equivalent
+(defalias 'ediff-buffer-with-file 'ediff-current-file)
+
 ;;; Isto vem do magit
 (use-package rebase-mode)
 
