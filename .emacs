@@ -5,8 +5,26 @@
 (menu-bar-mode 0)
 
 
-;; TODO: Arranjar uma keybind para find-function (podera funcionar melhor que as tags)
+;; Load CEDET
+;; This should be near the top of your init file, so that this can
+;; really replace the CEDET that ships with Emacs proper.
+(ignore-errors (load-file "/home/rolando/src/bazaar/cedet/cedet-devel-load.el"))
 
+;; Add further minor-modes to be enabled by semantic-mode.
+;; See doc-string of `semantic-default-submodes' for other things
+;; you can use here.
+(add-to-list 'semantic-default-submodes 'global-semantic-idle-summary-mode)
+(add-to-list 'semantic-default-submodes 'global-semantic-idle-completions-mode)
+
+
+
+;; Enable Semantic
+(semantic-mode 1)
+
+
+
+;; TODO: Arranjar uma keybind para find-function (podera funcionar melhor que as tags)
+;; TODO: Ver a funcao normal-top-level-add-subdirs-to-load-path
 
 ;; Load CEDET.
 ;; See cedet/common/cedet.info for configuration details.
@@ -2315,6 +2333,8 @@ somewhere on the variable mode-line-format."
 (use-package sr-speedbar
   :commands sr-speedbar-toggle)
 
+(defun cedet-called-interactively-p (arg)
+  (called-interactively-p arg))
 (use-package furl
   :commands (furl-retrieve furl-retrieve-synchronously))
 (use-package create-directory-tree
