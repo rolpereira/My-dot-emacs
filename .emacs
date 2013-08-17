@@ -2141,6 +2141,9 @@ somewhere on the variable mode-line-format."
 (setq compilation-auto-jump-to-first-error nil)
 (setq compilation-scroll-output 'first-error)
 
+(use-package kill-ring-search
+  :bind ("M-C-y" . kill-ring-search))
+
 ;; From: https://bitbucket.org/tarballs_are_good/qtility/src/423519bbe130/sequence.lisp
 (defun subdivide (sequence chunk-size)
   "Split SEQUENCE into subsequences of size CHUNK-SIZE."
