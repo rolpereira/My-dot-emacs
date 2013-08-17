@@ -2337,6 +2337,25 @@ somewhere on the variable mode-line-format."
 (use-package macro-utils
   :commands (once-only))
 
+(defun -take-random (list)
+  (nth (random (length list)) list))
+
+(defun -empty (list)
+  (zerop (length list)))
+
+(defun -same-length (&rest lists-or-integer)
+  (let ((size (length (first lists-or-integer))))
+    (ignore-errors
+      (dolist (list lists-or-integer)
+        (cond ((integerp list)
+                (unless (= size list)
+                  (error "mismatch")))
+          ((listp list)
+            (unless (= size (length list))
+              (error "mismatch")))))
+      t)))
+
+
 (use-package esxml)
 (use-package macro-utils)
 (use-package memoize
