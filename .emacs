@@ -2144,6 +2144,36 @@ somewhere on the variable mode-line-format."
 (use-package kill-ring-search
   :bind ("M-C-y" . kill-ring-search))
 
+;; From:
+;; https://github.com/nicferrier/emacs-lisp-editing-tools/blob/master/lisp-editing.el
+(defun lisp-reinsert-as-pp ()
+  "Read sexp at point, delete it and pretty print it back in."
+  (interactive)
+  (let* ((buf (current-buffer))
+         (pp-sexp
+          (replace-regexp-in-string
+           "\\(\n\\)$"
+           ""
+           (with-temp-buffer
+             (let ((bufname (buffer-name)))
+               (pp-display-expression
+                (with-current-buffer buf
+                  (car
+                   (read-from-string
+                    (replace-regexp-in-string
+                     "\\*\\(.*?\\)\\*\\(<[0-9]+>\\)* <[0-9:.]+>"
+                     "\"\\&\""
+                     (save-excursion
+                       (buffer-substring-no-properties
+                        (point)
+                        (progn
+                          (forward-sexp)
+                          (point))))))))
+                bufname)
+               (buffer-substring (point-min) (point-max)))))))
+    (kill-sexp)
+    (insert pp-sexp)))
+
 ;; From: https://bitbucket.org/tarballs_are_good/qtility/src/423519bbe130/sequence.lisp
 (defun subdivide (sequence chunk-size)
   "Split SEQUENCE into subsequences of size CHUNK-SIZE."
