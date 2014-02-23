@@ -2652,3 +2652,7 @@ FUNC is a function that receives a string (without the final
 
 
 
+
+(use-package perlbrew
+  :commands perlbrew-use)
+
