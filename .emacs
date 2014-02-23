@@ -2435,6 +2435,12 @@ Argument REPLACE String used to replace the matched strings in the buffer.
 ;; (require 'semantic/db-javap)
 
 ;; (setq cedet-java-jdk-root "/usr/lib/jvm/java-6-openjdk/")
+
+;;; FIXME: what was this used for?
+;; (defun my-java-flymake-init ()
+;;   (list "javac" (list (flymake-init-create-temp-buffer-copy
+;;                    'flymake-create-temp-with-folder-structure))))
+
 ;; (add-to-list 'flymake-allowed-file-name-masks
 ;;          '("\\.java$" my-java-flymake-init flymake-simple-cleanup))
 
