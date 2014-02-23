@@ -576,7 +576,7 @@ it moves the cursor to the beginning-of-line"
                                         ; Colocar o calendario mais bonito
 (setq calendar-view-diary-initially-flag t
   calendar-mark-diary-entries-flag t
-  number-of-diary-entries 7)
+  diary-number-of-entries 7)
 (add-hook 'diary-display-hook 'fancy-diary-display)
 (add-hook 'today-visible-calendar-hook 'calendar-mark-today)
 ;;;;;
@@ -1341,7 +1341,7 @@ point."
 
 
 
-(message "My .emacs loaded in %ds" (destructuring-bind (hi lo ms) (current-time)
+(message "My .emacs loaded in %ds" (destructuring-bind (hi lo ms &rest ignore) (current-time)
                                      (- (+ hi lo) (+ (first *emacs-load-start*) (second *emacs-load-start*)))))
 
 
