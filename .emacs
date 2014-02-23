@@ -1599,6 +1599,7 @@ point."
 
 ;; Slime stuff
 (use-package slime
+  :load-path "~/src/git/slime/"
   ;; :load-path "elisp/slime/"
   :commands (slime slime-connect)
   :config (progn
