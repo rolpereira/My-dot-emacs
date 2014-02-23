@@ -2125,6 +2125,22 @@ somewhere on the variable mode-line-format."
   :commands edit-list)
 
 
+(use-package auto-complete
+  :init ;; (setq-default ac-sources '(ac-source-semantic-raw))
+  )
+
+;; (require 'company)
+;; (setq company-semantic-modes '(c-mode c++-mode js-mode jde-mode java-mode emacs-lisp-mode))
+;; (add-hook 'c-mode-hook '(lambda ()
+;;                           (setq company-backend '(company-semantic))))
+
+;; (add-hook 'c-mode-hook '(lambda ()
+;;                           (company-mode 1)))
+
+;; (add-hook 'c++-mode-hook '(lambda ()
+;;                             (setq company-backend '(company-semantic))
+;;                             (company-mode 1)))
+
 
 ;; From: http://nullprogram.com/blog/2009/05/28/
 ;; ID: 6a3f3d99-f0da-329a-c01c-bb6b868f3239
