@@ -2753,6 +2753,17 @@ FUNC is a function that receives a string (without the final
 
 
 
+;;; Send this to the emacs-dev mailist
+(defun libxml-parse-html-string (string)
+  (with-temp-buffer
+    (insert string)
+    (libxml-parse-html-region (point-min) (point-max))))
+
+(defun libxml-parse-xml-string (string)
+  (with-temp-buffer
+    (insert string)
+    (libxml-parse-xml-region (point-min) (point-max))))
+;;;;;;
 
 
 (use-package perlbrew
