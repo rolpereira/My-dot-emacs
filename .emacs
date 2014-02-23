@@ -2318,6 +2318,7 @@ Argument REPLACE String used to replace the matched strings in the buffer.
 
 ;; Configuration Octave:
 (use-package octave-mod
+  :disabled t
   :mode ("\.m$" . octave-mode)
   :config (progn
             (use-package ac-octave)
