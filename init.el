@@ -1,4 +1,5 @@
-; Time-stamp: <2012-04-19 02:57:40 (rolando)>
+; Time-stamp: <2014-02-23 14:55:31 (rolando)>
+
 ;;(set-scroll-bar-mode 'right)
 (tool-bar-mode 0)
 (scroll-bar-mode 0)
@@ -1333,7 +1334,7 @@ point."
   "compile itself if ~/.emacs"
   (interactive)
   (require 'bytecomp)
-  (if (string= (buffer-file-name) (expand-file-name (concat default-directory ".emacs")))
+  (if (string= (buffer-file-name) (expand-file-name (concat default-directory "init.el")))
     (byte-compile-file (buffer-file-name))))
 
 (add-hook 'after-save-hook 'autocompile)
@@ -1494,7 +1495,7 @@ point."
 ;; Register jumping: ‘C-x r j e’ to open DotEmacs,
 ;; ‘C-x r j i’ to open an ‘ideas’ file:
 ;; http://www.emacswiki.org/emacs-en/EmacsNiftyTricks
-(set-register ?e '(file . "~/.emacs"))
+(set-register ?e '(file . "~/.emacs.d/init.el"))
 (set-register ?f '(file . "~/escola/escola.org"))
 (set-register ?h '(file . "~/Área de Trabalho/humor.txt"))
 (set-register ?c '(file . "~/Área de Trabalho/conducao/conducao.org"))
