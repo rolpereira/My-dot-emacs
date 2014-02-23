@@ -2290,28 +2290,28 @@ Argument REPLACE String used to replace the matched strings in the buffer.
     ;; Since lists have O(N) access time, we iterate through manually,
     ;; collecting each chunk as we pass through it. Using SUBSEQ would
     ;; be O(N^2).
-    (list (labels ((rec (sequence acc)
-                     (let ((rest (nthcdr chunk-size sequence)))
-                       (if (consp rest)
-                           (rec rest (cons (subseq sequence 0 chunk-size) acc))
-                           (nreverse (cons sequence acc))))))
+    (list (cl-labels ((rec (sequence acc)
+                        (let ((rest (nthcdr chunk-size sequence)))
+                          (if (consp rest)
+                            (rec rest (cons (cl-subseq sequence 0 chunk-size) acc))
+                            (nreverse (cons sequence acc))))))
             (and sequence (rec sequence nil))))
     
     ;; For other sequences like strings or arrays, we can simply chunk
     ;; by repeated SUBSEQs.
     (sequence (loop with len = (length sequence)
-                    for i below len by chunk-size
-                    collect (subseq sequence i (min len (+ chunk-size i)))))))
+                for i below len by chunk-size
+                collect (cl-subseq sequence i (min len (+ chunk-size i)))))))
 
 
 (defun take (n sequence)
   "Take the first N elements from SEQUENCE."
-  (subseq sequence 0 n))
+  (cl-subseq sequence 0 n))
 
 (defun drop (n sequence)
   "Drop the first N elements from SEQUENCE."
   ;; This used to be NTHCDR for lists.
-  (subseq sequence n))
+  (cl-subseq sequence n))
 
 (use-package async
   :load-path "~/.emacs.d/elisp/emacs-async/")
@@ -2539,9 +2539,9 @@ Argument REPLACE String used to replace the matched strings in the buffer.
   "Evaluates the args one at a time. If more than one arg returns true
   evaluation stops and NIL is returned. If exactly one arg returns
   true that value is retuned."
-  (let ((state (gensym "XOR-state-"))
-        (block-name (gensym "XOR-block-"))
-        (arg-temp (gensym "XOR-arg-temp-")))
+  (let ((state (cl-gensym "XOR-state-"))
+        (block-name (cl-gensym "XOR-block-"))
+        (arg-temp (cl-gensym "XOR-arg-temp-")))
     `(let ((,state nil)
            (,arg-temp nil))
        (block ,block-name
@@ -2576,13 +2576,13 @@ FUNC is a function that receives a string (without the final
   (mapcar func (s-lines string)))
 
 (defun s-drop-lines (s n)
-  (let ((string (apply #'concat (subseq (s-lines s) n))))
+  (let ((string (apply #'concat (cl-subseq (s-lines s) n))))
     (unless (string= string "")
       string)))
 
 
 (defun s-take-lines (s n)
-  (let ((string (apply #'concat (subseq (s-lines s) 0 n))))
+  (let ((string (apply #'concat (cl-subseq (s-lines s) 0 n))))
     (unless (string= string "")
       string)))
 (defun random-elt (list)
