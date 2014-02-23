@@ -2438,6 +2438,9 @@ Argument REPLACE String used to replace the matched strings in the buffer.
 ;; (add-to-list 'flymake-allowed-file-name-masks
 ;;          '("\\.java$" my-java-flymake-init flymake-simple-cleanup))
 
+(setq org-ctrl-k-protect-subtree t)
+(setq org-table-tab-jumps-over-hlines t)
+
 ;; Ver a variável org-structure-template-alist
 
 (use-package projectile)
@@ -2530,6 +2533,10 @@ Argument REPLACE String used to replace the matched strings in the buffer.
           ("C-c C-<" . mc/mark-all-like-this))
   :config (setq mc/cmds-to-run-for-all '(org-self-insert-command)))
 
+(setq org-export-latex-hyperref-format "\\ref{%s}")
+
+(add-hook 'org-mode-hook (lambda ()
+                          (local-set-key (kbd "M-*") 'org-mark-ring-goto)))
 
 ;; (use-package sr-speedbar
 ;;   :commands sr-speedbar-toggle)
@@ -2538,6 +2545,20 @@ Argument REPLACE String used to replace the matched strings in the buffer.
   (called-interactively-p arg))
 
 (defalias 'ppcb 'pp-current-buffer)
+
+(add-to-list 'org-structure-template-alist
+  '("cs" "#+BEGIN_SRC csharp\n?\n#+END_SRC" "<src lang=\"csharp\">\n?\n</src>"))
+
+(defun my-org-insert-time ()
+  (interactive)
+  (let ((time (with-temp-buffer
+                (org-time-stamp '(16)))))
+    (if (org-at-heading-p)
+      (save-excursion
+        (end-of-line)
+        (just-one-space)
+        (insert time))
+      (insert (concat time ": ")))))
 
 (use-package furl
   :commands (furl-retrieve furl-retrieve-synchronously))
