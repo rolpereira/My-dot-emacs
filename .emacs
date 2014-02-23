@@ -2503,6 +2503,24 @@ Argument REPLACE String used to replace the matched strings in the buffer.
             (add-hook 'ielm-mode-hook 'paredit-mode)))
 
 (org-agenda-list)
+
+;;; Send this function to the org-mode mailing list?
+(defun org-table-lisp-to-table (lisp)
+  (with-temp-buffer
+    (dolist (line lisp)
+      (if (eq line 'hline)
+        (insert "|-|\n")
+        (insert (concat "| "
+                  (mapconcat #'(lambda (element)
+                                 (format "%s" element))
+                    line " | ")
+                  " |\n"))))
+    (goto-char (point-min))
+    (org-table-align)
+    (buffer-substring-no-properties (point-min) (point-max))))
+
+
+
 (use-package org-special-blocks)
 
 (use-package multiple-cursors
