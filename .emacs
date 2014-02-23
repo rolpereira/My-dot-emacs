@@ -1845,7 +1845,7 @@ somewhere on the variable mode-line-format."
 ;; From: http://emacs-fu.blogspot.com/2009/01/navigating-through-source-code-using.html
 (add-hook 'gtags-mode-hook 
   (lambda ()
-    (local-set-key (kbd "M-.") 'gtags-find-tag)   ; find a tag, also M-.
+    (local-set-key (kbd "M-.") 'gtags-find-tag-from-here)   ; find a tag, also M-.
     (local-set-key (kbd "M-,") 'gtags-find-rtag)))  ; reverse tag
 
 ;; From:
