@@ -2656,3 +2656,5 @@ FUNC is a function that receives a string (without the final
 (use-package perlbrew
   :commands perlbrew-use)
 
+(use-package ace-jump-mode
+  :bind ("C-c ." . ace-jump-mode))
