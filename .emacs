@@ -2540,6 +2540,14 @@ Argument REPLACE String used to replace the matched strings in the buffer.
 ;;; (symbol-function 'median)
 ;;; => (lambda (&rest numbers) (/ (apply (function +) numbers) (float (length numbers))))
 
+(use-package flash-eval
+  :init (progn
+          (add-hook 'lisp-interaction-mode-hook (lambda ()
+                                                  (local-set-key (kbd "C-c C-c") #'flash-eval-eval-defun-flash)))
+
+          (add-hook 'emacs-lisp-mode-hook (lambda ()
+                                            (local-set-key (kbd "C-c C-c") #'flash-eval-eval-defun-flash)))))
+
 (use-package rx)
 (use-package ht)
 (use-package macro-utils
