@@ -2641,6 +2641,9 @@ FUNC is a function that receives a string (without the final
   (let ((string (apply #'concat (cl-subseq (s-lines s) 0 n))))
     (unless (string= string "")
       string)))
+
+(setq dired-dwim-target t)
+
 (defun random-elt (list)
   (elt list (random (length list))))
 
