@@ -2606,7 +2606,7 @@ FUNC is a function that receives a string (without the final
 ;;; Isto vem do magit
 (use-package rebase-mode)
 
-(use-package ris
+(use-package rubyinterpol
   :commands ris)
 
 (use-package magithub)
