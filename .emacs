@@ -2501,6 +2501,8 @@ Argument REPLACE String used to replace the matched strings in the buffer.
             (add-hook 'emacs-lisp-mode-hook 'paredit-mode)
             (add-hook 'lisp-mode-hook 'paredit-mode)
             (add-hook 'ielm-mode-hook 'paredit-mode)))
+
+(org-agenda-list)
 (use-package org-special-blocks)
 
 (use-package multiple-cursors
