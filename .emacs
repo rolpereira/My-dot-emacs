@@ -74,11 +74,14 @@
 
 
 ;; FIXME: c-annotation-face has a bad color
+
+
+;; Experimentar usar a variavel default-directory ou user-emacs-directory
+
 (when window-system
   (load-theme 'wombat))
 
 
-;; Experimentar usar a variavel default-directory ou user-emacs-directory
 
 (defun where-am-i ()
   "If it returns t, then I am on the laptop, otherwise I am on the desktop."
@@ -147,7 +150,7 @@ it moves the cursor to the beginning-of-line"
 ;(message (file-name-directory load-file-name))
 
 (defconst +dot-emacs-home+ (concat (set-home-folder) ".emacs.d/"))
-;(defconst home (file-name-directory load-file-name))
+;; (defconst home (file-name-directory load-file-name))
 
 (defun file-in-exec-path-p (filename)
   "Returns t if FILENAME is in the system exec-path, otherwise returns nil"
@@ -240,7 +243,7 @@ it moves the cursor to the beginning-of-line"
 (add-to-list 'auto-mode-alist '("\\.org$" . org-mode))
 (global-set-key "\C-cl" 'org-store-link)
 (global-set-key "\C-ca" 'org-agenda)
-(global-set-key "\C-cb" 'org-iswitchb)
+;; (global-set-key "\C-cb" 'org-iswitchb)
 ;;;;;
 
 ;; Activar flymake-mode para o python usando o pyflakes
@@ -466,18 +469,18 @@ it moves the cursor to the beginning-of-line"
 
             ;; Utitilizar numeros para saltar para links
             ;; http://emacs.wordpress.com/2008/04/12/numbered-links-in-emacs-w3m/
-            (use-package w3m-lnum)
+            ;; (use-package w3m-lnum)
 
-            (defun jao-w3m-go-to-linknum ()
-              "Turn on link numbers and ask for one to go to."
-              (interactive)
-              (let ((active w3m-link-numbering-mode))
-                (when (not active) (w3m-link-numbering-mode))
-                (unwind-protect
-                  (w3m-move-numbered-anchor (read-number "Anchor number: "))
-                  (when (not active) (w3m-link-numbering-mode)))))
+            ;; (defun jao-w3m-go-to-linknum ()
+            ;;   "Turn on link numbers and ask for one to go to."
+            ;;   (interactive)
+            ;;   (let ((active w3m-link-numbering-mode))
+            ;;     (when (not active) (w3m-link-numbering-mode))
+            ;;     (unwind-protect
+            ;;       (w3m-move-numbered-anchor (read-number "Anchor number: "))
+            ;;       (when (not active) (w3m-link-numbering-mode)))))
 
-            (define-key w3m-mode-map "f" 'jao-w3m-go-to-linknum)
+            ;; (define-key w3m-mode-map "f" 'jao-w3m-go-to-linknum)
 
             ;; Use "M" to open a link in the external browser
 
@@ -1845,7 +1848,7 @@ somewhere on the variable mode-line-format."
 
 ;; From:
 ;; http://mytechrants.wordpress.com/2010/03/25/emacs-tip-of-the-day-start-using-ibuffer-asap/
-(setq ibuffer-default-sorting-mode 'major-mode)
+;; (setq ibuffer-default-sorting-mode 'recency)
 
 ;; A couple more tips for ibuffer. After marking a couple of buffers:
 ;; * 'O' - ibuffer-do-occur - Do an occur on the selected buffers.
@@ -2124,6 +2127,19 @@ somewhere on the variable mode-line-format."
 (use-package edit-list
   :commands edit-list)
 
+;; (defun my-global-find-tag ()
+;;   (interactive)
+;;   (let (filename line)
+;;     (with-temp-buffer
+;;       (let ((command (concat "global -x " (substring-no-properties (thing-at-point 'symbol)))))
+;;         (shell-command command (current-buffer))
+;;         (goto-char (point-min))
+;;         (let ((foo (split-string (thing-at-point 'line))))
+;;           (setq filename (third foo))
+;;           (setq line (second foo)))))
+;;     (find-file filename)
+;;     (goto-char (point-min))
+;;     (forward-line (1- (string-to-number line)))))
 
 (use-package auto-complete
   :init ;; (setq-default ac-sources '(ac-source-semantic-raw))
@@ -2142,6 +2158,19 @@ somewhere on the variable mode-line-format."
 ;;                             (company-mode 1)))
 
 (setq max-lisp-eval-depth 10000)
+
+;; (defmacro inline-arith (&rest formula)
+;;   (string-to-number (calc-eval (coerce (rest (butlast (coerce (prin1-to-string formula) 'list))) 'string))))
+
+;; Ver a funcao (default-value 'x)
+
+
+;; (ert-deftest inline-arith-test ()
+;;   (ert-should (= (inline-arith 1 + 1) 2))
+;;   (ert-should (= (inline-arith 1 / 1) 1))
+;;   (ert-should (= (inline-arith 2**10) 1024))
+;;   (ert-should (= (inline-arith (2**10) / (2**10)) 1)))
+
 
 
 ;; From: http://nullprogram.com/blog/2009/05/28/
@@ -2328,6 +2357,9 @@ Argument REPLACE String used to replace the matched strings in the buffer.
               '(lambda ()
                  (ac-octave-mode-setup)
                  (auto-complete-mode)))))            
+
+;; (define-key ac-completing-map (kbd "M-h") 'ac-quick-help)
+
 (defmacro sort-safe (list predicate)
   "Sort LIST without modifying it using PREDICATE"
   `(sort (copy-sequence ,list) ,predicate))
@@ -2349,6 +2381,8 @@ Argument REPLACE String used to replace the matched strings in the buffer.
 ;;         "-pdf" "")))
 
 ;; to TeX-expand-list and use "latexmk %(-PDF) %s" so that it will work in both pdf and dvi mode. Personally, I find it easier to use customize especially when you are experimenting.
+
+;; (add-to-list 'org-file-apps '("\\.pdf\\'" . "evince %s"))
 
 (defun pp-current-buffer (thing)
   (pp thing
@@ -2393,6 +2427,16 @@ Argument REPLACE String used to replace the matched strings in the buffer.
 (use-package vector-utils)
 (use-package trie)
 (use-package heap)
+
+;; Check out magit-blame-mode
+
+;; (require 'semantic/db-javap)
+
+;; (setq cedet-java-jdk-root "/usr/lib/jvm/java-6-openjdk/")
+;; (add-to-list 'flymake-allowed-file-name-masks
+;;          '("\\.java$" my-java-flymake-init flymake-simple-cleanup))
+
+;; Ver a variável org-structure-template-alist
 
 (use-package projectile)
 (use-package helm-projectile)
@@ -2464,8 +2508,9 @@ Argument REPLACE String used to replace the matched strings in the buffer.
           ("C-c C-<" . mc/mark-all-like-this))
   :config (setq mc/cmds-to-run-for-all '(org-self-insert-command)))
 
-(use-package sr-speedbar
-  :commands sr-speedbar-toggle)
+
+;; (use-package sr-speedbar
+;;   :commands sr-speedbar-toggle)
 
 (defun cedet-called-interactively-p (arg)
   (called-interactively-p arg))
@@ -2491,6 +2536,9 @@ Argument REPLACE String used to replace the matched strings in the buffer.
 (use-package ob-R)
 (use-package ob-lisp)
 
+;;; Ver a função symbol-function
+;;; (symbol-function 'median)
+;;; => (lambda (&rest numbers) (/ (apply (function +) numbers) (float (length numbers))))
 
 (use-package rx)
 (use-package ht)
