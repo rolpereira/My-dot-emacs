@@ -1762,7 +1762,8 @@ somewhere on the variable mode-line-format."
                  "Show help for predicate on point"
                  (interactive)
                  (funcall prolog-help-function-i (prolog-atom-under-point)))
-               (define-key prolog-mode-map (kbd "C-c ?") 'prolog-quick-help))))
+               (define-key prolog-mode-map (kbd "C-c ?") 'prolog-quick-help)
+               (local-set-key (kbd "C-j") 'newline-and-indent))))
 
 
 ;; This is sweet!  right-click, get a list of functions in the source
