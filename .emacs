@@ -2203,7 +2203,7 @@ Argument REPLACE String used to replace the matched strings in the buffer.
 ;;      hash-temp))
 
 (defun make-hash-from-alist (data &rest keyword-args)
-  (assert (alistp data) t "DATA is not a valid alist")
+  (assert (alistp data) t "DATA is not a valid alist %s")
   (let ((return-value (if keyword-args
                         (apply #'make-hash-table keyword-args)
                         (make-hash-table))))
