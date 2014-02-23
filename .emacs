@@ -1922,20 +1922,20 @@ somewhere on the variable mode-line-format."
 ;; (setq eclim-executable "~/src/eclim/eclipse/eclim")
 ;; (global-eclim-mode)
 
-(load "~/.emacs.d/elisp/nxhtml/autostart.el")
-(add-hook 'nxhtml-mumamo-mode-hook 'mumamo-no-chunk-coloring)
-(setq mumamo-chunk-coloring 'no-chunks-colored)
-(setq mumamo-background-colors nil)
-;; Mumamo is making emacs 23.3 and 24.0 freak out:
-(when (and (equal emacs-major-version 24)
-           (equal emacs-minor-version 0))
-  (eval-after-load "bytecomp"
-    '(add-to-list 'byte-compile-not-obsolete-vars
-                  'font-lock-beginning-of-syntax-function))
-  ;; tramp-compat.el clobbers this variable!
-  (eval-after-load "tramp-compat"
-    '(add-to-list 'byte-compile-not-obsolete-vars
-                  'font-lock-beginning-of-syntax-function)))
+;; (load "~/.emacs.d/elisp/nxhtml/autostart.el")
+;; (add-hook 'nxhtml-mumamo-mode-hook 'mumamo-no-chunk-coloring)
+;; (setq mumamo-chunk-coloring 'no-chunks-colored)
+;; (setq mumamo-background-colors nil)
+;; ;; Mumamo is making emacs 23.3 and 24.0 freak out:
+;; (when (and (equal emacs-major-version 24)
+;;            (equal emacs-minor-version 0))
+;;   (eval-after-load "bytecomp"
+;;     '(add-to-list 'byte-compile-not-obsolete-vars
+;;                   'font-lock-beginning-of-syntax-function))
+;;   ;; tramp-compat.el clobbers this variable!
+;;   (eval-after-load "tramp-compat"
+;;     '(add-to-list 'byte-compile-not-obsolete-vars
+;;                   'font-lock-beginning-of-syntax-function)))
 
 ;; Rinari configurations
 
