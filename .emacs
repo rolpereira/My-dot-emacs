@@ -2427,6 +2427,9 @@ Argument REPLACE String used to replace the matched strings in the buffer.
 (use-package shadchen)
 (use-package dotassoc)
 
+(add-hook 'emacs-lisp-mode-hook '(lambda ()
+                                   (local-set-key (kbd "C-c RET") #'pp-macroexpand-last-sexp)))
+
 (use-package paredit
   :config (progn
             (use-package paredit-menu)
