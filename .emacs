@@ -2141,6 +2141,8 @@ somewhere on the variable mode-line-format."
 ;;                             (setq company-backend '(company-semantic))
 ;;                             (company-mode 1)))
 
+(setq max-lisp-eval-depth 10000)
+
 
 ;; From: http://nullprogram.com/blog/2009/05/28/
 ;; ID: 6a3f3d99-f0da-329a-c01c-bb6b868f3239
