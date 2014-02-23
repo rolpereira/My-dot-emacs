@@ -2766,6 +2766,13 @@ FUNC is a function that receives a string (without the final
 ;;;;;;
 
 
+
+(ido-everywhere)
+;;; ver rectangle-mode
+;;; ver cpp-edit-mode
+;;; ver data-debug-eval-expression
+;;; ver xesam-mode
+
 (use-package perlbrew
   :commands perlbrew-use)
 
