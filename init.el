@@ -1708,6 +1708,12 @@ somewhere on the variable mode-line-format."
 (use-package uniquify
   :init (setq uniquify-buffer-name-style 'forward))
 
+;;; Place perlbrew before `eshell' otherwise `eshell' doesn't add
+;;; perlbrew to it's path
+(use-package perlbrew
+  :commands perlbrew-use
+  :init (perlbrew-use "perl-5.18.2"))
+
 ;; Some custom commands for eshell
 (use-package eshell
   :commands eshell
@@ -2780,8 +2786,6 @@ FUNC is a function that receives a string (without the final
 ;;; ver data-debug-eval-expression
 ;;; ver xesam-mode
 
-(use-package perlbrew
-  :commands perlbrew-use)
 
 (use-package ace-jump-mode
   :bind ("C-c ." . ace-jump-mode))
