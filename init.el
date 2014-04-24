@@ -2786,6 +2786,32 @@ FUNC is a function that receives a string (without the final
 ;;; ver data-debug-eval-expression
 ;;; ver xesam-mode
 
+(use-package cperl-mode
+  :init (defalias 'perl-mode 'cperl-mode)
+  :mode ("\\.t$" . cperl-mode)
+  :config (progn
+            ;; Add perl tooltips to minibuffer using eldoc
+            ;; From: 
+            (defun my-cperl-eldoc-documentation-function ()
+              "Return meaningful doc string for `eldoc-mode'."
+              (car
+                (let ((cperl-message-on-help-error nil))
+                  (cperl-get-help))))
+
+            (add-hook 'cperl-mode-hook
+              (lambda ()
+                (set (make-local-variable 'eldoc-documentation-function)
+                  'my-cperl-eldoc-documentation-function)
+                (eldoc-mode)))
+
+            (add-hook 'cperl-mode-hook (lambda ()
+                                         (local-set-key (kbd "<f1>") 'cperl-perldoc)))))
+
+(use-package helm-perldoc
+  :commands helm-perldoc
+  :init (helm-perldoc:setup))
+
+
 
 (use-package ace-jump-mode
   :bind ("C-c ." . ace-jump-mode))
