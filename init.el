@@ -2789,3 +2789,5 @@ FUNC is a function that receives a string (without the final
 
 (use-package ace-jump-mode
   :bind ("C-c ." . ace-jump-mode))
+(use-package recentf
+  :init (recentf-mode 1))
