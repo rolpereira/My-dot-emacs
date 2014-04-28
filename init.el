@@ -2817,6 +2817,10 @@ FUNC is a function that receives a string (without the final
   :bind ("C-c ." . ace-jump-mode))
 (use-package recentf
   :init (recentf-mode 1))
+
+(use-package helm-git-grep
+  :bind ("C-c g" . helm-git-grep))
+
 (use-package processing-mode
   :init (progn
           (setf processing-application-dir "~/src/processing/processing-2.1.2/")
