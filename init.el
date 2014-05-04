@@ -2612,8 +2612,8 @@ Argument REPLACE String used to replace the matched strings in the buffer.
 (defun -take-random (list)
   (nth (random (length list)) list))
 
-(defun -empty (list)
-  (zerop (length list)))
+(defalias 'empty? 'null)
+(defalias 'empty-p 'null)
 
 (defun -same-length (&rest lists-or-integer)
   (let ((size (length (first lists-or-integer))))
