@@ -2815,6 +2815,15 @@ FUNC is a function that receives a string (without the final
 
 (use-package ace-jump-mode
   :bind ("C-c ." . ace-jump-mode))
+
+
+;;; From jwiegley's dotemacs
+(use-package helm-descbinds
+  :disabled t
+  :commands helm-descbinds
+  :init (progn
+          (fset 'describe-bindings 'helm-descbinds)
+          (bind-key "C-h b" 'helm-descbinds)))
 (use-package recentf
   :init (recentf-mode 1))
 
