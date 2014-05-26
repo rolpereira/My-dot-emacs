@@ -2827,6 +2827,10 @@ FUNC is a function that receives a string (without the final
 (use-package recentf
   :init (recentf-mode 1))
 
+(use-package discover
+  :disabled t
+  :init (global-discover-mode 1))
+
 (use-package helm-git-grep
   :bind ("C-c g" . helm-git-grep))
 
