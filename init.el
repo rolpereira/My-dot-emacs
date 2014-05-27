@@ -2824,6 +2824,11 @@ FUNC is a function that receives a string (without the final
   :init (progn
           (fset 'describe-bindings 'helm-descbinds)
           (bind-key "C-h b" 'helm-descbinds)))
+
+(use-package emmet-mode
+  :commands (emmet-mode emmet-expand-line)
+  :init (add-hook 'html-mode-hook (lambda ()
+                                    (local-set-key (kbd "C-c e") 'emmet-expand-line))))
 (use-package recentf
   :init (recentf-mode 1))
 
