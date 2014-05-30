@@ -2843,3 +2843,9 @@ FUNC is a function that receives a string (without the final
   :init (progn
           (setf processing-application-dir "~/src/processing/processing-2.1.2/")
           (setf processing-location "~/src/processing/processing-2.1.2/processing-java")))
+
+(use-package lua-mode
+  :commands lua-mode
+  :mode ("\\.lua$" . lua-mode)
+  :defines (lua-mode-hook))
+
