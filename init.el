@@ -2829,6 +2829,11 @@ FUNC is a function that receives a string (without the final
   :commands (emmet-mode emmet-expand-line)
   :init (add-hook 'html-mode-hook (lambda ()
                                     (local-set-key (kbd "C-c e") 'emmet-expand-line))))
+
+(use-package gnus-url-minibuffer
+  :load-path "~/src/git/gnus-url-minibuffer/"
+  :init (add-hook 'gnus-article-mode-hook 'gnus-url-minibuffer))
+
 (use-package recentf
   :init (recentf-mode 1))
 
