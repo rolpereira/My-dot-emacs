@@ -2854,3 +2854,22 @@ FUNC is a function that receives a string (without the final
   :mode ("\\.lua$" . lua-mode)
   :defines (lua-mode-hook))
 
+
+
+(defun -count-diff (list)
+  "Returns an alist containing the elements in LIST plus the number of times they occur.
+
+EXAMPLE: (-count-diff '(a b a a a a c c a a a c)) returns ((c . 3) (b . 1) (a . 8))."
+  (let ((bins (make-hash-table))
+         return-value)
+    (mapc (lambda (item)
+            (incf (gethash item bins 0)))
+      list)
+    (maphash (lambda (k v)
+               (setf return-value (acons k v return-value)))
+      bins)
+    return-value))
+
+
+
+
