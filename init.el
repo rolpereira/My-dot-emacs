@@ -2597,6 +2597,7 @@ Argument REPLACE String used to replace the matched strings in the buffer.
 ;;; => (lambda (&rest numbers) (/ (apply (function +) numbers) (float (length numbers))))
 
 (use-package flash-eval
+  :load-path "~/src/git/flash-eval.el"
   :init (progn
           (add-hook 'lisp-interaction-mode-hook (lambda ()
                                                   (local-set-key (kbd "C-c C-c") #'flash-eval-eval-defun-flash)))
