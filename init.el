@@ -2855,6 +2855,11 @@ FUNC is a function that receives a string (without the final
   :mode ("\\.lua$" . lua-mode)
   :defines (lua-mode-hook))
 
+(use-package lua-eldoc-mode
+  :commands lua-eldoc-mode
+  :load-path "~/src/git/lua-eldoc-mode/"
+  :init (progn
+          (add-hook 'lua-mode-hook 'lua-eldoc-mode)))
 (use-package auto-complete-lua
   :load-path "~/src/git/auto-complete-lua/"
   :init (progn
