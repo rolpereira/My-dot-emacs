@@ -394,7 +394,7 @@ it moves the cursor to the beginning-of-line"
   ;;       font-lock-constant-face)))
 
   (show-paren-mode 1)
-  (setq show-paren-style 'expression)
+  (setq show-paren-style 'parenthesis)
   (eldoc-mode 1))
 
 (add-hook 'emacs-lisp-mode-hook 'djcb-emacs-lisp-mode-hook)
