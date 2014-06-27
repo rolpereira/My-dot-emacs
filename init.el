@@ -1831,13 +1831,13 @@ somewhere on the variable mode-line-format."
 (add-to-list 'load-path (concat +dot-emacs-home+ "elisp/emacs-java"))
 
 
-(add-hook 'java-mode-hook
-  '(lambda ()
-     (require 'java-docs)
-     (require 'java-mode-plus)))
+;; (add-hook 'java-mode-hook
+;;   '(lambda ()
+;;      (require 'java-docs)
+;;      (require 'java-mode-plus)))
 
-(eval-after-load "java-docs"
-  '(java-docs "~/src/java-documentation/docs/api"))
+;; (eval-after-load "java-docs"
+;;   '(java-docs "~/src/java-documentation/docs/api"))
 
 ;; (setq-default mode-line-position
 ;;   (cons '(:eval (format "[width: %s] " (window-width)))
