@@ -2873,6 +2873,14 @@ FUNC is a function that receives a string (without the final
           (add-hook 'lua-mode-hook #'my-lua-configuration)))
 
 
+(use-package auto-complete-love
+  :load-path "~/src/git/auto-complete-love/"
+  :init (progn
+          (defun my-love-configuration ()
+            (push ac-source-love ac-sources)
+            (auto-complete-mode))
+
+          (add-hook 'love-minor-mode-hook #'my-love-configuration)))
 (use-package f)
 
 
