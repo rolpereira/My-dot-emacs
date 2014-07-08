@@ -22,7 +22,8 @@
 ;; Enable Semantic
 (semantic-mode 1)
 
-
+;;; Need to require "nxml-mode" before loading any theme with the `load-theme' command, otherwise XML files won't be font-locked
+(require 'nxml-mode)
 
 ;; TODO: Arranjar uma keybind para find-function (podera funcionar melhor que as tags)
 ;; TODO: Ver a funcao normal-top-level-add-subdirs-to-load-path
