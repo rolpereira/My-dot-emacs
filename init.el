@@ -2368,6 +2368,8 @@ Argument REPLACE String used to replace the matched strings in the buffer.
                  (ac-octave-mode-setup)
                  (auto-complete-mode)))))            
 
+(use-package octave
+  :mode ("\.m$" . octave-mode))
 ;; (define-key ac-completing-map (kbd "M-h") 'ac-quick-help)
 
 (defmacro sort-safe (list predicate)
