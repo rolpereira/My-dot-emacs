@@ -2906,3 +2906,5 @@ EXAMPLE: (-count-diff '(a b a a a a c c a a a c)) returns ((c . 3) (b . 1) (a . 
 
 
 
+(use-package helm-pydoc
+  :commands (helm-pydoc))
