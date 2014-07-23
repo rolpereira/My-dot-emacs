@@ -2906,5 +2906,9 @@ EXAMPLE: (-count-diff '(a b a a a a c c a a a c)) returns ((c . 3) (b . 1) (a . 
 
 
 
+(use-package python
+  :config (progn
+            (define-key python-mode-map (kbd "C-c C-d") 'helm-pydoc)))
+
 (use-package helm-pydoc
   :commands (helm-pydoc))
