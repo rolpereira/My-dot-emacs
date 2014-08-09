@@ -285,6 +285,8 @@ it moves the cursor to the beginning-of-line"
 
 (add-hook 'python-mode-hook 'my-python-mode-hook)
 
+(use-package nlinum)
+
 ;; C/C++/Java/C# Mode
 (defun my-c-mode-common-hook ()
   (setq show-paren-style 'parenthesis)
@@ -299,7 +301,7 @@ it moves the cursor to the beginning-of-line"
   ;(yas/minor-mode)
 
   ;; Show line numbers
-  (linum-mode)
+  (nlinum-mode)
   )
 
 (message "Stop 2 %ds" (destructuring-bind (hi lo ms &rest ignore) (current-time)
@@ -646,11 +648,11 @@ it moves the cursor to the beginning-of-line"
 
                                         ; Mostrar linhas lado esquerdo
 
-(add-hook 'emacs-lisp-mode-hook 'linum-mode)
-(add-hook 'python-mode-hook 'linum-mode)
-(add-hook 'haskell-mode-hook 'linum-mode)
+(add-hook 'emacs-lisp-mode-hook 'nlinum-mode)
+(add-hook 'python-mode-hook 'nlinum-mode)
+(add-hook 'haskell-mode-hook 'nlinum-mode)
 
-(global-set-key (kbd "<f2>") 'linum-mode)
+(global-set-key (kbd "<f2>") 'nlinum-mode)
 ;;;
 
 
