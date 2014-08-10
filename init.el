@@ -80,8 +80,6 @@
 
 ;; Experimentar usar a variavel default-directory ou user-emacs-directory
 
-(when window-system
-  (load-theme 'wombat))
 
 
 
@@ -184,6 +182,12 @@ it moves the cursor to the beginning-of-line"
 ;; Activate packages installed using package.el
 (load "package")
 (package-initialize)
+
+(when window-system
+  ;; (load-theme 'wombat)
+  ;; (load-theme 'cyberpunk)
+  (load-theme 'zenburn))
+
 
 (require 'use-package)
 
