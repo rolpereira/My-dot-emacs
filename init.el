@@ -2912,6 +2912,11 @@ EXAMPLE: (-count-diff '(a b a a a a c c a a a c)) returns ((c . 3) (b . 1) (a . 
 
 
 
+(use-package sgml
+  :init (progn
+          ;; From: http://steckerhalter.co.vu/steckemacs.html#sec-2-10-7
+          (setq sgml-basic-offset 4)
+          (add-hook 'sgml-mode-hook 'sgml-electric-tag-pair-mode)))
 (use-package python
   :config (progn
             (define-key python-mode-map (kbd "C-c C-d") 'helm-pydoc)))
