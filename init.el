@@ -2923,3 +2923,13 @@ EXAMPLE: (-count-diff '(a b a a a a c c a a a c)) returns ((c . 3) (b . 1) (a . 
 
 (use-package helm-pydoc
   :commands (helm-pydoc))
+
+(use-package tern
+  :load-path "~/src/git/tern/emacs/"
+  :init (progn
+          (add-hook 'js-mode-hook (lambda () (tern-mode t))))
+  :config (progn
+            (require 'tern-auto-complete)
+            (tern-ac-setup)
+            (auto-complete)
+            (auto-complete-mode)))
