@@ -2552,7 +2552,8 @@ Argument REPLACE String used to replace the matched strings in the buffer.
   :bind (("C-S-c C-S-c" . mc/edit-lines)
           ("C->" . mc/mark-next-like-this)
           ("C-<" . mc/mark-previous-like-this)
-          ("C-c C-<" . mc/mark-all-like-this))
+          ("C-c C-<" . mc/mark-all-like-this)
+          ("C-c r" . mc/mark-all-like-this-dwim))
   :config (setq mc/cmds-to-run-for-all '(org-self-insert-command)))
 
 (setq org-export-latex-hyperref-format "\\ref{%s}")
