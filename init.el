@@ -4,7 +4,10 @@
 (tool-bar-mode 0)
 (scroll-bar-mode 0)
 (menu-bar-mode 0)
-
+(when (fboundp 'horizontal-scroll-bar-mode)
+  ;; "trunk" Emacs now also adds a horizontal scroll-bar
+  ;; This disables it.
+  (horizontal-scroll-bar-mode 0))
 
 ;; Load CEDET
 ;; This should be near the top of your init file, so that this can
