@@ -2755,15 +2755,16 @@ FUNC is a function that receives a string (without the final
   :init (global-set-key (kbd "<f4>") 'helm-imenu))
 
 
-(add-hook 'python-mode-hook 'jedi:setup)
-(setq jedi:setup-keys t)                      ; optional
-(setq jedi:complete-on-dot t)                 ; optional
-(setq jedi:tooltip-method nil)
-(setq jedi:get-in-function-call-delay 10)
+;; (use-package pungi)
+;; (add-hook 'python-mode-hook 'jedi:setup)
+;; (setq jedi:setup-keys t)                      ; optional
+;; (setq jedi:complete-on-dot t)                 ; optional
+;; (setq jedi:tooltip-method nil)
+;; (setq jedi:get-in-function-call-delay 10)
 
-(add-hook 'python-mode-hook (lambda ()
-                              (eldoc-mode)
-                              (auto-complete-mode)))
+;; (add-hook 'python-mode-hook (lambda ()
+;;                               (eldoc-mode)
+;;                               (auto-complete-mode)))
 
 (when window-system
   (global-unset-key (kbd "C-x C-z")))
