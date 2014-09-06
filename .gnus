@@ -48,6 +48,8 @@
 ;; Don't show articles below this score
 (setq-default gnus-summary-expunge-below -1000)
 
+(add-hook 'gnus-group-mode-hook 'gnus-topic-mode)
+
 ;; Configure gnus-demon
 
 ;; This version `gnus-demon-scan-news' is exactly like the normal
