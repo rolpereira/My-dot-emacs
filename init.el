@@ -2539,9 +2539,7 @@ Argument REPLACE String used to replace the matched strings in the buffer.
       (if (eq line 'hline)
         (insert "|-|\n")
         (insert (concat "| "
-                  (mapconcat #'(lambda (element)
-                                 (format "%s" element))
-                    line " | ")
+                  (mapconcat #'identity line " | ")
                   " |\n"))))
     (goto-char (point-min))
     (org-table-align)
