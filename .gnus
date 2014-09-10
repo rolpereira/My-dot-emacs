@@ -14,7 +14,8 @@
                                        (nntp "news.gmane.org")))
 
 
-(setq gnus-summary-line-format "%U%R%z %(%&user-date;  %-15,15f %* %B%s%)\n"
+
+(setq gnus-summary-line-format "%U%R%z %(%&user-date;  %-15,15f %* %B%s%) %k\n"
   gnus-user-date-format-alist '((t . "%d.%m.%Y %H:%M"))
   gnus-sum-thread-tree-false-root ""
   gnus-sum-thread-tree-indent " "
