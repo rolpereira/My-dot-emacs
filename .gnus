@@ -93,6 +93,9 @@
     (message "Converting Atom to RSS... done")))
 
 (ad-activate 'mm-url-insert)
+;;; Avoid showing html formated emails since they tend to be displayed with a white background and I can't read them
+;;; From: http://www.emacswiki.org/emacs/MimeTypesWithGnus
+(setq mm-discouraged-alternatives '("text/html" "text/richtext"))
 (add-hook 'gnus-summary-mode-hook
   (lambda ()
     (local-set-key (kbd "k") 'gnus-summary-kill-same-subject)
