@@ -51,6 +51,18 @@
 
 (add-hook 'gnus-group-mode-hook 'gnus-topic-mode)
 
+;; Push the threads with bigger score on top of the buffer
+(setq gnus-thread-sort-functions
+      '(gnus-thread-sort-by-number
+        gnus-thread-sort-by-total-score))
+
+;; (setq gnus-thread-sort-functions
+;;            '(gnus-thread-sort-by-number
+;;              gnus-thread-sort-by-subject
+;;              gnus-thread-sort-by-total-score))
+
+;; (setq gnus-thread-sort-functions
+;;            '(gnus-thread-sort-by-number))
 ;; Configure gnus-demon
 
 ;; This version `gnus-demon-scan-news' is exactly like the normal
