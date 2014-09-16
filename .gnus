@@ -105,6 +105,19 @@
     (message "Converting Atom to RSS... done")))
 
 (ad-activate 'mm-url-insert)
+(add-hook 'gnus-summary-mode-hook
+  (lambda ()
+    (local-set-key (kbd "k") 'gnus-summary-kill-same-subject)
+    (local-set-key (kbd "C-k") 'gnus-summary-kill-same-subject-and-select)
+    ;; I usually prefer to do a very wide reply instead of a reply to a single user
+
+    ;; This used to be "S W". The original function of "R" is now
+    ;; called by "r".
+    (local-set-key (kbd "R") 'gnus-summary-wide-reply-with-original)
+
+    ;; To call `gnus-summary-reply' (the original function of "r"),
+    ;; use "S r".
+    (local-set-key (kbd "r") 'gnus-summary-reply-with-original)))
 ;;; Avoid showing html formated emails since they tend to be displayed with a white background and I can't read them
 ;;; From: http://www.emacswiki.org/emacs/MimeTypesWithGnus
 (setq mm-discouraged-alternatives '("text/html" "text/richtext"))
