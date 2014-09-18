@@ -118,6 +118,8 @@
     ;; To call `gnus-summary-reply' (the original function of "r"),
     ;; use "S r".
     (local-set-key (kbd "r") 'gnus-summary-reply-with-original)))
+(setq gnus-blocked-images ".*")
+
 ;;; Avoid showing html formated emails since they tend to be displayed with a white background and I can't read them
 ;;; From: http://www.emacswiki.org/emacs/MimeTypesWithGnus
 (setq mm-discouraged-alternatives '("text/html" "text/richtext"))
