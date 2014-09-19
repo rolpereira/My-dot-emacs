@@ -118,6 +118,10 @@
     ;; To call `gnus-summary-reply' (the original function of "r"),
     ;; use "S r".
     (local-set-key (kbd "r") 'gnus-summary-reply-with-original)))
+
+;; From: http://www.inference.phy.cam.ac.uk/cjb/dotfiles/dotgnus
+;; This marks mail I send as read.
+(setq gnus-gcc-mark-as-read t)
 (setq gnus-blocked-images ".*")
 
 ;;; Avoid showing html formated emails since they tend to be displayed with a white background and I can't read them
